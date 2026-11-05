@@ -217,11 +217,59 @@ public final class CommandGrammar {
         choices.size() == 1 ? choices.getFirst() : commonPrefix(choices), List.copyOf(choices));
   }
   public static String help(Console cli, Device device) {
-    return String.join("\n",
-               commands(cli, device)
-                   .stream()
-                   .map(s -> s.words + (s.usage.isEmpty() ? "" : " " + s.usage))
-                   .toList())
-        + "\nTab completes unique keywords and interfaces. Use any unambiguous prefix.";
+    return contextHelp(cli, device, "");
+  }
+  /** `?` describes the next token; Tab remains an editor operation with concrete completions. */
+  public static String contextHelp(Console cli, Device device, String prefix) {
+    String clean = prefix.stripLeading();
+    boolean space = !clean.isEmpty() && Character.isWhitespace(clean.charAt(clean.length() - 1));
+    var input = new ArrayList<>(clean.isBlank() ? List.<String>of() : Arrays.asList(clean.stripTrailing().split("\\s+")));
+    String fragment = space || input.isEmpty() ? "" : input.removeLast();
+    Node node = tree(cli, device);
+    var normalized = new ArrayList<String>();
+    for (int i = 0; i < input.size(); i++) {
+      var candidates = matching(node, input.get(i));
+      if (node.command != null && candidates.isEmpty())
+        return argumentHelp(cli, device, node.command, normalized,
+            input.subList(i, input.size()), fragment);
+      if (candidates.size() != 1) return "% Ambiguous or invalid help context";
+      String word = candidates.getFirst();
+      normalized.add(word);
+      node = node.children.get(word);
+    }
+    var result = new ArrayList<String>();
+    String base = normalized.isEmpty() ? "" : String.join(" ", normalized) + " ";
+    for (String word : matching(node, fragment)) result.add(base + word);
+    if (node.command != null) {
+      String arguments = argumentHelp(cli, device, node.command, normalized, List.of(), fragment);
+      if (!arguments.startsWith("%")) result.addAll(Arrays.asList(arguments.split("\n")));
+    }
+    return result.isEmpty() ? "% No matching keywords or arguments" : String.join("\n", new LinkedHashSet<>(result));
+  }
+  private static String argumentHelp(Console cli, Device d, Spec spec, List<String> normalized,
+      List<String> args, String fragment) {
+    int index = args.size();
+    var result = new LinkedHashSet<String>();
+    if (fragment.isEmpty() && index >= spec.minArgs() && index <= spec.maxArgs()) result.add("<cr>");
+    if (index >= spec.maxArgs()) return result.isEmpty() ? "% Too many arguments" : String.join("\n", result);
+    String[] usage = spec.usage().replace("[", "").replace("]", "").split("\\s+");
+    String parameter = usage[Math.min(index, usage.length - 1)];
+    if (parameter.equals("VLAN") || parameter.startsWith("VLAN,")) {
+      result.add("<1-4094>  VLAN IDs 1-4094 (normal range 1-1005)");
+    } else {
+      var input = new ArrayList<>(normalized); input.addAll(args);
+      String base = String.join(" ", input) + " ";
+      var completion = completeArgument(cli, d, spec, normalized, input, fragment, base + fragment, fragment.isEmpty());
+      for (String choice : completion.choices()) result.add(choice.stripTrailing());
+      if (parameter.contains("|")) {
+        for (String choice : parameter.split("\\|"))
+          if (choice.toLowerCase(Locale.ROOT).startsWith(fragment.toLowerCase(Locale.ROOT))) result.add(base + choice);
+      } else if (parameter.equals("IP") || parameter.equals("MASK") || parameter.equals("NETWORK") || parameter.equals("NEXT_HOP")) {
+        result.add("A.B.C.D  " + parameter);
+      } else if (!parameter.isEmpty() && (result.isEmpty() || result.equals(Set.of("<cr>")))) {
+        result.add(parameter + "  " + (parameter.equals("INTERFACE") ? "Interface name" : "Argument"));
+      }
+    }
+    return result.isEmpty() ? "% No matching arguments" : String.join("\n", result);
   }
 }

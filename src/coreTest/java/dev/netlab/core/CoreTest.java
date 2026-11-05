@@ -182,6 +182,7 @@ public final class CoreTest {
     checks += RouterTest.run();
     checks += SwitchingTest.run();
     checks += HardwareTest.run();
+    checks += CliRegressionTest.run();
     checks += WirelessTest.run();
     checks += AutomationTest.run();
     checks += PortLayoutTest.run();

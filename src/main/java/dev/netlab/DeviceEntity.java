@@ -178,13 +178,13 @@ public class DeviceEntity extends BlockEntity {
     for(var entry:tag.getList("powerLinks",Tag.TAG_COMPOUND)){var t=(CompoundTag)entry;var peer=PowerSystem.loadPeer(t);if(peer!=null)powerLinks.put(t.getInt("port"),peer);}
     if (tag.contains("device"))
       device = GSON.fromJson(StoredJson.get(tag,"device"), Device.class);
-    boolean missingIdentity=device.identity==null||device.identity.isBlank();boolean missingConsole=Set.of("server","endpoint","sniffer").contains(device.kind)&&device.ports.stream().noneMatch(port->port.console);device.normalize();if(missingIdentity||missingConsole)setChanged();
+    boolean missingIdentity=device.identity==null||device.identity.isBlank();boolean missingConsole=Set.of("server","endpoint","sniffer").contains(device.kind)&&device.ports.stream().noneMatch(port->port.console);boolean oldPortNames=Set.of("router","switch").contains(device.kind)&&device.hardware!=null&&device.hardware.portNamingVersion<1;device.normalize();if(missingIdentity||missingConsole||oldPortNames)setChanged();
     if(device.kind.equals("pc")&&device.hardware==null)Hardware.ensure(device).profile=getBlockState().getBlock()==NetLab.LAPTOP.get()?"Laptop-PT":"PC-PT";
     if(device.kind.equals("pc")&&Hardware.migrateHostConsole(device))setChanged();
     if(device.kind.equals("router")||device.kind.equals("switch")||device.kind.equals("traffic"))Hardware.ensure(device);
     PowerSystem.prepare(device);
     upperDevice=tag.contains("upperDevice")?GSON.fromJson(StoredJson.get(tag,"upperDevice"),Device.class):null;
-    if(upperDevice!=null)upperDevice.normalize();
+    if(upperDevice!=null){boolean oldNames=Set.of("router","switch").contains(upperDevice.kind)&&upperDevice.hardware!=null&&upperDevice.hardware.portNamingVersion<1;upperDevice.normalize();if(oldNames)setChanged();}
     if(upperDevice!=null)Hardware.ensure(upperDevice);
     if(level==null||!level.isClientSide){MemoryCards.migrate(device);if(upperDevice!=null)MemoryCards.migrate(upperDevice);}
     links.clear();

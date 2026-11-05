@@ -10,6 +10,7 @@ public final class Hardware implements Serializable {
     public boolean energyRequired,energySupplied;
     public long epoch;
     public int hostConsoleVersion;
+    public int portNamingVersion;
     public String profile="";
     public Map<String,String> modules=new LinkedHashMap<>();
     public record Module(String id,String format,String medium,int ports,int mbps,boolean switching,int wicSlots) {}
@@ -88,15 +89,16 @@ public final class Hardware implements Serializable {
     public static boolean compatible(String slot,Module m){return slot.equals(m.format)||slot.equals("HWIC")&&m.format.equals("WIC");}
     public static void install(Device d,String slot,String module){
         var h=ensure(d);if(h.powered)throw new IllegalArgumentException("Сначала выключи устройство");
+        normalizePortNames(d);
         var m=CATALOG.get(module);String format=slots(d).get(slot);
         if(m==null||format==null||!compatible(format,m))throw new IllegalArgumentException("Модуль несовместим со слотом");
         if(h.modules.containsKey(slot))throw new IllegalArgumentException("Слот занят");
         if(d.ports.size()+m.ports>120)throw new IllegalArgumentException("Достигнут лимит аппаратных индексов");
-        if(m.format.equals("SFP")&&slot.contains("/")){
-            String parent=slot.substring(0,slot.lastIndexOf('/'));var p=d.ports.stream().filter(port->port.hardwareSlot.equals(parent)&&!port.hidden).findFirst().orElseThrow();p.medium=m.medium;p.maxMbps=m.mbps;p.bandwidth=m.mbps*1000;
+        if(m.format.equals("SFP")&&(slot.contains("/")||h.profile.equals("3650-24PS"))){
+            String parent=slot.contains("/")?slot.substring(0,slot.lastIndexOf('/')):slot;var p=d.ports.stream().filter(port->port.hardwareSlot.equals(parent)&&!port.hidden).findFirst().orElseThrow();p.medium=m.medium;p.maxMbps=m.mbps;p.bandwidth=m.mbps*1000;
         }else for(int i=0;i<m.ports;i++){
             String family=m.medium.equals("serial")?"Serial":m.medium.equals("async")?"Async":m.medium.equals("phone")?"Modem":m.medium.equals("wireless")?"Dot11Radio":m.medium.equals("fronthaul")?"Fronthaul":m.mbps==10?"Ethernet":m.mbps==100?"FastEthernet":"GigabitEthernet";
-            int index=slotNumber(slot);String name=m.medium.equals("cellular")?"Cellular0":m.medium.equals("fronthaul")?"Fronthaul0/"+i:m.medium.equals("console")?"RS232":m.format.equals("PCMCIA")||m.format.equals("PCI")?"Wireless0":family+"0/"+index+"/"+i;
+            String name=m.medium.equals("cellular")?"Cellular0":m.medium.equals("fronthaul")?"Fronthaul0/"+i:m.medium.equals("console")?"RS232":m.format.equals("PCMCIA")||m.format.equals("PCI")?"Wireless0":modulePortName(d,slot,family,i);
             int found=-1;for(int j=0;j<d.ports.size();j++)if(d.portName(j).equals(name)&&d.ports.get(j).hidden){found=j;break;}
             var p=new Device.Port(d.kind.equals("switch")||m.switching||m.medium.equals("wireless"));p.name=name;p.hardwareSlot=slot;p.medium=m.medium;p.maxMbps=m.mbps;p.bandwidth=m.mbps>0?m.mbps*1000:64;p.l2=m.switching||d.kind.equals("switch")||m.id.equals("HWIC-AP-AG-B");
             if(m.medium.equals("console")){p.console=true;p.up=true;}
@@ -111,17 +113,54 @@ public final class Hardware implements Serializable {
         for(var guard:REMOVE_GUARDS)guard.accept(d,slot);
         if(h.modules.keySet().stream().anyMatch(k->k.startsWith(slot+"/")))throw new IllegalArgumentException("Сначала извлеки вложенные карты/SFP");
         String module=h.modules.remove(slot);if(module==null)throw new IllegalArgumentException("Слот пуст");
-        if(slot.endsWith("/sfp0")){String parent=slot.substring(0,slot.lastIndexOf('/'));for(var p:d.ports)if(p.hardwareSlot.equals(parent)){p.medium="sfp";p.maxMbps=1000;}}
+        if(slot.endsWith("/sfp0")||h.profile.equals("3650-24PS")&&slot.startsWith("sfp")){String parent=slot.contains("/")?slot.substring(0,slot.lastIndexOf('/')):slot;for(var p:d.ports)if(p.hardwareSlot.equals(parent)&&!p.hidden){p.medium="sfp";p.maxMbps=1000;p.bandwidth=1000000;}}
         else for(int i:portsIn(d,slot)){var p=d.ports.get(i);p.hidden=true;p.up=false;p.ip="";}
         if(d.kind.equals("pc")&&d.preferredPort<d.ports.size()&&d.ports.get(d.preferredPort).hidden){
             d.preferredPort=0;if(d.wireless!=null){d.gateway=d.wireless.wiredGateway;d.os().dns=new ArrayList<>(d.wireless.wiredDns);}
         }
         return module;
     }
-    private static int slotNumber(String slot){
+    private static String modulePortName(Device d,String slot,String family,int port){
         String[] parts=slot.split("/");String root=parts[0];int number=Integer.parseInt(root.replaceAll("[^0-9]",""));
-        int base=root.startsWith("hwic")?1:root.startsWith("nm")?10:root.startsWith("nim")?20:root.startsWith("pt")?30:50;
-        return parts.length==1?base+number:(base+number)*10+Integer.parseInt(parts[1].replaceAll("[^0-9]",""))+1;
+        if(root.startsWith("sfp")&&d.hardware.profile.equals("3650-24PS"))return "GigabitEthernet1/1/"+(number+1);
+        if(root.startsWith("hwic"))return family+"0/"+number+"/"+port;
+        if(root.startsWith("nim"))return family+"0/"+(number+(d.hardware.profile.equals("ISR4331")?1:2))+"/"+port;
+        if(root.startsWith("nm"))return family+(number+1)+"/"+(parts.length==1?"":Integer.parseInt(parts[1].replaceAll("[^0-9]",""))+"/")+port;
+        if(root.startsWith("pt"))return family+(number+(d.hardware.profile.equals("Router-PT")?0:2))+"/"+port;
+        return family+"0/"+number+"/"+port;
+    }
+    /** Rename in place: cable endpoints, counters, configuration and parent indices stay attached. */
+    public static void normalizePortNames(Device d){
+        var h=d.hardware;if(h==null||!Set.of("router","switch").contains(d.kind))return;
+        var renamed=new LinkedHashMap<String,String>();
+        for(var p:d.ports){
+            if(p.virtual||p.console||p.hardwareSlot==null||!p.hardwareSlot.matches("(?:hwic|nim|nm|pt|sfp)[0-9]+(?:/wic[0-9]+)?"))continue;
+            if(p.name==null||!p.name.matches("[A-Za-z]+[0-9]+(?:/[0-9]+)+"))continue;
+            String family=p.name.replaceAll("[0-9].*","");int ordinal=Integer.parseInt(p.name.substring(p.name.lastIndexOf('/')+1));
+            String name=modulePortName(d,p.hardwareSlot,family,ordinal);
+            if(!name.equals(p.name)){renamed.put(p.name,name);p.name=name;}
+        }
+        for(var p:d.ports)if(p.virtual&&p.parent>=0&&p.parent<d.ports.size()&&p.name.contains(".")){
+            String name=d.portName(p.parent)+p.name.substring(p.name.lastIndexOf('.'));
+            if(!name.equals(p.name)){renamed.put(p.name,name);p.name=name;}
+        }
+        if(h.profile.equals("3650-24PS"))for(int i=0;i<4;i++){
+            String slot="sfp"+i,name="GigabitEthernet1/1/"+(i+1);
+            boolean present=d.ports.stream().anyMatch(p->!p.hidden&&p.hardwareSlot.equals(slot));
+            if(!present){
+                int reuse=-1;for(int k=0;k<d.ports.size();k++)if(d.ports.get(k).hidden&&d.ports.get(k).hardwareSlot.equals(slot)){reuse=k;break;}
+                if(reuse>=0||d.ports.size()<120){var p=new Device.Port(true);p.name=name;p.hardwareSlot=slot;p.medium="sfp";p.l2=true;if(reuse<0)d.ports.add(p);else d.ports.set(reuse,p);}
+            }
+        }
+        if(!renamed.isEmpty()){
+            var os=d.os();os.staticMacs.replaceAll((k,v)->renamed.getOrDefault(v,v));
+            os.spanSources.replaceAll((k,v)->renamed.getOrDefault(v,v));os.spanDestinations.replaceAll((k,v)->renamed.getOrDefault(v,v));
+            for(var routing:os.routing.values()){var names=new LinkedHashSet<String>();for(String name:routing.passive)names.add(renamed.getOrDefault(name,name));routing.passive=names;}
+            d.routes.replaceAll(r->new Device.Route(r.network(),r.mask(),r.nextHop(),r.ad(),renamed.getOrDefault(r.iface(),r.iface())));
+            os.routes6.replaceAll(r->new RouterState.Route6(r.prefix(),r.next(),renamed.getOrDefault(r.iface(),r.iface())));
+            os.nat.replaceAll(r->new RouterState.NatRule(r.type(),r.local(),r.global(),r.acl(),r.pool(),renamed.getOrDefault(r.iface(),r.iface()),r.localPort(),r.globalPort()));
+        }
+        h.portNamingVersion=1;
     }
     public static void changeProfile(Device d,String profile){
         var h=ensure(d);if(h.powered||!h.modules.isEmpty())throw new IllegalArgumentException("Выключи устройство и извлеки все модули");if(!profiles(d.kind).contains(profile))throw new IllegalArgumentException("Неизвестное шасси");
@@ -136,6 +175,7 @@ public final class Hardware implements Serializable {
             for(int i=1;i<=24;i++)builtin(d,(profile.equals("3650-24PS")?"GigabitEthernet1/0/":"FastEthernet0/")+i,profile.equals("3650-24PS")?1000:100);
             if(profile.equals("2960-24TT")||profile.equals("3560-24PS"))for(int i=1;i<=2;i++)builtin(d,"GigabitEthernet0/"+i,1000);
         }
+        normalizePortNames(d);
     }
     private static void builtin(Device d,String name,int speed){
         var p=new Device.Port(d.kind.equals("switch"));p.name=name;p.maxMbps=speed;p.bandwidth=speed*1000;p.l2=d.kind.equals("switch");

@@ -60,6 +60,7 @@ public final class Device implements java.io.Serializable {
       consolePort.virtual = false;
       ports.add(consolePort);
     }
+    Hardware.normalizePortNames(this);
   }
   public int physicalPortIndex(int slot) {
     for (int i = 0; i < ports.size(); i++)
@@ -161,7 +162,7 @@ public final class Device implements java.io.Serializable {
           && (f.startsWith(family) || (f.equals("eth") && type.equals("ethernet")))
           && canonical.substring(f.length()).equals(number)) {
         if (create && ports.get(i).hidden) {
-          if(hardware!=null&&!ports.get(i).virtual)return -1;
+          if(hardware!=null&&!ports.get(i).virtual)continue;
           ports.get(i).hidden = false;
           if (canonical.startsWith("loopback"))
             ports.get(i).up = true;

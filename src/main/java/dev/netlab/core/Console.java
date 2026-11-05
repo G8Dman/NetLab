@@ -29,6 +29,7 @@ public final class Console {
       case 5 -> "(config-router)#";
       case 6 -> "(dhcp-config)#";
       case 7 -> "(config-std-nacl)#";
+      case 8 -> "(config-vlan)#";
       default -> "#";
     };
     return d.hostname + suffix;
@@ -138,8 +139,7 @@ public final class Console {
     if (line.strip().equals("?") || line.strip().equalsIgnoreCase("help"))
       return CommandGrammar.help(this, d);
     if (line.stripTrailing().endsWith("?")) {
-      var completion = complete(d, line.stripTrailing().substring(0, line.stripTrailing().length() - 1));
-      return completion.choices().isEmpty() ? "% No completions" : String.join("\n", completion.choices());
+      return CommandGrammar.contextHelp(this, d, line.stripTrailing().substring(0, line.stripTrailing().length() - 1));
     }
     if (d.kind.equals("switch") && (line.strip().equalsIgnoreCase("show ip dhcp snooping")
         || line.strip().equalsIgnoreCase("show ip dhcp snooping binding")))

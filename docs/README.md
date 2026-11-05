@@ -30,6 +30,8 @@
 
 ## Проверки и история
 
+- [0.18.1: исправления VLAN, справки и имён портов](UPDATE-0.18.1.md)
+
 - [Проверки отдельных обновлений](VALIDATION.md)
 - [Проверки Mobile](MOBILE-VALIDATION.md)
 - [Результаты проверок Sputnik](SPUTNIK-VALIDATION.json)

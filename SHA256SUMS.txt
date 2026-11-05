@@ -1,4 +1,4 @@
-e51e8ecd9c6d3b9d34f0da96d72ef4d245644175b710dbd6f7f5ef4d48f7fb4b  mods/netlab-0.18.0-alpha.jar
+3957332e3a93130e7997641cf0973b63185aeeab6298184a8ae6428b2b528560  mods/netlab-0.18.1-alpha.jar
 41b04ca2a3cc5d3237502b139a2148d86b74aababdbb58695c41f6ca60cb00f9  mods/netlab-automation-0.6.0-alpha.jar
 c36f53a9fc60b1b6e2e7171d07f31e469d0ee5d6547fc75c7ff8685568469d54  mods/netlab-mobile-0.1.2-alpha.jar
 ef389f4eca4ebe9ecc97fd4822db8453db05812b84fde9d5ca97aade1d0ddb85  mods/netlab-sputnik-0.1.2-alpha.jar
