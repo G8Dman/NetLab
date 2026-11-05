@@ -25,7 +25,9 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 | Mobile 0.1.2 | [netlab-mobile-0.1.2-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-mobile-0.1.2-alpha.jar) |
 | Sputnik 0.1.2 | [netlab-sputnik-0.1.2-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-sputnik-0.1.2-alpha.jar) |
 
-После авторизации ссылки скачивают JAR непосредственно. Контрольные суммы: [SHA256SUMS.txt](SHA256SUMS.txt). Состав комплекта и зависимости: [MODS.json](MODS.json).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/releases/download/netlab-suite-2026.11.05-r2/NetLab-1.21.1-mods.zip).
+
+Контрольные суммы: [SHA256SUMS.txt](SHA256SUMS.txt). Состав комплекта и зависимости: [MODS.json](MODS.json).
 
 ### Обязательные сторонние зависимости
 
