@@ -88,8 +88,10 @@ public final class CommandManual {
         ENTRIES.put("traceroute",new Entry("Показать вычисленный путь маршрутизации до узла.","192.168.20.2","Путь определяется моделью, полный обмен ICMP TTL exceeded не воспроизводится."));
         ENTRIES.put("tracert",new Entry("Показать маршрут с ПК/ноутбука; аналог traceroute в интерфейсе ПК.","192.168.20.2","Полная диагностика TTL и реального Интернета не реализована."));
         ENTRIES.put("copy",new Entry("Скопировать конфигурацию. Для TFTP модель запрашивает сервер и имя файла.","running-config startup-config",""));
+        ENTRIES.put("copy running-config startup-config",new Entry("Сохранить running-config в startup-config и на карту CISCO. Эквивалент write memory; сокращение copy run start.","","Для оборудования с картой памяти предварительно вставь карту."));
         ENTRIES.put("write",new Entry("Сохранить текущую конфигурацию как startup-config.","",""));
-        ENTRIES.put("write memory",new Entry("Сохранить текущую конфигурацию для reload.","",""));
+        ENTRIES.put("write memory",new Entry("Сохранить running-config в startup-config и на установленную карту CISCO. Доступно после enable; сокращения wr и wr mem. Из настройки: do write memory. ПК и ноутбук используют встроенную память.","",""));
+        ENTRIES.put("memory write",new Entry("Прежний псевдоним NetLab для write memory: сохранить текущие настройки на карту CISCO. В новых инструкциях используй write memory.","","Это команда совместимости NetLab, не синтаксис Cisco IOS."));
         ENTRIES.put("erase startup-config",new Entry("Удалить сохранённую конфигурацию; running-config пока остаётся.","",""));
         ENTRIES.put("reload",new Entry("Перезагрузить виртуальное устройство из startup-config.","",""));
         ENTRIES.put("dir flash:",new Entry("Показать учебное содержимое flash.","",""));

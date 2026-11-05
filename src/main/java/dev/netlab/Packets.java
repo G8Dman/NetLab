@@ -102,8 +102,7 @@ public final class Packets {
         if(ConsoleAccess.active(device,player.getUUID())){
           var connection=ConsoleAccess.target(device,player.getUUID(),false);
           if(connection==null)return;
-          var extension=dev.netlab.api.ConsoleExtensions.HANDLERS.get(connection.device().kind);
-          var memory=MemoryCards.complete(msg.prefix);var completion=memory!=null?memory:extension!=null?extension.complete(msg.prefix):connection.device().kind.equals("traffic")?TrafficControllers.complete(connection.cli(),msg.prefix):connection.cli().complete(connection.device(),msg.prefix);
+          var completion=dev.netlab.api.ConsoleExtensions.complete(connection,msg.prefix);
           PacketDistributor.sendToPlayer(player,new Completed(msg.pos,msg.prefix,completion.value(),String.join("\n",completion.choices())));return;
         }
         var completion = device.session(player.getUUID()).complete(device.selectedDevice(player.getUUID()), msg.prefix);

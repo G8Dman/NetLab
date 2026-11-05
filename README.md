@@ -20,12 +20,12 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 
 | Готовый файл | Скачать |
 |---|---|
-| NetLab 0.18.2 | [netlab-0.18.2-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-0.18.2-alpha.jar) |
-| Automation 0.6.0 | [netlab-automation-0.6.0-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-automation-0.6.0-alpha.jar) |
-| Mobile 0.1.2 | [netlab-mobile-0.1.2-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-mobile-0.1.2-alpha.jar) |
-| Sputnik 0.1.2 | [netlab-sputnik-0.1.2-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-sputnik-0.1.2-alpha.jar) |
+| NetLab 0.18.3 | [netlab-0.18.3-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-0.18.3-alpha.jar) |
+| Automation 0.6.1 | [netlab-automation-0.6.1-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-automation-0.6.1-alpha.jar) |
+| Mobile 0.1.3 | [netlab-mobile-0.1.3-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-mobile-0.1.3-alpha.jar) |
+| Sputnik 0.1.3 | [netlab-sputnik-0.1.3-alpha.jar](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/raw/branch/main/mods/netlab-sputnik-0.1.3-alpha.jar) |
 
-**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/releases/download/netlab-suite-2026.11.06-r2/NetLab-1.21.1-mods.zip).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://git.2.26.6.117.sslip.io:9443/G8Dman/NetLab/releases/download/netlab-suite-2026.11.06-r3/NetLab-1.21.1-mods.zip).
 
 Контрольные суммы: [SHA256SUMS.txt](SHA256SUMS.txt). Состав комплекта и зависимости: [MODS.json](MODS.json).
 
@@ -42,14 +42,14 @@ Rinku сам скачивает Chromium под текущую ОС при пе�
 
 | Мод | Версия | Что добавляет |
 |---|---|---|
-| **NetLab** | `0.18.2-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
-| **NetLab Automation** | `0.6.0-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение. |
-| **NetLab Mobile** | `0.1.2-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
-| **NetLab Sputnik** | `0.1.2-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
+| **NetLab** | `0.18.3-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
+| **NetLab Automation** | `0.6.1-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение. |
+| **NetLab Mobile** | `0.1.3-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
+| **NetLab Sputnik** | `0.1.3-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
 
-Все дополнения требуют основной **NetLab**. Они устанавливаются независимо друг от друга.
+Версии дополнений из этого комплекта требуют основной **NetLab 0.18.3-alpha или новее**. Они устанавливаются независимо друг от друга.
 
-Обновление **0.18.2**: [исправлены порядок портов на передней панели и формат `show run`](docs/UPDATE-0.18.2.md).
+Обновление **0.18.3**: [исправлены порядок портов на передней панели и формат `show run`](docs/UPDATE-0.18.3.md).
 
 ## NetLab · от разъёма до маршрута
 

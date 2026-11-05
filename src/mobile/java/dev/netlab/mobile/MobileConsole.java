@@ -10,16 +10,25 @@ import java.util.concurrent.*;
 
 /** NetLab commands, not a claim to emulate a vendor's LTE management OS. */
 public final class MobileConsole implements ConsoleExtensions.Handler {
-    public static final String HELP="NetLab Mobile\nОбщие IOS-подобные: enable; configure terminal; interface gi0/0; ip address IP MASK; no shutdown; ip default-gateway IP; memory write.\nmobile panel — панель оборудования / SIM\nshow mobile — состояние; show subscribers — абоненты EPC\nВ configure terminal:\nEPC: mobile password ПАРОЛЬ; mobile operator PLMN НАЗВАНИЕ; mobile pool ШЛЮЗ/24; mobile apn ИМЯ\nBBU / станок: mobile core IP\nСтанок: mobile pair ПАРОЛЬ; mobile issue [ИМЯ] (также в enable)\nEPC: mobile revoke UUID\nRRU: mobile radio on|off; mobile band 3|20; mobile channel N; mobile azimuth auto|0..359; mobile tilt 0..20; mobile range 64..1024\nmobile keep-loaded on|off — ограниченная загрузка инфраструктуры.\nSIM: пустую карту вставь в панели станка, выпусти и забери активную. Рецептов пока нет.";
+    public static final String HELP="NetLab Mobile\nОбщие IOS-подобные: enable; configure terminal; interface gi0/0; ip address IP MASK; no shutdown; ip default-gateway IP; write memory.\nmobile panel — панель оборудования / SIM\nshow mobile — состояние; show subscribers — абоненты EPC\nВ configure terminal:\nEPC: mobile password ПАРОЛЬ; mobile operator PLMN НАЗВАНИЕ; mobile pool ШЛЮЗ/24; mobile apn ИМЯ\nBBU / станок: mobile core IP\nСтанок: mobile pair ПАРОЛЬ; mobile issue [ИМЯ] (также в enable)\nEPC: mobile revoke UUID\nRRU: mobile radio on|off; mobile band 3|20; mobile channel N; mobile azimuth auto|0..359; mobile tilt 0..20; mobile range 64..1024\nmobile keep-loaded on|off — ограниченная загрузка инфраструктуры.\nSIM: пустую карту вставь в панели станка, выпусти и забери активную. Рецептов пока нет.";
     private MobileRef ref(Context c){var t=c.target();var r=MobileRef.of(t.entity(),t.id()==t.entity().slotId(1)?1:0);if(r==null||!r.state().owns(c.player().getUUID()))throw new IllegalArgumentException("Устройство принадлежит другому игроку");return r;}
     @Override public String open(Context c){var r=ref(c);return "NetLab Mobile / учебная мобильная сеть\nhelp — команды; mobile panel — оборудование\n"+MemoryCards.status(r.device())+"\n"+c.target().cli().prompt(r.device());}
     private static CompletableFuture<String> done(String text){return CompletableFuture.completedFuture(text);}
     private static void kind(MobileRef r,String expected){if(!r.device().kind.equals(expected))throw new IllegalArgumentException("Команда для "+expected);}
+    private static String ports(MobileRef r){
+        var out=new StringBuilder("\nПорты (административное состояние / наличие кабеля):");
+        for(int i=0;i<r.device().ports.size();i++){
+            var p=r.device().ports.get(i);if(p.hidden||p.console||p.medium.equals("cellular"))continue;
+            out.append('\n').append(r.device().portName(i)).append(p.up?": no shutdown":": shutdown")
+                .append(r.host().links.containsKey(r.bay()*128+i)?" / кабель подключён":" / нет кабеля");
+        }
+        return out.toString();
+    }
     @Override public CompletableFuture<String> execute(Context c,String line){
         try{var r=ref(c);var s=r.state();var cli=c.target().cli();String text=line.strip();var a=text.split("\\s+");
             if(text.equals("help")||text.equals("?"))return done(HELP);
             if(text.equals("mobile panel")){MobilePackets.open(c.player(),r.host(),r.bay());return done("Панель открыта");}
-            if(text.equals("show mobile"))return done("Оператор: "+s.operatorName+" / PLMN "+s.plmn+"\nIP: "+r.ip()+" / gateway "+r.device().gateway+"\nEPC: "+s.coreAddress+" / APN "+s.apn+"\nПул: "+s.subscriberGateway+"/24\nRadio: "+s.radioEnabled+" band "+s.band+" channel "+s.channel+" azimuth "+s.azimuth+" tilt "+s.tilt+" range "+s.range+"\n"+MemoryCards.status(r.device()));
+            if(text.equals("show mobile"))return done("Оператор: "+s.operatorName+" / PLMN "+s.plmn+"\nIP: "+r.ip()+" / gateway "+r.device().gateway+"\nEPC: "+s.coreAddress+" / APN "+s.apn+"\nПул: "+s.subscriberGateway+"/24\nRadio: "+s.radioEnabled+" band "+s.band+" channel "+s.channel+" azimuth "+s.azimuth+" tilt "+s.tilt+" range "+s.range+"\n"+MemoryCards.status(r.device())+ports(r));
             if(text.equals("show subscribers")){kind(r,MobileHardware.CORE);var out=new StringBuilder("UUID | имя | активна | IP\n");for(var sub:s.subscribers.entries.values())out.append(sub.id).append(" | ").append(sub.label).append(" | ").append(sub.active).append(" | ").append(sub.ip).append('\n');return done(out.toString());}
             if(!text.startsWith("mobile ")){
                 var resolved=CommandGrammar.resolve(cli,r.device(),line);
@@ -47,7 +56,7 @@ public final class MobileConsole implements ConsoleExtensions.Handler {
                 case "range"->{kind(r,MobileHardware.RRU);s.range=Addressing.number(a[2],64,1024);}
                 case "keep-loaded"->s.keepLoaded=on(a[2]);
                 default->throw new IllegalArgumentException("Неизвестная mobile-команда; help");
-            }r.changed(s);MobileChunks.register(r.level(),r.host().getBlockPos());return done("OK; "+MemoryCards.status(r.device()));
+            }r.changed(s);MobileChunks.register(r.level(),r.host().getBlockPos());return done("OK; "+MemoryCards.status(r.device())+ports(r));
         }catch(IllegalArgumentException e){return done("% "+e.getMessage());}
     }
     private static boolean on(String value){if(!Set.of("on","off").contains(value))throw new IllegalArgumentException("on|off");return value.equals("on");}

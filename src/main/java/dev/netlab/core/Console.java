@@ -156,6 +156,11 @@ public final class Console {
     String[] a = line.trim().split("\\s+");
     String cmd = line.trim().toLowerCase(Locale.ROOT);
     try {
+      if(ConfigurationCommands.isSave(cmd)) {
+        String result=ConfigurationCommands.save(d);
+        n.changed.add(id);
+        return result;
+      }
       if (d.kind.equals("router")) {
         if(d.ports.stream().anyMatch(p->p.l2)&&((mode==3&&selected>=0&&d.ports.get(selected).l2)
             ||line.startsWith("vlan ")||line.startsWith("no vlan ")||mode==8||line.startsWith("show vlan")||line.startsWith("show mac"))){

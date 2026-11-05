@@ -32,6 +32,7 @@ public class MobileRuntimeCheck {
         var core=RackDevices.restore(new ItemStack(Mobile.CORE.get()),MobileHardware.CORE);
         check(core.ports.size()==3&&core.ports.get(1).console&&MobileHardware.cellular(core)==2,"fresh rack EPC restores proper ports, not generic switch ports");
         var bbu=RackDevices.restore(new ItemStack(Mobile.BBU.get()),MobileHardware.BBU);check(Hardware.slots(bbu).keySet().containsAll(List.of("control0","baseband0","fronthaul0")),"rack BBU has module bays");
+        saveCommands(core,bbu);
         var state=new MobileState();state.owner=UUID.randomUUID().toString();state.adminVerifier=MobileAuth.credential("operator-password");state.coreAddress="192.168.77.2";
         var sim=new SimCredentials();sim.issuer=core.identity;sim.operator=state.plmn;sim.label="Runtime SIM";state.subscribers.provision(sim);state.subscribers.activate(sim.id,MobileAuth.proof(sim.key,"challenge","activate|"+sim.id),"challenge");state.save(core);MemoryCards.demo(core);core.ports.get(0).ip="192.168.77.2";MemoryCards.sync(core);
         var item=RackDevices.item(core);var restored=RackDevices.restore(ItemStack.parse(regs,item.save(regs)).orElseThrow(),MobileHardware.CORE);
@@ -56,6 +57,30 @@ public class MobileRuntimeCheck {
         var action=new MobilePackets.Action(BlockPos.ZERO,1,"phone-id","pair","sample-password");buf=new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),regs);MobilePackets.Action.CODEC.encode(buf,action);check(MobilePackets.Action.CODEC.decode(buf).equals(action),"mobile request codec round trip");buf.release();
         var response=new MobilePackets.State(BlockPos.ZERO,1,"","{\"status\":\"SIM готова\"}",true);buf=new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),regs);MobilePackets.State.CODEC.encode(buf,response);check(MobilePackets.State.CODEC.decode(buf).equals(response),"mobile response codec round trip");buf.release();
         System.out.println(checks+" mobile registry/NBT/security checks passed; no client, server or world launched.");
+    }
+    static void saveCommands(Device core,Device bbu){
+        var n=new Network();n.devices.put(1L,core);n.devices.put(2L,bbu);
+        for(var device:List.of(core,bbu,new Device("server"),new Device("endpoint"),new Device("router"),new Device("switch"))){
+            boolean rejected=false;try{MemoryCards.write(device);}catch(IllegalArgumentException e){rejected=e.getMessage().contains("CISCO");}
+            check(rejected,"explicit save without card reports missing CISCO card: "+device.kind);
+            MemoryCards.demo(device);device.hostname="Saved-"+device.kind;device.extensions.put("save-check","live addon configuration");
+            var card=MemoryCards.card(device);card.active=false;device.extensions.put("netlab.memory",MobileState.JSON.toJson(card));
+            check(MemoryCards.write(device).contains("[OK]")&&MemoryCards.card(device).active,"write activates inserted card: "+device.kind);
+            String hostname=device.hostname;device.hostname="Unsaved";device.extensions.put("save-check","modified");MemoryCards.read(device);
+            check(device.hostname.equals(hostname)&&device.extensions.get("save-check").equals("live addon configuration"),"write stores running state instead of reading stale image: "+device.kind);
+            check(ConfigStore.restore(device.os().startup).hostname.equals(hostname),"startup configuration agrees with physical card: "+device.kind);
+        }
+        Hardware.ensure(bbu).powered=false;
+        Hardware.install(bbu,"control0",MobileHardware.CONTROL);Hardware.install(bbu,"baseband0",MobileHardware.BASEBAND);Hardware.install(bbu,"fronthaul0",MobileHardware.FRONTHAUL);Hardware.ensure(bbu).powered=true;
+        int port=bbu.findInterface("Fronthaul0/0",false);check(port>=0&&bbu.ports.get(port).up,"new fronthaul module starts enabled");
+        // Reproduce the user's saved state, without silently overriding deliberate shutdown.
+        for(var p:bbu.ports)if(p.medium.equals("fronthaul"))p.up=false;
+        var cli=new Console();for(String command:List.of("enable","configure terminal","interface Fronthaul0/0","no shutdown","end"))check(!cli.execute(bbu,n,2,command).startsWith("% Interface does not exist"),"BBU handbook command: "+command);
+        MemoryCards.write(bbu);bbu.ports.get(port).up=false;MemoryCards.read(bbu);check(bbu.ports.get(port).up,"documented BBU no shutdown survives saving and reading card");
+        var host=new MobileEntity(net.minecraft.core.BlockPos.ZERO,Mobile.BBU.get().defaultBlockState());
+        host.device=bbu;var target=new ConsoleAccess.Target(host,bbu,0,cli);
+        check(ConsoleExtensions.complete(target,"wr").value().strip().equals("write"),"Mobile Tab falls back to shared write grammar");
+        cli.pending="enable";check(ConsoleExtensions.complete(target,"memory").choices().isEmpty(),"memory completion cannot disclose commands at password prompt");
     }
     static void antenna(RegistryAccess registries)throws Exception{
         var block=(SectorAntennaBlock)Mobile.ANTENNA.get();var lower=block.defaultBlockState();var upper=lower.setValue(SectorAntennaBlock.HALF,net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER);

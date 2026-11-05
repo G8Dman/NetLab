@@ -78,10 +78,34 @@ public final class MemoryCards {
     }
     private static Device withExtensions(Device d,Map<String,String> extensions){var old=new Device(d.kind);old.extensions=extensions;return old;}
     public static String command(ServerPlayer p,ConsoleAccess.Target target,String line){
-        if(!line.startsWith("memory ")&&!line.equals("show memory"))return null;
+        var cli=target.cli();
+        // A password prompt consumes text verbatim; a remote EXEC belongs to its peer.
+        if(!cli.pending.isEmpty()||!cli.authenticated||cli.remoteId!=Long.MIN_VALUE)return null;
+        line=line.strip().toLowerCase(Locale.ROOT).replaceAll("\\s+"," ");
+        var resolver=cli;
+        // TrafficControl uses its own LAN login instead of IOS enable; saving a
+        // controller's existing lease never grants new LAN/VLAN permissions.
+        if(target.device().kind.equals("traffic")){resolver=new dev.netlab.core.Console();resolver.mode=1;}
+        String canonical=CommandGrammar.resolve(resolver,target.device(),line).value();
+        if(canonical.startsWith("do "))canonical=canonical.substring(3);
+        boolean save=ConfigurationCommands.isSave(canonical);
+        if(!save&&!line.startsWith("memory ")&&!line.equals("show memory"))return null;
         if(!RackDevices.allowed(p,target.entity(),target.id()==target.entity().slotId(1)?1:0))return "% Нет доступа к устройству";
-        if(line.equals("show memory"))return status(target.device());if(target.cli().mode!=1&&!target.device().kind.equals("traffic"))return "% Сначала enable";
-        try{switch(line){case "memory read"->{read(target.device());restoreServices(target.entity(),target.id()==target.entity().slotId(1)?1:0);}case "memory write"->{if(!present(target.device()))throw new IllegalArgumentException("Вставь карту памяти");var c=card(target.device());c.active=true;put(target.device(),c);sync(target.device());}default->{return "% memory read | memory write | show memory";}}target.entity().changed();return "Карта памяти: OK";}catch(IllegalArgumentException e){return "% "+e.getMessage();}
+        if(line.equals("show memory"))return status(target.device());
+        if(!save&&cli.mode!=1&&!target.device().kind.equals("traffic"))return "% Сначала enable";
+        try{
+            if(save){ConsoleExtensions.flush(target);String result=write(target.device());target.entity().changed();return result;}
+            if(line.equals("memory read")){read(target.device());restoreServices(target.entity(),target.id()==target.entity().slotId(1)?1:0);}
+            else return "% write memory | memory read | show memory";
+            target.entity().changed();return "Карта памяти: OK";
+        }catch(IllegalArgumentException e){return "% "+e.getMessage();}
+    }
+    /** Save running configuration and activate the physical card without reading stale settings. */
+    public static String write(Device d){
+        if(required(d)&&!present(d))throw new IllegalArgumentException("Вставь карту памяти CISCO; конфигурация не сохранена");
+        String result=ConfigurationCommands.save(d);
+        if(required(d)){var c=card(d);c.active=true;put(d,c);sync(d);}
+        return result;
     }
     public static void restoreServices(DeviceEntity host,int slot){var d=slot==0?host.device:host.upperDevice;if(d!=null&&host.getLevel() instanceof net.minecraft.server.level.ServerLevel level){if(d.kind.equals("router"))dev.netlab.api.VpnStore.get(level).restore(host.slotId(slot),d);if(d.kind.equals("traffic"))TrafficControllers.restore(level,d);}}
     public static CommandGrammar.Completion complete(String prefix){if(!prefix.startsWith("memory")&&!prefix.startsWith("show mem"))return null;var choices=List.of("memory read","memory write","show memory").stream().filter(c->c.startsWith(prefix)).toList();return new CommandGrammar.Completion(choices.size()==1?choices.getFirst():prefix,choices);}

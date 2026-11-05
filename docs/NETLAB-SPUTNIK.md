@@ -1,4 +1,4 @@
-# NetLab Sputnik 0.1.2
+# NetLab Sputnik 0.1.3
 
 Один и тот же JAR предназначен для **Windows 10/11 x64 и Linux x64**.
 Java 21 и Rinku выбирают нативные библиотеки своей платформы. Sputnik
@@ -22,7 +22,7 @@ Linux проверен отдельным реальным Chromium: HTTPS, из
 системных библиотек, Rinku или переменных окружения Prism. Для Linux нужна
 полная Java 21 с AWT, а не headless-only среда.
 
-Аддон для Minecraft 1.21.1 / NeoForge. Требуется NetLab 0.18.0 и, на клиенте,
+Аддон для Minecraft 1.21.1 / NeoForge. Требуется NetLab 0.18.3 и, на клиенте,
 Rinku 3.0.4. Automation и Mobile для Sputnik не обязательны. Браузер открывает
 настоящие сайты через интернет Minecraft-сервера. На выделенном сервере
 Chromium и графический интерфейс не запускаются.
@@ -128,7 +128,7 @@ LNB-RX ── радиокабель RX ── большая антенна RX
 Платы HUB устанавливаются при Power OFF. В консоли сетевые команды работают
 обычным образом: `enable`, `configure terminal`, `interface GigabitEthernet0/0`,
 `ip address IP MASK`, `ip default-gateway IP`, `ip route NET MASK NEXT_HOP`,
-`end`, `memory write`.
+`end`, `write memory`.
 
 Пример адресации одного абонента:
 
@@ -184,7 +184,7 @@ sat hub 172.30.77.1
 sat internet on
 ```
 
-На каждом устройстве: `end`, затем `memory write`. На двух антеннах через ПКМ
+На каждом устройстве: `end`, затем `write memory`. На двух антеннах через ПКМ
 выбери GEO-1 / 180 / 45. При OFFLINE проверь обе пары кабелей, FE, три платы HUB,
 ключ, UUID, частоты, поляризацию, сеть, наведение и IP-маршруты в обе стороны.
 Сам интернет-шлюз включается только при работающем тракте HUB ↔ абонент.

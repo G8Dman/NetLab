@@ -15,7 +15,7 @@ public final class CliRegressionTest {
         check(help.contains("<1-4094>")&&!help.contains("vlan 10"),"VLAN help describes the accepted ID range, not known VLAN examples");
         check(c.mode==2&&c.prompt(sw).equals("Switch(config)#"),"asking VLAN help leaves global configuration active");
         check(c.execute(sw,n,1,"vlan?").equals("vlan"),"partial keyword help differs from argument help");
-        check(Set.of(c.execute(sw,n,1,"do ?").split("\n")).equals(Set.of("do ping","do show")),"do help lists only the next command level");
+        check(Set.of(c.execute(sw,n,1,"do ?").split("\n")).equals(Set.of("do ping","do show","do copy","do memory","do write")),"do help lists only the next command level, including EXEC save commands");
         String showHelp=c.execute(sw,n,1,"do sh ?");
         check(showHelp.contains("do show ip")&&!showHelp.contains("do show ip interface brief"),"abbreviated context help does not dump entire command paths");
         check(c.execute(sw,n,1,"do show running-config ?").equals("<cr>"),"complete command help shows end of command");

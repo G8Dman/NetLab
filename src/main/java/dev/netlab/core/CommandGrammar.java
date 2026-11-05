@@ -18,6 +18,7 @@ public final class CommandGrammar {
     add(specs, "exit", 0, 0, "");
     add(specs, "help", 0, 0, "");
     if(device.kind.equals("pc")){specs.addAll(PCCommands.specs(device));return specs;}
+    specs.addAll(ConfigurationCommands.specs(cli,device));
     if (cli.mode < 2) {
       add(specs, "enable", 0, 0, "");
       add(specs, "show ip interface brief", 0, 0, "");

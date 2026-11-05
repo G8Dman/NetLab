@@ -16,6 +16,16 @@ public final class ConsoleExtensions {
         default CommandGrammar.Completion complete(String prefix){return new CommandGrammar.Completion(prefix,List.of());}
     }
     public static final Map<String,Handler> HANDLERS=new java.util.concurrent.ConcurrentHashMap<>();
+    /** Addon vocabulary falls back to the shared IOS grammar, including save commands. */
+    public static CommandGrammar.Completion complete(ConsoleAccess.Target target,String prefix){
+        if(!target.cli().pending.isEmpty()||!target.cli().authenticated)return new CommandGrammar.Completion(prefix,List.of());
+        var memory=MemoryCards.complete(prefix);if(memory!=null)return memory;
+        var handler=HANDLERS.get(target.device().kind);
+        var custom=handler!=null?handler.complete(prefix):target.device().kind.equals("traffic")?TrafficControllers.complete(target.cli(),prefix):null;
+        if(custom!=null&&!custom.choices().isEmpty())return custom;
+        if(target.device().kind.equals("traffic")){var cli=new dev.netlab.core.Console();cli.mode=1;return cli.complete(target.device(),prefix);}
+        return target.cli().complete(target.device(),prefix);
+    }
     public static void flush(ConsoleAccess.Target target){
         int slot=target.id()==target.entity().slotId(1)?1:0;
         if(target.entity().isRemoved()||target.entity().portDevice(slot*128)!=target.device())return;
