@@ -7,7 +7,11 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,15 +34,23 @@ jobs:
           python-version: '3.x'
 
       - name: Build all mods and check the model without launching Minecraft
+        if: runner.os != 'Windows'
         run: ./dev.sh build
+
+      - name: Build and check on Windows without launching Minecraft
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: dev.cmd build
+
+      - name: Prepare ready-to-install NetLab mods
+        run: python tools/package_mods.py
 
       - name: Upload mod JARs
         uses: actions/upload-artifact@v4
         with:
-          name: netlab-minecraft-1.21.1
+          name: netlab-minecraft-1.21.1-${{ matrix.os }}
           if-no-files-found: error
           path: |
-            build/libs/netlab-0.18.0-alpha.jar
-            build/libs/netlab-automation-0.6.0-alpha.jar
-            build/libs/netlab-mobile-0.1.2-alpha.jar
-            build/libs/netlab-sputnik-0.1.1-alpha.jar
+            mods/*.jar
+            MODS.json
+            SHA256SUMS.txt

@@ -200,6 +200,7 @@ public final class CoreTest {
     checks += MobileTest.run();
     checks += ServerThermalTest.run();
     checks += SputnikTest.run();
+    checks += dev.netlab.sputnik.client.NativeBrowserLibrariesTest.run();
     System.out.println("NetLab: " + checks + " core checks passed");
   }
 }

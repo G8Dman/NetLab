@@ -255,7 +255,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.sputnik.output
 tasks.register('sputnikJar', Jar) {
     dependsOn sputnikClasses
     archiveBaseName = 'netlab-sputnik'
-    archiveVersion = '0.1.1-alpha'
+    archiveVersion = '0.1.2-alpha'
     from sourceSets.sputnik.output
 }
 tasks.named('assemble') { dependsOn sputnikJar }
