@@ -13,5 +13,11 @@
   "sputnik_version": "0.1.1-alpha",
   "linux_missing_jawt_reproduced": true,
   "linux_production_preloader_native_link_passed_without_ld_library_path": true,
-  "linux_native_link_passed_with_overridden_java_library_path": true
+  "linux_native_link_passed_with_overridden_java_library_path": true,
+  "standalone_chromium_production_preloader_without_ld_library_path": {
+    "https": true,
+    "paint": true,
+    "pcm_capture": true,
+    "satellite_crossings": 20
+  }
 }

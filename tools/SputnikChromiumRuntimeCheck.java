@@ -14,7 +14,7 @@ public class SputnikChromiumRuntimeCheck {
     public static void main(String[] args)throws Exception{
         System.setProperty("jcef.path",args[0]);System.setProperty("jcef.external_message_pump","true");
         String[] switches={"--disable-gpu","--disable-background-networking","--autoplay-policy=no-user-gesture-required"};
-        System.loadLibrary("jawt");
+        dev.netlab.sputnik.client.NativeBrowserLibraries.prepare();
         if(!CefApp.startup(switches))throw new AssertionError("CEF startup failed");var settings=new CefSettings();settings.windowless_rendering_enabled=true;settings.log_severity=CefSettings.LogSeverity.LOGSEVERITY_ERROR;settings.log_file="/tmp/netlab-sputnik-cef.log";
         var app=CefApp.getInstance(switches,settings);var client=app.createClient();long deadline=System.nanoTime()+40_000_000_000L;
         while(CefApp.getState()!=CefApp.CefAppState.INITIALIZED&&System.nanoTime()<deadline){app.N_DoMessageLoopWork();Thread.sleep(10);}
