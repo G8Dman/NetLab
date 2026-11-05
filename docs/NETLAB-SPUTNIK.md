@@ -1,4 +1,10 @@
-# NetLab Sputnik 0.1.0
+# NetLab Sputnik 0.1.1
+
+Версия 0.1.1 исправляет Linux-запуск Rinku 3.0.4: библиотека текущей Java
+`libjawt.so` загружается до старта JCEF. Это устраняет ошибку
+`libjcef.so: libjawt.so: cannot open shared object file` без изменения
+системных библиотек, Rinku или переменных окружения Prism. Для Linux нужна
+полная Java 21 с AWT, а не headless-only среда.
 
 Аддон для Minecraft 1.21.1 / NeoForge. Требуется NetLab 0.18.0 и, на клиенте,
 Rinku 3.0.4. Automation и Mobile для Sputnik не обязательны. Браузер открывает

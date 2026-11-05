@@ -9,5 +9,9 @@
   "standalone_chromium_https": true,
   "standalone_chromium_paint": true,
   "standalone_chromium_pcm_capture": true,
-  "minecraft_prism_server_world_or_gametest_launched": false
+  "minecraft_prism_server_world_or_gametest_launched": false,
+  "sputnik_version": "0.1.1-alpha",
+  "linux_missing_jawt_reproduced": true,
+  "linux_production_preloader_native_link_passed_without_ld_library_path": true,
+  "linux_native_link_passed_with_overridden_java_library_path": true
 }

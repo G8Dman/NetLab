@@ -41,4 +41,4 @@ jobs:
             build/libs/netlab-0.18.0-alpha.jar
             build/libs/netlab-automation-0.6.0-alpha.jar
             build/libs/netlab-mobile-0.1.2-alpha.jar
-            build/libs/netlab-sputnik-0.1.0-alpha.jar
+            build/libs/netlab-sputnik-0.1.1-alpha.jar
