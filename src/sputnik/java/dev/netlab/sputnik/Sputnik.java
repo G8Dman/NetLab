@@ -27,7 +27,8 @@ public final class Sputnik {
     public static final Supplier<BlockEntityType<SputnikEntity>> ENTITY=ENTITIES.register("sputnik_device",()->BlockEntityType.Builder.of(SputnikEntity::new,DEVICES.values().stream().map(Supplier::get).toArray(SputnikBlock[]::new)).build(null));
     private static boolean integrated;
     public static synchronized void integrate(){if(integrated)return;integrated=true;
-        for(String k:List.of(SputnikHardware.HUB,SputnikHardware.GATEWAY)){RackDevices.register(k,DEVICES.get(k));RackDevices.INITIALIZERS.put(k,SputnikHardware::initialize);}
+        for(String k:SputnikHardware.KINDS)RackDevices.INITIALIZERS.put(k,SputnikHardware::initialize);
+        for(String k:List.of(SputnikHardware.HUB,SputnikHardware.GATEWAY))RackDevices.register(k,DEVICES.get(k));
         RackDevices.INSTALLED.add(i->{var ref=SputnikRef.of(i.host(),i.slot());if(ref!=null&&SputnikHardware.KINDS.contains(ref.device().kind)){var s=ref.state();if(s.owner.isEmpty())s.owner=i.player().getUUID().toString();ref.changed(s);SputnikChunks.register(ref.level(),ref.host().getBlockPos());}});
         RackDevices.GUARDS.add((p,h,b)->{var ref=SputnikRef.of(h,b);return ref==null||!SputnikHardware.KINDS.contains(ref.device().kind)||ref.state().owns(p.getUUID());});
         var cli=new SputnikConsole();for(String k:SputnikHardware.KINDS)if(dev.netlab.core.DeviceKinds.console(k))ConsoleExtensions.HANDLERS.put(k,cli);

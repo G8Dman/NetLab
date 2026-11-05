@@ -24,6 +24,21 @@ public final class SputnikHardware {
         if(!d.kind.equals(GATEWAY)){port(d,"TX-IF","coax_tx",1000,false);port(d,"RX-IF","coax_rx",1000,false);port(d,"Satellite0/0","satellite",25,false);d.ports.get(4).ip=d.kind.equals(HUB)?"10.254.0.1":"";}
     }
     public static boolean hubReady(Device d){return d.kind.equals(HUB)&&Hardware.powered(d)&&Hardware.ensure(d).modules.values().containsAll(MODULES);}
+    /** Repair only the unmistakable generic-device fallback, on an unwired host. */
+    public static boolean repairGeneric(Device d){
+        if(!KINDS.contains(d.kind)||d.ports.isEmpty()||d.ports.size()>2)return false;
+        var first=d.ports.getFirst();
+        if(first.console||first.virtual||first.hidden||!"copper".equals(first.medium)||!"".equals(first.name))return false;
+        for(int i=1;i<d.ports.size();i++)if(!d.ports.get(i).console)return false;
+        String hostname=d.hostname;
+        initialize(d);
+        if(!hostname.equals("Switch"))d.hostname=hostname;
+        if(Set.of(HUB,GATEWAY,MODEM).contains(d.kind)){
+            var lan=d.ports.getFirst();lan.ip=first.ip;lan.mask=first.mask;lan.dhcp=first.dhcp;lan.up=first.up;
+        }
+        Hardware.ensure(d).epoch++;
+        return true;
+    }
     public static void audio(Device d){if(d.kind.equals("pc")&&d.ports.stream().noneMatch(p->p.name.equals("AudioOut")))port(d,"AudioOut","audio",1,false);}
     public static PortLayout.Profile profile(Device d){var j=new ArrayList<PortLayout.Jack>();var labels=new HashMap<Integer,String>();var physical=new ArrayList<Integer>();for(int i=0;i<d.ports.size();i++)if(!d.ports.get(i).medium.equals("satellite")&&!d.ports.get(i).hidden)physical.add(i);
         double height=Set.of(DISH,VSAT).contains(d.kind)?.09:d.kind.equals(SPEAKER)?.12:d.kind.equals(ODU)?.16:.10;

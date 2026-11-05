@@ -34,6 +34,20 @@ public final class ConfigurationSaveTest {
         check(cli.pending.equals("enable"),"enable password requested");
         cli.execute(secured,n,1,"write memory");
         check(cli.mode==1&&secured.os().startup.isEmpty(),"password spelling write memory is consumed as a password, never as a save command");
+        fixedNames();
         return checks;
+    }
+    private static void fixedNames(){
+        var d=new Device("server");d.ports.clear();
+        for(String name:List.of("TX-IF","RX-IF","BUC-TX","LNB-RX")){var p=new Device.Port(false);p.name=name;p.medium="coax_tx";d.ports.add(p);}
+        var console=new Device.Port(true);console.name="Console";console.console=true;d.ports.add(console);
+        var n=new Network();n.devices.put(1L,d);var cli=new Console();cli.execute(d,n,1,"enable");cli.execute(d,n,1,"configure terminal");
+        for(int i=0;i<4;i++){
+            String name=d.portName(i);check(d.findInterface(name.toLowerCase(Locale.ROOT),false)==i,"exact hardware name can have no numeric suffix");
+            check(cli.execute(d,n,1,"interface "+name).isEmpty()&&cli.selected==i,"CLI selects "+name);
+            cli.execute(d,n,1,"no shutdown");check(d.ports.get(i).up,"CLI enables "+name);cli.execute(d,n,1,"exit");
+        }
+        check(d.findInterface("Console",false)==-1,"console is not a data interface");
+        d.ports.getFirst().hidden=true;check(d.findInterface("TX-IF",true)==-1,"exact names cannot resurrect removed hardware");
     }
 }

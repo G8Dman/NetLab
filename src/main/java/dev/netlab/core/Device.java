@@ -149,6 +149,11 @@ public final class Device implements java.io.Serializable {
   }
   public int findInterface(String value, boolean create) {
     String input = value.replaceAll("\\s+", "").toLowerCase(Locale.ROOT);
+    // Fixed hardware names such as TX-IF, RX-IF and BUC-TX have no numeric suffix.
+    // Console remains configured through line console, never as a data interface.
+    for(int i=0;i<ports.size();i++)
+      if(!ports.get(i).hidden&&!ports.get(i).console
+          &&portName(i).replaceAll("\\s+", "").equalsIgnoreCase(input))return i;
     var m = java.util.regex.Pattern.compile("([a-z-]+)([0-9]+(?:/[0-9]+)*(?:\\.[0-9]+)?)").matcher(input);
     if (!m.matches())
       return -1;
