@@ -9,10 +9,10 @@
   "mods": [
     {
       "id": "netlab",
-      "version": "0.18.1-alpha",
-      "file": "mods/netlab-0.18.1-alpha.jar",
-      "bytes": 692776,
-      "sha256": "3957332e3a93130e7997641cf0973b63185aeeab6298184a8ae6428b2b528560"
+      "version": "0.18.2-alpha",
+      "file": "mods/netlab-0.18.2-alpha.jar",
+      "bytes": 699306,
+      "sha256": "1692adecbde1c00feff9128670b1c0055f8d39f7b6565e16c95cfd88d0216a88"
     },
     {
       "id": "netlabautomation",

@@ -97,11 +97,11 @@ public final class CommandManual {
         ENTRIES.put("vlan",new Entry("Создать/выбрать VLAN. В VTP client редактирование запрещено.","10",""));
         ENTRIES.put("name",new Entry("Назначить имя выбранной VLAN.","STUDENTS",""));
         ENTRIES.put("switchport mode",new Entry("Выбрать access, trunk или dynamic auto/desirable.","access",""));
-        ENTRIES.put("switchport mode access",new Entry("Установить порт в режим access.","",""));
+        ENTRIES.put("switchport mode access",new Entry("Установить порт в режим access. Trunk-параметры сохраняются, но не действуют в access.","",""));
         ENTRIES.put("switchport mode trunk",new Entry("Установить порт в режим trunk.","",""));
         ENTRIES.put("switchport access vlan",new Entry("Выбрать VLAN для нетегированных данных access-порта; не переводит trunk в access.","10",""));
-        ENTRIES.put("switchport trunk native vlan",new Entry("Назначить native VLAN trunk-порта; сама команда не включает trunk.","99",""));
-        ENTRIES.put("switchport trunk allowed vlan",new Entry("Задать разрешённые VLAN trunk; add/remove изменяют список.","10,20",""));
+        ENTRIES.put("switchport trunk native vlan",new Entry("Назначить VLAN для нетегированных кадров trunk. По умолчанию 1; allowed list и access VLAN меняются отдельно.","99","Сама команда не включает trunk; no switchport trunk native vlan возвращает native VLAN 1."));
+        ENTRIES.put("switchport trunk allowed vlan",new Entry("Задать разрешённые VLAN trunk; add/remove изменяют список, но не native VLAN. По умолчанию разрешены все VLAN.","10,20","no switchport trunk allowed vlan возвращает all и не переводит access-порт в trunk."));
         ENTRIES.put("switchport voice vlan",new Entry("Сохранить voice VLAN интерфейса.","20","IP-телефоны, CDP voice negotiation и голосовой трафик отдельно не моделируются."));
         ENTRIES.put("switchport nonegotiate",new Entry("Отключить DTP-переговоры на порту; режим trunk задаётся отдельно.","",""));
         ENTRIES.put("switchport port-security",new Entry("Включить ограничение MAC-адресов на access-порту вне EtherChannel.","",""));

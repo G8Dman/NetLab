@@ -49,7 +49,7 @@ public final class SwitchLogicCommands {
                 int last=iface(d,lastName);if(last<first)throw new IllegalArgumentException("Invalid interface range");
                 c.context="range:"+first+":"+last;c.selected=first;c.mode=3;return "";
             }
-            if(cmd.startsWith("default interface ")){int p=iface(d,String.join("",Arrays.asList(a).subList(2,a.length)));var old=d.ports.get(p);var fresh=new Device.Port(true);fresh.name=old.name;fresh.console=old.console;fresh.virtual=old.virtual;fresh.hidden=old.hidden;fresh.hardwareSlot=old.hardwareSlot;fresh.medium=old.medium;fresh.maxMbps=old.maxMbps;fresh.l2=old.l2;d.ports.set(p,fresh);os.secureLearned.remove(p);os.learnedMacs.entrySet().removeIf(e->e.getValue().port()==p);return "";}
+            if(cmd.startsWith("default interface ")){int p=iface(d,String.join("",Arrays.asList(a).subList(2,a.length)));var old=d.ports.get(p);var fresh=new Device.Port(!old.virtual||!old.name.equals("Vlan1"));fresh.name=old.name;fresh.console=old.console;fresh.virtual=old.virtual;fresh.hidden=old.hidden;fresh.hardwareSlot=old.hardwareSlot;fresh.medium=old.medium;fresh.maxMbps=old.maxMbps;fresh.bandwidth=old.maxMbps>0?old.maxMbps*1000:64;fresh.l2=old.l2;if(!fresh.virtual&&d.hardware!=null&&PortLayout.paired(d.hardware.profile))fresh.switchMode="dynamic auto";d.ports.set(p,fresh);os.secureLearned.remove(p);os.learnedMacs.entrySet().removeIf(e->e.getValue().port()==p);return "";}
             if(cmd.startsWith("vlan ")||cmd.startsWith("no vlan ")){
                 if(os.vtpMode.equals("client"))throw new IllegalArgumentException("VTP client cannot modify VLAN database");
                 int v=Addressing.number(a[a.length-1],1,4094);if(v>=1002&&v<=1005||cmd.startsWith("no ")&&v==1)throw new IllegalArgumentException("Reserved VLAN");
@@ -82,6 +82,8 @@ public final class SwitchLogicCommands {
             if(cmd.startsWith("switchport access vlan ")){port.accessVlan=Addressing.number(a[3],1,4094);port.vlan=0;return "";}
             if(cmd.equals("no switchport access vlan")){port.accessVlan=1;port.vlan=0;return "";}
             if(cmd.startsWith("switchport trunk native vlan ")){port.trunkNative=Addressing.number(a[4],1,4094);return "";}
+            if(cmd.equals("no switchport trunk native vlan")){if(port.vlan>0&&port.accessVlan==1)port.accessVlan=port.vlan;port.vlan=0;port.trunkNative=1;return "";}
+            if(cmd.equals("no switchport trunk allowed vlan")){port.allowedVlans="all";return "";}
             if(cmd.startsWith("switchport trunk allowed vlan ")){String value=a[4];if(value.equalsIgnoreCase("add")||value.equalsIgnoreCase("remove")){
                 if(a.length!=6)throw new IllegalArgumentException("add|remove VLAN-LIST");var set=Switching.vlans(port.allowedVlans);var change=Switching.vlans(a[5]);if(value.equalsIgnoreCase("add"))set.addAll(change);else set.removeAll(change);port.allowedVlans=set.isEmpty()?"none":String.join(",",set.stream().map(Object::toString).toList());
             }else{Switching.vlans(value);port.allowedVlans=value;}return "";}

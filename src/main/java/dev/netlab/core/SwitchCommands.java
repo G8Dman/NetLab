@@ -63,7 +63,7 @@ public final class SwitchCommands {
         s(x, "speed", 1, 1, "auto|10|100|1000"); s(x, "duplex", 1, 1, "auto|full|half");
         s(x, "switchport mode", 1, 2, "access|trunk|dynamic"); s(x, "switchport access vlan", 1, 1, "VLAN"); s(x, "no switchport access vlan", 0, 0, "");
         s(x, "switchport voice vlan", 1, 1, "VLAN"); s(x, "no switchport voice vlan", 0, 0, "");
-        s(x, "switchport trunk native vlan", 1, 1, "VLAN"); s(x, "switchport trunk allowed vlan", 1, 4, "all|none|add|remove VLAN"); s(x, "no switchport trunk allowed vlan", 0, 0, "");
+        s(x, "switchport trunk native vlan", 1, 1, "VLAN"); s(x,"no switchport trunk native vlan",0,0,""); s(x, "switchport trunk allowed vlan", 1, 4, "all|none|add|remove VLAN"); s(x, "no switchport trunk allowed vlan", 0, 0, "");
         s(x, "switchport nonegotiate", 0, 0, ""); s(x, "no switchport nonegotiate", 0, 0, "");
         s(x, "switchport port-security", 0, 0, ""); s(x, "no switchport port-security", 0, 0, ""); s(x, "switchport port-security maximum", 1, 1, "NUMBER");
         s(x, "switchport port-security mac-address", 1, 1, "MAC|sticky"); s(x, "switchport port-security violation", 1, 1, "shutdown|restrict|protect");
@@ -93,7 +93,7 @@ public final class SwitchCommands {
       if (cmd.equals("show clock")) return java.time.Instant.now().toString();
       if (cmd.equals("show history")) return String.join("\n", c.history);
       if (cmd.equals("show startup-config")) return os.startup.isEmpty() ? "startup-config is not present" : config(ConfigStore.restore(os.startup));
-      if (cmd.equals("show running-config")) return config(d);
+      if (cmd.equals("show running-config")) return SwitchConfiguration.showRunning(d);
       if (cmd.equals("show cdp neighbors") || cmd.equals("show cdp neighbors detail")) return n.cdp(id, cmd.endsWith("detail"));
       if (cmd.equals("show vlan brief")) return vlanBrief(d, os);
       if (cmd.equals("show vlan id") || cmd.startsWith("show vlan id ")) { int v = num(a[a.length-1],1,4094); return "VLAN " + v + "  " + os.vlans.getOrDefault(v,"VLAN"+v); }

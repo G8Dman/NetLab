@@ -28,6 +28,7 @@ public final class FrontPanel {
             ports.add(new Port(i,device.portName(i),CableKind.medium(device,i),p.maxMbps,p.l2||device.kind.equals("switch"),p.up,link,p.sent+p.received,
                 CableKind.medium(device,i).equals("serial")?network.serialRole(entity.slotId(bay),i)+" / clock "+p.clock:p.console?"9600 8N1":""));
         }
+        if(device.kind.equals("switch")||device.kind.equals("router"))ports.sort((a,b)->InterfaceOrder.compare(a.name(),b.name()));
         var slots=new ArrayList<Slot>();Hardware.slots(device).forEach((key,format)->slots.add(new Slot(key,format,h.modules.getOrDefault(key,""))));
         String energy=PowerSystem.status(entity,bay);status=status.isBlank()?energy:status+" | "+energy;
         String extra=extraStatus(entity,bay);if(!extra.isBlank())status+=" | "+extra;

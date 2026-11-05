@@ -149,7 +149,7 @@ public final class Hardware implements Serializable {
             boolean present=d.ports.stream().anyMatch(p->!p.hidden&&p.hardwareSlot.equals(slot));
             if(!present){
                 int reuse=-1;for(int k=0;k<d.ports.size();k++)if(d.ports.get(k).hidden&&d.ports.get(k).hardwareSlot.equals(slot)){reuse=k;break;}
-                if(reuse>=0||d.ports.size()<120){var p=new Device.Port(true);p.name=name;p.hardwareSlot=slot;p.medium="sfp";p.l2=true;if(reuse<0)d.ports.add(p);else d.ports.set(reuse,p);}
+                if(reuse>=0||d.ports.size()<120){var p=new Device.Port(true);p.name=name;p.hardwareSlot=slot;p.medium="sfp";p.l2=true;p.switchMode="dynamic auto";if(reuse<0)d.ports.add(p);else d.ports.set(reuse,p);}
             }
         }
         if(!renamed.isEmpty()){
@@ -161,6 +161,7 @@ public final class Hardware implements Serializable {
             os.nat.replaceAll(r->new RouterState.NatRule(r.type(),r.local(),r.global(),r.acl(),r.pool(),renamed.getOrDefault(r.iface(),r.iface()),r.localPort(),r.globalPort()));
         }
         h.portNamingVersion=1;
+        if(d.kind.equals("switch")&&PortLayout.paired(h.profile)&&d.findInterface("Vlan1",false)<0){int reuse=-1;for(int i=0;i<d.ports.size();i++)if(d.ports.get(i).virtual&&d.portName(i).equals("Vlan1")){reuse=i;break;}if(reuse>=0||d.ports.size()<120){var svi=new Device.Port(false);svi.name="Vlan1";svi.virtual=true;if(reuse<0)d.ports.add(svi);else d.ports.set(reuse,svi);}}
     }
     public static void changeProfile(Device d,String profile){
         var h=ensure(d);if(h.powered||!h.modules.isEmpty())throw new IllegalArgumentException("Выключи устройство и извлеки все модули");if(!profiles(d.kind).contains(profile))throw new IllegalArgumentException("Неизвестное шасси");
@@ -179,6 +180,7 @@ public final class Hardware implements Serializable {
     }
     private static void builtin(Device d,String name,int speed){
         var p=new Device.Port(d.kind.equals("switch"));p.name=name;p.maxMbps=speed;p.bandwidth=speed*1000;p.l2=d.kind.equals("switch");
+        if(d.kind.equals("switch")&&PortLayout.paired(d.hardware.profile))p.switchMode="dynamic auto";
         for(int i=0;i<d.ports.size();i++)if(d.portName(i).equals(name)){d.ports.set(i,p);return;}d.ports.add(p);
     }
 }

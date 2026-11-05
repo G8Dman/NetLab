@@ -161,7 +161,7 @@ public final class RouterCommands {
         return "Password:";
       }
       if (cmd.equals("show running-config"))
-        return config(d);
+        return showConfiguration(config(d));
       if (cmd.equals("show startup-config"))
         return os.startup.isEmpty() ? "startup-config is not present"
                                     : config(ConfigStore.restore(os.startup));
@@ -1091,6 +1091,12 @@ public final class RouterCommands {
     ConfigStore.replace(target, source);
   }
   public static String config(Device d) {
+    var s=new StringBuilder(globalConfig(d));
+    for(int i:InterfaceOrder.visible(d))s.append(interfaceConfig(d,i));
+    return s.append(tailConfig(d,true)).toString();
+  }
+  static String showConfiguration(String body){return "Building configuration...\n\nCurrent configuration : "+body.getBytes(java.nio.charset.StandardCharsets.UTF_8).length+" bytes\n!\n"+body;}
+  static String globalConfig(Device d) {
     var os = d.os();
     var s = new StringBuilder("hostname " + d.hostname + "\n");
     if (!os.domainLookup)
@@ -1120,10 +1126,13 @@ public final class RouterCommands {
       s.append("ipv6 unicast-routing\n");
     if (!os.cdp)
       s.append("no cdp run\n");
-    for (int i = 0; i < d.ports.size(); i++) {
+    return s.toString();
+  }
+  static String interfaceConfig(Device d,int i) {
+    var s=new StringBuilder();
       var p = d.ports.get(i);
       if (p.hidden || p.console)
-        continue;
+        return "";
       s.append("interface ").append(d.portName(i)).append('\n');
       if (!p.description.isEmpty())
         s.append(" description ").append(p.description).append('\n');
@@ -1182,7 +1191,10 @@ public final class RouterCommands {
       if (!p.cdp)
         s.append(" no cdp enable\n");
       s.append("!\n");
-    }
+    return s.toString();
+  }
+  static String tailConfig(Device d,boolean includeLines) {
+    var os=d.os();var s=new StringBuilder();
     for (var r : d.routes)
       s.append("ip route ")
           .append(r.network())
@@ -1199,7 +1211,7 @@ public final class RouterCommands {
           .append(r.iface().isEmpty() ? "" : r.iface() + " ")
           .append(r.next())
           .append('\n');
-    os.lines.forEach((name, l) -> {
+    if (includeLines) os.lines.forEach((name, l) -> {
       s.append("line ").append(name).append('\n');
       if (!l.password.isEmpty())
         s.append(" password ")

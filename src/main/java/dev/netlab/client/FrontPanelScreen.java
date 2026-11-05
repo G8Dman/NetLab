@@ -85,7 +85,7 @@ public final class FrontPanelScreen extends Screen {
         else if(!modulesView){
         g.fill(left+5,top+51,left+w-5,top+113,0xff34444c);
         long now=System.currentTimeMillis();
-        for(int i=0;i<12;i++){int index=portPage*12+i;if(index>=state.ports().size())break;var port=state.ports().get(index);int col=i%6,row=i/6;
+        for(int i=0;i<12;i++){int index=portPage*12+i;if(index>=state.ports().size())break;var port=state.ports().get(index);boolean pairs=dev.netlab.core.PortLayout.paired(state.profile());int col=pairs?i/2:i%6,row=pairs?i%2:i/6;
             int pw=(w-24)/6,x=left+12+col*pw,y=top+56+row*28;
             int color=port.medium().equals("fiber")?0xffffaa33:port.medium().equals("console")?0xff55ddff:port.medium().equals("serial")?0xffdd5555:0xff11191e;
             g.fill(x,y,x+pw-5,y+15,color);g.fill(x+3,y+3,x+pw-8,y+12,0xff101419);

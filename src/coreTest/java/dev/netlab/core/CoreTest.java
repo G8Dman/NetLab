@@ -183,6 +183,7 @@ public final class CoreTest {
     checks += SwitchingTest.run();
     checks += HardwareTest.run();
     checks += CliRegressionTest.run();
+    checks += SwitchPresentationTest.run();
     checks += WirelessTest.run();
     checks += AutomationTest.run();
     checks += PortLayoutTest.run();

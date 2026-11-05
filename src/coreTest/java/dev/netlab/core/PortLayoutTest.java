@@ -24,7 +24,7 @@ public final class PortLayoutTest {
     public static int run(){
         var router=new Device("router");var sw=new Device("switch");selectable(router,false,0);selectable(sw,false,0);
         var console=PortLayout.jacks(router,false,0).stream().filter(PortLayout.Jack::console).findFirst().orElseThrow();
-        check(router.portName(console.port()).equals("Console")&&console.x()>.88,"router has a dedicated right-hand Console connector");
+        check(router.portName(console.port()).equals("Console")&&console.x()>.88,"router has a dedicated Console connector at the left of the front panel");
         Hardware.ensure(sw).powered=false;Hardware.changeProfile(sw,"2960-24TT");selectable(sw,false,0);
         check(PortLayout.jacks(sw,false,0).size()==27,"2960 renders 24FE + 2GE + Console");
         int last=sw.findInterface("FastEthernet0/24",false);check(PortLayout.jacks(sw,false,0).stream().anyMatch(j->j.port()==last),"last access port reachable instead of only first four");

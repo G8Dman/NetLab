@@ -123,6 +123,7 @@ public final class CableRenderer implements BlockEntityRenderer<DeviceEntity> {
             }
             boolean linked=cache.network().linkUp(entity.slotId(bay),jack.port()%128);
             if(profile!=null){String caption=profile.labels().getOrDefault(jack.port()%128,device.portName(jack.port()%128));frontLabel(stack,buffers,caption,jack.x(),jack.y()+jack.height()/2+.038,jack.z()-.004,.0035f,rim);consumer=buffers.getBuffer(RenderType.entitySolid(TEXTURE));}
+            else if(!jack.console()&&(device.kind.equals("switch")||device.kind.equals("router"))){frontLabel(stack,buffers,PortLayout.shortName(device.portName(jack.port()%128)),jack.x(),jack.y()+jack.height()/2+.015,jack.z()-.004,.0011f,0xd5e6ed);consumer=buffers.getBuffer(RenderType.entitySolid(TEXTURE));}
             else if(jack.console()){
                 linked=false;var peer=entity.links.get(jack.port());
                 if(peer!=null&&level.hasChunkAt(BlockPos.of(peer.pos()))&&level.getBlockEntity(BlockPos.of(peer.pos())) instanceof DeviceEntity other){

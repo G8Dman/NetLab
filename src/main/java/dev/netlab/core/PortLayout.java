@@ -22,6 +22,8 @@ public final class PortLayout {
         public boolean contains(double px,double py){return Math.abs(px-x)<=width*.62&&Math.abs(py-y)<=height*.62;}
     }
     public static boolean supported(Device d){return d!=null&&DeviceKinds.ports(d.kind);}
+    public static boolean paired(String profile){return Set.of("2960-24TT","2950-24","3560-24PS","3650-24PS").contains(profile);}
+    public static String shortName(String name){return name.replace("GigabitEthernet","Gi").replace("FastEthernet","Fa").replace("Ethernet","Et");}
     public static List<Jack> jacks(Device d,boolean rack,int bay){
         if(!supported(d))return List.of();var custom=profile(d);
         if(custom!=null){if(!rack)return custom.jacks();return custom.jacks().stream().map(j->new Jack(bay*128+j.port,.06+j.x*.88,(bay==0?.12:.62)+j.y,.02+j.z*.9,j.width*.88,j.height,j.console,j.medium)).toList();}
@@ -40,11 +42,15 @@ public final class PortLayout {
             if(!rack)return List.copyOf(out);
             return out.stream().map(j->new Jack(bay*128+j.port,.06+j.x*.88,(bay==0?.12:.62)+j.y,.02+j.z*.9,j.width*.88,j.height,j.console,j.medium)).toList();
         }
-        int columns=Math.min(13,Math.max(1,data.size())),rows=Math.max(1,(data.size()+columns-1)/columns);
+        data.sort((a,b)->InterfaceOrder.compare(d.portName(a),d.portName(b)));
+        boolean pairs=d.kind.equals("switch")&&d.hardware!=null&&paired(d.hardware.profile);
+        int columns=pairs?Math.max(1,(data.size()+1)/2):Math.min(13,Math.max(1,data.size())),rows=pairs?2:Math.max(1,(data.size()+columns-1)/columns);
         double area=consoles.isEmpty()?.88:.77,step=area/columns;
         var out=new ArrayList<Jack>();
         for(int i=0;i<data.size();i++){
-            double x=.06+(i%columns+.5)*step,y=.035+(rows-i/columns-.5)*.18/rows;
+            int column=pairs?i/2:i%columns,row=pairs?i%2:i/columns;
+            // For a viewer facing the north panel, screen-left is high local X.
+            double x=.06+area-(column+.5)*step,y=.035+(rows-row-.5)*.18/rows;
             out.add(new Jack(data.get(i),x,y,.10,Math.min(.11,step*.78),Math.min(.085,.18/rows*.68),false,CableKind.medium(d,data.get(i))));
         }
         for(int i=0;i<consoles.size();i++)out.add(new Jack(consoles.get(i),.918,.125,.10,.075,.082,true,"console"));

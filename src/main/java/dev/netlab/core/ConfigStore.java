@@ -173,5 +173,6 @@ public final class ConfigStore {
     target.router = saved.os();
     target.router.startup = startup;
     target.router.flash = flash;
+    Hardware.normalizePortNames(target);
   }
 }
