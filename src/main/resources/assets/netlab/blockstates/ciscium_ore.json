@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "netlab:block/ciscium_ore"
+    }
+  }
+}

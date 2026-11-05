@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "AGA",
+    "CFC",
+    "IGI"
+  ],
+  "key": {
+    "A": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "C": {
+      "item": "minecraft:copper_block"
+    },
+    "F": {
+      "item": "netlabautomation:module_nl_server_cooler"
+    },
+    "I": {
+      "item": "minecraft:iron_bars"
+    }
+  },
+  "result": {
+    "id": "netlabautomation:module_nl_server_cooler_pro",
+    "count": 1
+  }
+}

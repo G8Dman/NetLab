@@ -1,0 +1,44 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "netlabmobile:block/sector_antenna",
+      "y": 0,
+      "uvlock": true
+    },
+    "facing=north,half=upper": {
+      "model": "netlabmobile:block/sector_antenna_upper",
+      "y": 0,
+      "uvlock": true
+    },
+    "facing=east,half=lower": {
+      "model": "netlabmobile:block/sector_antenna",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=east,half=upper": {
+      "model": "netlabmobile:block/sector_antenna_upper",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,half=lower": {
+      "model": "netlabmobile:block/sector_antenna",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=south,half=upper": {
+      "model": "netlabmobile:block/sector_antenna_upper",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,half=lower": {
+      "model": "netlabmobile:block/sector_antenna",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=west,half=upper": {
+      "model": "netlabmobile:block/sector_antenna_upper",
+      "y": 270,
+      "uvlock": true
+    }
+  }
+}

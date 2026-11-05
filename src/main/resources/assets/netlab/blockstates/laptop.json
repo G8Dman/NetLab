@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlab:block/laptop"
+    },
+    "facing=east": {
+      "model": "netlab:block/laptop",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlab:block/laptop",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlab:block/laptop",
+      "y": 270
+    }
+  }
+}

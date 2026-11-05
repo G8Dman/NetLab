@@ -1,0 +1,13 @@
+{
+  "core_checks": 8784,
+  "recipe_and_memory_checks": 499,
+  "mobile_checks": 326,
+  "fluid_checks": 30,
+  "server_thermal_checks": 24,
+  "sputnik_registry_geometry_privacy_payload_checks": 378,
+  "real_https_through_socks_and_netlab": true,
+  "standalone_chromium_https": true,
+  "standalone_chromium_paint": true,
+  "standalone_chromium_pcm_capture": true,
+  "minecraft_prism_server_world_or_gametest_launched": false
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "netlab:ciscium_ingot"
+    },
+    {
+      "item": "netlab:ciscium_ingot"
+    },
+    {
+      "item": "minecraft:book"
+    }
+  ],
+  "result": {
+    "id": "netlab:cisco_bible",
+    "count": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "LBL",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "L": {
+      "item": "minecraft:light_blue_dye"
+    },
+    "B": {
+      "item": "netlab:basic_circuit_board"
+    }
+  },
+  "result": {
+    "id": "netlab:console_cable",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "BBB",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "B": {
+      "item": "netlab:basic_circuit_board"
+    }
+  },
+  "result": {
+    "id": "netlab:async_cable",
+    "count": 1
+  }
+}

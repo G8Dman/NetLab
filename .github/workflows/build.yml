@@ -1,0 +1,44 @@
+name: Build four NetLab mods
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Build all mods and check the model without launching Minecraft
+        run: ./dev.sh build
+
+      - name: Upload mod JARs
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlab-minecraft-1.21.1
+          if-no-files-found: error
+          path: |
+            build/libs/netlab-0.18.0-alpha.jar
+            build/libs/netlab-automation-0.6.0-alpha.jar
+            build/libs/netlab-mobile-0.1.2-alpha.jar
+            build/libs/netlab-sputnik-0.1.0-alpha.jar

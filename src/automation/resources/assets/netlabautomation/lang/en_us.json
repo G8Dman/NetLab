@@ -1,0 +1,9 @@
+{
+  "block.netlabautomation.multiinterface": "Multiinterface",
+  "block.netlabautomation.management_server": "Management Server",
+  "block.netlabautomation.packet_analyzer": "Packet Analyzer",
+  "item.netlabautomation.module_nl_server_accelerator": "Server Acceleration Board",
+  "item.netlabautomation.module_nl_server_buffer": "Server Buffer Board",
+  "item.netlabautomation.module_nl_server_cooler": "Basic Server Cooler",
+  "item.netlabautomation.module_nl_server_cooler_pro": "Advanced Server Cooler"
+}

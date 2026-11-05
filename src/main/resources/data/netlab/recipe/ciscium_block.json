@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CCC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "netlab:ciscium_ingot"
+    }
+  },
+  "result": {
+    "id": "netlab:ciscium_block",
+    "count": 1
+  }
+}

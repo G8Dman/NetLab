@@ -1,0 +1,30 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+license="All Rights Reserved"
+[[mods]]
+modId="netlabsputnik"
+version="0.1.0-alpha"
+displayName="NetLab Sputnik"
+description='''VSAT satellite links, provider hubs, real web access and background speakers.'''
+[[dependencies.netlabsputnik]]
+modId="netlab"
+type="required"
+versionRange="[0.18.0-alpha,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabsputnik]]
+modId="rinku"
+type="required"
+versionRange="[3.0.4,)"
+ordering="AFTER"
+side="CLIENT"
+[[dependencies.netlabsputnik]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.265,)"
+side="BOTH"
+[[dependencies.netlabsputnik]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.2)"
+side="BOTH"

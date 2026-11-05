@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="All Rights Reserved"
+[[mods]]
+modId="netlabmobile"
+version="0.1.2-alpha"
+displayName="NetLab Mobile"
+description='''LTE teaching network: antennas, RRU/BBU, EPC, issued SIM cards and mobile clients.'''
+[[dependencies.netlabmobile]]
+modId="netlab"
+type="required"
+versionRange="[0.15.1-alpha,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabmobile]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.265,)"
+side="BOTH"
+[[dependencies.netlabmobile]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.2)"
+side="BOTH"

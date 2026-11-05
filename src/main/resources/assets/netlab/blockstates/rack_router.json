@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlab:block/rack_router"
+    },
+    "facing=east": {
+      "model": "netlab:block/rack_router",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlab:block/rack_router",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlab:block/rack_router",
+      "y": 270
+    }
+  }
+}

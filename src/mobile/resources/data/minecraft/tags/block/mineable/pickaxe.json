@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "netlabmobile:sector_antenna",
+    "netlabmobile:radio_unit",
+    "netlabmobile:baseband_unit",
+    "netlabmobile:mobile_core",
+    "netlabmobile:sim_station"
+  ]
+}

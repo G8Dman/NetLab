@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "netlab:block/module_assembler_top",
+    "bottom": "netlab:block/module_assembler_bottom",
+    "front": "netlab:block/module_assembler_front",
+    "side": "netlab:block/module_assembler_side"
+  }
+}

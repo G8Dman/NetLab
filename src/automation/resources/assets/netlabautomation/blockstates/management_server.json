@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlabautomation:block/management_server"
+    },
+    "facing=east": {
+      "model": "netlabautomation:block/management_server",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlabautomation:block/management_server",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlabautomation:block/management_server",
+      "y": 270
+    }
+  }
+}

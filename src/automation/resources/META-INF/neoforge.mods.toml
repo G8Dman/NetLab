@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="All Rights Reserved"
+[[mods]]
+modId="netlabautomation"
+version="0.6.0-alpha"
+displayName="NetLab Automation"
+description='''Network-controlled inventories, device capabilities, logistics and interception for NetLab.'''
+[[dependencies.netlabautomation]]
+modId="netlab"
+type="required"
+versionRange="[0.17.0-alpha,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabautomation]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.265,)"
+side="BOTH"
+[[dependencies.netlabautomation]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.2)"
+side="BOTH"

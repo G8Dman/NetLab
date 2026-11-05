@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "group": "ciscium_ingot",
+  "ingredient": {
+    "item": "netlab:raw_ciscium"
+  },
+  "result": {
+    "id": "netlab:ciscium_ingot"
+  },
+  "experience": 0.7,
+  "cookingtime": 100
+}

@@ -1,0 +1,17 @@
+{
+  "block.netlabsputnik.hub": "Provider Satellite HUB",
+  "block.netlabsputnik.gateway": "Sputnik Internet Gateway",
+  "block.netlabsputnik.odu": "BUC / LNB Radio Unit",
+  "block.netlabsputnik.dish": "Sputnik Gateway Dish",
+  "block.netlabsputnik.vsat_dish": "VSAT Subscriber Dish",
+  "block.netlabsputnik.modem": "VSAT Subscriber Modem",
+  "block.netlabsputnik.speaker": "Sputnik Speaker",
+  "item.netlabsputnik.module_nl_sat_control": "Module Nl Sat Control",
+  "item.netlabsputnik.module_nl_sat_tx": "Module Nl Sat Tx",
+  "item.netlabsputnik.module_nl_sat_rx": "Module Nl Sat Rx",
+  "item.netlabsputnik.coax_tx_cable": "Coax Tx Cable",
+  "item.netlabsputnik.coax_rx_cable": "Coax Rx Cable",
+  "item.netlabsputnik.sat_rf_tx_cable": "Sat Rf Tx Cable",
+  "item.netlabsputnik.sat_rf_rx_cable": "Sat Rf Rx Cable",
+  "item.netlabsputnik.audio_cable": "Audio Cable"
+}

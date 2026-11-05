@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "netlab:ciscium_block"
+    }
+  ],
+  "result": {
+    "id": "netlab:ciscium_ingot",
+    "count": 9
+  }
+}

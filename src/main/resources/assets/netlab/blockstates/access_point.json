@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlab:block/access_point"
+    },
+    "facing=east": {
+      "model": "netlab:block/access_point",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlab:block/access_point",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlab:block/access_point",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "block.netlabmobile.sector_antenna": "LTE Sector Antenna",
+  "block.netlabmobile.radio_unit": "Remote Radio Unit (RRU)",
+  "block.netlabmobile.baseband_unit": "Baseband Unit (BBU)",
+  "block.netlabmobile.mobile_core": "Mobile Core (EPC)",
+  "block.netlabmobile.sim_station": "SIM Provisioning Station",
+  "item.netlabmobile.blank_sim": "Пустая SIM-карта",
+  "item.netlabmobile.sim_card": "SIM-карта оператора",
+  "item.netlabmobile.cisco_pocket": "Cisco Pocket",
+  "item.netlabmobile.rf_cable": "Антенный RF-кабель",
+  "item.netlabmobile.module_nl_mob_control": "NL-MOB-CONTROL",
+  "item.netlabmobile.module_nl_mob_baseband": "NL-MOB-BASEBAND",
+  "item.netlabmobile.module_nl_mob_fronthaul": "NL-MOB-FRONTHAUL",
+  "item.netlabmobile.module_cisco_lte_modem": "CISCO-LTE-MODEM"
+}

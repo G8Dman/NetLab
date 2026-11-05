@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "netlabmobile:item/module_nl_mob_baseband"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlabautomation:block/multiinterface"
+    },
+    "facing=east": {
+      "model": "netlabautomation:block/multiinterface",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlabautomation:block/multiinterface",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlabautomation:block/multiinterface",
+      "y": 270
+    }
+  }
+}

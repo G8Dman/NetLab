@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IRI",
+    "BTB",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "netlab:basic_circuit_board"
+    },
+    "T": {
+      "item": "minecraft:clock"
+    }
+  },
+  "result": {
+    "id": "netlab:traffic_controller",
+    "count": 1
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlab:block/energy_cabinet",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "netlab:block/energy_cabinet",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlab:block/energy_cabinet",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlab:block/energy_cabinet",
+      "y": 270
+    }
+  }
+}

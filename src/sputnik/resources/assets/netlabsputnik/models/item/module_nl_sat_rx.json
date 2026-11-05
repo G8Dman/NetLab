@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "netlabsputnik:item/module_nl_sat_rx"
+  }
+}

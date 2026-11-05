@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "AGA",
+    "CRC",
+    "AGA"
+  ],
+  "key": {
+    "A": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:comparator"
+    }
+  },
+  "result": {
+    "id": "netlabautomation:module_nl_server_buffer",
+    "count": 1
+  }
+}

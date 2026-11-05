@@ -1,0 +1,9 @@
+{
+  "block.netlabautomation.multiinterface": "Мультиинтерфейс",
+  "block.netlabautomation.management_server": "Сервер управления",
+  "block.netlabautomation.packet_analyzer": "Анализатор пакетов",
+  "item.netlabautomation.module_nl_server_accelerator": "Плата ускорения сервера",
+  "item.netlabautomation.module_nl_server_buffer": "Плата объёма сервера",
+  "item.netlabautomation.module_nl_server_cooler": "Обычный серверный кулер",
+  "item.netlabautomation.module_nl_server_cooler_pro": "Улучшенный серверный кулер"
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlabautomation:block/packet_analyzer"
+    },
+    "facing=east": {
+      "model": "netlabautomation:block/packet_analyzer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "netlabautomation:block/packet_analyzer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "netlabautomation:block/packet_analyzer",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "netlab:basic_circuit_board"
+    },
+    {
+      "item": "netlab:ciscium_ingot"
+    },
+    {
+      "item": "minecraft:gold_nugget"
+    }
+  ],
+  "result": {
+    "id": "netlab:cisco_memory_card",
+    "count": 1
+  }
+}

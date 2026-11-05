@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "netlab:ciscium_ore",
+    "netlab:deepslate_ciscium_ore",
+    "netlab:module_assembler",
+    "netlab:ciscium_block"
+  ]
+}

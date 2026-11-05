@@ -1,0 +1,17 @@
+{
+  "block.netlabsputnik.hub": "Спутниковый HUB провайдера",
+  "block.netlabsputnik.gateway": "Интернет-шлюз Sputnik",
+  "block.netlabsputnik.odu": "Радиоблок BUC / LNB",
+  "block.netlabsputnik.dish": "Антенна провайдера Sputnik",
+  "block.netlabsputnik.vsat_dish": "Абонентская антенна VSAT",
+  "block.netlabsputnik.modem": "Абонентский модем VSAT",
+  "block.netlabsputnik.speaker": "Колонка Sputnik",
+  "item.netlabsputnik.module_nl_sat_control": "Модуль управления SAT-CONTROL",
+  "item.netlabsputnik.module_nl_sat_tx": "Модуль передачи SAT-TX",
+  "item.netlabsputnik.module_nl_sat_rx": "Модуль приёма SAT-RX",
+  "item.netlabsputnik.coax_tx_cable": "Коаксиальный кабель TX",
+  "item.netlabsputnik.coax_rx_cable": "Коаксиальный кабель RX",
+  "item.netlabsputnik.sat_rf_tx_cable": "Радиокабель BUC → антенна",
+  "item.netlabsputnik.sat_rf_rx_cable": "Радиокабель антенна → LNB",
+  "item.netlabsputnik.audio_cable": "Аудиокабель 3,5 мм"
+}

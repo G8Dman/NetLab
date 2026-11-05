@@ -1,0 +1,376 @@
+СПРАВОЧНИК КОМАНД РОУТЕРА CISCO PACKET TRACER
+
+Назначение: справочник основных команд Cisco IOS для учебного проекта.
+Это расширенный список основных команд из ответа в чате, а не полное дерево
+CLI конкретной модели. Доступность и синтаксис зависят от модели роутера,
+версии Packet Tracer, установленного модуля и текущего режима CLI.
+Разделы BGP, GRE, IPsec, OSPFv3, DHCPv6, AAA, NTP и QoS требуют отдельного
+уточнения поддержки на выбранном устройстве и здесь не перечислены.
+
+ОБОЗНАЧЕНИЯ
+<...> — подставляемое значение; угловые скобки не вводятся.
+IP — IPv4-адрес; wildcard — обратная маска; AD — административная дистанция.
+Названия интерфейсов — примеры: FastEthernet0/0, GigabitEthernet0/0,
+GigabitEthernet0/0/0, Serial0/0/0. Используйте имя из своего устройства.
+Строки ниже имеют вид «команда — назначение». Пояснение вводить не нужно.
+
+1. РЕЖИМЫ CLI И СПРАВКА
+
+Router>              Пользовательский EXEC.
+Router#              Привилегированный EXEC.
+Router(config)#      Глобальная конфигурация.
+Router(config-if)#   Настройка интерфейса.
+Router(config-line)# Настройка консольной или удалённой линии.
+Router(config-router)# Настройка протокола маршрутизации.
+
+? — команды текущего режима.
+show ? — подкоманды show.
+ip ? — подкоманды ip текущего режима.
+sh? — команды, начинающиеся на sh.
+enable — перейти в привилегированный EXEC.
+disable — вернуться в пользовательский EXEC.
+configure terminal — открыть глобальную конфигурацию из Router#.
+exit — выйти на один уровень выше.
+end — вернуться из конфигурации в Router#.
+do show running-config — просмотреть конфигурацию из режима настройки.
+no <команда> — обычно отменить настройку; результат зависит от команды.
+
+Сокращения принимаются, если однозначны: conf t, sh run, int g0/0.
+Tab дополняет однозначное имя. Ctrl+Z возвращает в Router#.
+
+2. ПРОСМОТР СОСТОЯНИЯ И ДИАГНОСТИКА
+Режим: Router#; часть команд доступна также в Router>.
+
+show running-config — текущая конфигурация.
+show startup-config — сохранённая загрузочная конфигурация.
+show version — версия IOS и сведения об устройстве.
+show ip interface brief — IPv4-адреса и состояние интерфейсов.
+show interfaces — подробная статистика интерфейсов.
+show interfaces <интерфейс> — сведения об одном интерфейсе.
+show ip interface <интерфейс> — параметры IPv4 на интерфейсе.
+show ipv6 interface brief — краткое состояние IPv6-интерфейсов.
+show ipv6 interface — подробные параметры IPv6.
+show ip route — таблица маршрутизации IPv4.
+show ipv6 route — таблица маршрутизации IPv6.
+show ip protocols — сведения о протоколах маршрутизации IPv4.
+show arp — таблица соответствий IPv4 и MAC.
+show access-lists — списки контроля доступа.
+show users — активные подключения к CLI.
+show history — история команд.
+show clock — время устройства.
+show controllers serial <номер> — параметры Serial, включая DCE/DTE.
+ping <IP> — проверка доступности адреса.
+traceroute <IP> — определение пути до адреса.
+
+3. ОСНОВНАЯ НАСТРОЙКА
+Режим: Router(config)#.
+
+hostname <имя> — имя устройства.
+no ip domain-lookup — отключить DNS-поиск при ошибках ввода.
+enable secret <пароль> — пароль привилегированного режима.
+service password-encryption — обратимое скрытие поддерживаемых открытых паролей.
+banner motd #<текст># — приветственное сообщение; # служит разделителем.
+username <имя> secret <пароль> — локальный пользователь.
+username <имя> privilege 15 secret <пароль> — пользователь с уровнем 15.
+no username <имя> — удалить пользователя.
+ip domain-name <домен> — доменное имя устройства.
+ip name-server <IP> — адрес DNS-сервера.
+ip host <имя> <IP> — локальное соответствие имени и адреса.
+
+service password-encryption не обеспечивает надёжной защиты паролей.
+
+4. КОНСОЛЬ И УДАЛЁННЫЙ ДОСТУП
+В глобальной конфигурации:
+
+line console 0 — перейти к настройке консоли.
+line vty 0 4 — перейти к настройке удалённых линий 0–4.
+crypto key generate rsa — создать RSA-ключи; размер может запрашиваться отдельно.
+ip ssh version 2 — использовать SSH версии 2.
+
+В режиме настройки линии Router(config-line)#:
+
+password <пароль> — пароль линии.
+login — проверять пароль линии.
+login local — проверять данные локального пользователя.
+logging synchronous — не давать сообщениям разбивать ввод команды.
+exec-timeout <минуты> <секунды> — тайм-аут простоя.
+transport input ssh — разрешить удалённый вход по SSH.
+transport input telnet — разрешить удалённый вход по Telnet.
+transport input ssh telnet — разрешить оба протокола.
+
+В EXEC:
+show ip ssh — состояние SSH.
+ssh -l <пользователь> <IP> — подключение к другому устройству по SSH.
+telnet <IP> — подключение по Telnet.
+
+Для SSH предварительно задают hostname, доменное имя и пользователя.
+
+5. ИНТЕРФЕЙСЫ
+В глобальной конфигурации:
+
+interface GigabitEthernet0/0 — выбрать Ethernet-интерфейс.
+interface Serial0/0/0 — выбрать Serial-интерфейс.
+interface Loopback0 — создать или выбрать Loopback.
+interface GigabitEthernet0/0.10 — создать или выбрать подынтерфейс.
+
+В режиме интерфейса Router(config-if)#:
+
+description <текст> — описание интерфейса.
+ip address <IP> <маска> — назначить IPv4-адрес.
+no ip address — удалить IPv4-адрес.
+ip address dhcp — получать IPv4-адрес по DHCP, если поддерживается.
+shutdown — административно выключить интерфейс.
+no shutdown — включить интерфейс.
+duplex auto — автосогласование дуплекса, если поддерживается.
+speed auto — автосогласование скорости, если поддерживается.
+bandwidth <кбит/с> — расчётная пропускная способность для протоколов.
+ip helper-address <IP> — пересылать DHCP-запросы к серверу.
+
+bandwidth не ограничивает фактическую скорость передачи.
+
+6. VLAN И ROUTER-ON-A-STICK
+
+В глобальной конфигурации:
+interface GigabitEthernet0/0.10 — выбрать подынтерфейс.
+
+На подынтерфейсе:
+encapsulation dot1Q 10 — привязать к VLAN 10.
+encapsulation dot1Q 10 native — назначить VLAN 10 как native VLAN.
+ip address <IP> <маска> — адрес шлюза соответствующей VLAN.
+
+Физический интерфейс должен быть включён через no shutdown.
+На коммутаторе подключённый порт отдельно настраивают как trunk.
+
+7. SERIAL И PPP
+Режим: настройка Serial-интерфейса.
+
+clock rate 64000 — тактовая частота на стороне DCE, бит/с.
+encapsulation hdlc — инкапсуляция HDLC.
+encapsulation ppp — инкапсуляция PPP.
+ppp authentication pap — требовать аутентификацию PAP.
+ppp pap sent-username <имя> password <пароль> — отправляемые PAP-данные.
+ppp authentication chap — требовать аутентификацию CHAP.
+
+Для CHAP также настраивают локального пользователя с именем соседнего
+роутера и общим паролем. Параметры соединения согласуют на обеих сторонах.
+
+8. СТАТИЧЕСКАЯ МАРШРУТИЗАЦИЯ IPv4
+Режим: Router(config)#.
+
+ip route <сеть> <маска> <следующий_IP> — статический маршрут.
+ip route <сеть> <маска> <интерфейс> — маршрут через интерфейс, обычно point-to-point.
+ip route 0.0.0.0 0.0.0.0 <следующий_IP> — маршрут по умолчанию.
+ip route <сеть> <маска> <следующий_IP> <AD> — маршрут с указанной дистанцией.
+no ip route <сеть> <маска> <следующий_IP> — удалить соответствующий маршрут.
+
+9. RIP v2
+В глобальной конфигурации:
+router rip — открыть настройку RIP.
+
+В режиме Router(config-router)#:
+version 2 — использовать RIP v2.
+network <классовая_сеть> — включить RIP на интерфейсах основной сети.
+no auto-summary — отключить автоматическое суммирование.
+passive-interface <интерфейс> — не отправлять RIP-обновления через интерфейс.
+default-information originate — объявлять маршрут по умолчанию.
+
+10. OSPFv2
+В глобальной конфигурации:
+router ospf <ID_процесса> — создать или выбрать процесс OSPF.
+
+В режиме Router(config-router)#:
+router-id <ID> — идентификатор роутера в формате IPv4.
+network <адрес> <wildcard> area <область> — выбрать интерфейсы и область.
+passive-interface <интерфейс> — не устанавливать соседство через интерфейс.
+default-information originate — объявлять имеющийся маршрут по умолчанию.
+default-information originate always — объявлять его независимо от наличия.
+
+В режиме интерфейса:
+ip ospf <ID_процесса> area <область> — включить OSPF на интерфейсе.
+ip ospf cost <значение> — стоимость интерфейса.
+ip ospf priority <значение> — приоритет на выборах DR/BDR.
+
+В Router#:
+show ip ospf — сведения о процессе OSPF.
+show ip ospf neighbor — соседи OSPF.
+show ip ospf interface — параметры OSPF на интерфейсах.
+show ip route ospf — маршруты OSPF.
+
+11. EIGRP ДЛЯ IPv4
+Поддержка зависит от устройства.
+В глобальной конфигурации:
+router eigrp <AS> — создать или выбрать процесс EIGRP.
+
+В режиме Router(config-router)#:
+network <адрес> <wildcard> — выбрать интерфейсы EIGRP.
+no auto-summary — отключить автоматическое суммирование.
+passive-interface <интерфейс> — не устанавливать соседство через интерфейс.
+variance <множитель> — использовать допустимые пути разной стоимости.
+
+В Router#:
+show ip eigrp neighbors — соседи EIGRP.
+show ip eigrp topology — таблица топологии EIGRP.
+show ip route eigrp — маршруты EIGRP.
+
+12. DHCP-СЕРВЕР
+В глобальной конфигурации:
+
+ip dhcp excluded-address <начало> <конец> — исключить диапазон адресов.
+ip dhcp pool <имя> — создать или выбрать DHCP-пул.
+
+В режиме DHCP-пула:
+network <сеть> <маска> — обслуживаемая подсеть.
+default-router <IP> — шлюз для клиентов.
+dns-server <IP> — DNS-сервер для клиентов.
+domain-name <домен> — домен для клиентов.
+
+В Router#:
+show ip dhcp binding — выданные адреса.
+show ip dhcp pool — состояние пулов.
+show ip dhcp conflict — обнаруженные конфликты адресов.
+
+13. ACL
+В глобальной конфигурации:
+
+access-list 1 permit <сеть> <wildcard> — разрешение в стандартном ACL.
+access-list 1 deny <сеть> <wildcard> — запрет в стандартном ACL.
+access-list 100 permit tcp <источник> <wildcard> <назначение> <wildcard> eq 80 — разрешить TCP к порту 80.
+access-list 100 permit icmp any any — разрешить ICMP.
+access-list 100 permit ip any any — разрешить весь IPv4-трафик.
+ip access-list standard <имя> — открыть именованный стандартный ACL.
+ip access-list extended <имя> — открыть именованный расширенный ACL.
+no access-list <номер> — удалить нумерованный ACL.
+
+В именованных ACL правила permit и deny вводятся без префикса access-list.
+Для одного узла используется host <IP>, для любого адреса — any.
+
+В режиме интерфейса:
+ip access-group <номер_или_имя> in — применить ACL ко входящим пакетам.
+ip access-group <номер_или_имя> out — применить ACL к исходящим пакетам.
+
+В режиме line vty:
+access-class <номер_или_имя> in — ограничить удалённый вход.
+
+Правила проверяются сверху вниз до первого совпадения.
+В конце ACL подразумевается запрет всего неразрешённого трафика.
+
+14. NAT И PAT
+В режиме интерфейса:
+ip nat inside — обозначить внутренний интерфейс.
+ip nat outside — обозначить внешний интерфейс.
+
+В глобальной конфигурации:
+ip nat inside source static <внутренний_IP> <внешний_IP> — статический NAT.
+ip nat pool <имя> <начало> <конец> netmask <маска> — пул внешних адресов.
+ip nat inside source list <ACL> pool <пул> — динамический NAT.
+ip nat inside source list <ACL> interface <интерфейс> overload — PAT через адрес интерфейса.
+ip nat inside source static tcp <внутренний_IP> <порт> <внешний_IP> <порт> — перенаправление TCP-порта.
+
+В Router#:
+show ip nat translations — таблица трансляций.
+show ip nat statistics — статистика NAT.
+clear ip nat translation * — очистить динамические трансляции.
+
+15. IPv6
+В глобальной конфигурации:
+ipv6 unicast-routing — включить маршрутизацию IPv6.
+ipv6 route <сеть>/<префикс> <следующий_IPv6> — статический маршрут.
+ipv6 route ::/0 <следующий_IPv6> — маршрут по умолчанию.
+
+В режиме интерфейса:
+ipv6 enable — включить IPv6 с автоматическим link-local адресом.
+ipv6 address <адрес>/<префикс> — назначить IPv6-адрес.
+ipv6 address <адрес> link-local — назначить link-local вручную.
+ipv6 address autoconfig — получать адрес по SLAAC, если поддерживается.
+
+В Router#:
+show ipv6 neighbors — таблица соседей IPv6.
+show ipv6 route — маршруты IPv6.
+
+Если следующий узел задан link-local адресом, в статическом маршруте
+нужно указать и выходной интерфейс:
+ipv6 route <сеть>/<префикс> <интерфейс> <link-local_адрес>
+
+16. CDP
+В глобальной конфигурации:
+cdp run — включить CDP глобально.
+no cdp run — выключить CDP глобально.
+
+В режиме интерфейса:
+cdp enable — включить CDP на интерфейсе.
+no cdp enable — выключить CDP на интерфейсе.
+
+В Router#:
+show cdp neighbors — соседние устройства.
+show cdp neighbors detail — подробные сведения о соседях.
+
+17. СОХРАНЕНИЕ И ФАЙЛЫ
+Режим: Router#.
+
+copy running-config startup-config — сохранить текущую конфигурацию.
+write memory — альтернативная команда сохранения.
+copy startup-config running-config — объединить сохранённые настройки с текущими.
+copy running-config tftp: — передать конфигурацию на TFTP-сервер.
+copy tftp: running-config — загрузить настройки с TFTP и объединить с текущими.
+dir flash: — список файлов flash, если поддерживается.
+show flash: — сведения о flash.
+erase startup-config — удалить сохранённую загрузочную конфигурацию.
+reload — перезагрузить устройство.
+
+Загрузка в running-config выполняет объединение, а не чистую замену.
+erase startup-config не удаляет текущую конфигурацию из оперативной памяти.
+Сброс сохранённых настроек и перезагрузка могут привести к потере доступа.
+
+18. КАК ПОЛУЧИТЬ ТОЧНОЕ ДЕРЕВО КОМАНД
+
+В каждом режиме введите ? и сохраните вывод:
+
+Router> ?
+Router> enable
+Router# ?
+Router# configure terminal
+Router(config)# ?
+Router(config)# interface GigabitEthernet0/0
+Router(config-if)# ?
+
+Раскрывайте вложенные ветки в соответствующем режиме:
+show ?
+show ip ?
+router ?
+ip ?
+crypto ?
+
+На каждой ступени добавляйте пробел и ?, чтобы узнать следующий аргумент.
+Параметры интерфейса смотрите после его выбора; параметры протокола —
+после перехода в настройку соответствующего процесса.
+Один вывод Router# ? не содержит команды всех режимов и всех вложенных веток.
+
+19. ПРИМЕР МИНИМАЛЬНОЙ КОНФИГУРАЦИИ
+Пример для роутера с интерфейсом GigabitEthernet0/0.
+Адреса, имена и пароль замените под свою схему.
+
+enable
+configure terminal
+hostname R1
+no ip domain-lookup
+enable secret REPLACE_WITH_YOUR_PASSWORD
+interface GigabitEthernet0/0
+description LAN
+ip address 192.168.10.1 255.255.255.0
+no shutdown
+end
+show ip interface brief
+copy running-config startup-config
+
+20. ИСТОЧНИКИ И ГРАНИЦЫ ПРИМЕНИМОСТИ
+
+Cisco — Understanding the Cisco IOS Command Line Interface
+https://developer.cisco.com/docs/iox/phase-2-understanding-the-cisco-ios-command-line-interface-cli/
+
+Cisco IOS Configuration Fundamentals Command Reference — F through K
+https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/command/cf_command_ref/F_through_K.html
+
+Документация объясняет режимы IOS и контекстную справку. Она не является
+подтверждением реализации каждой команды в каждой версии Packet Tracer.
+Для окончательного списка проекта укажите модель и версию программы,
+затем проверьте наличие команд через встроенную справку устройства.
