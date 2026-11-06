@@ -21,7 +21,7 @@ public final class WirelessWorld {
         }
         for(var e:entities.values())for(var entry:e.links.entrySet()){
             long id=e.getBlockPos().asLong();var peer=entry.getValue();var other=entities.get(peer.pos());if(other==null)continue;
-            var back=other.links.get(peer.port());if(back==null||back.pos()!=id||back.port()!=entry.getKey())continue;
+            var back=other.links.get(peer.port());if(back==null||back.pos()!=id||back.port()!=entry.getKey()||!back.circuit().equals(peer.circuit())||!CableInventory.active(e,entry.getKey(),peer.pos(),peer.port(),false,peer.circuit()))continue;
             if(id<peer.pos()||id==peer.pos()&&entry.getKey()<peer.port())
                 n.wires.add(new Network.Wire(new Network.Endpoint(e.slotId(entry.getKey()/128),entry.getKey()%128),new Network.Endpoint(other.slotId(peer.port()/128),peer.port()%128),dev.netlab.core.WallCablePath.length(CableGeometry.route(e,entry.getKey(),other,peer.port(),peer.anchors())),peer.cable()));
         }

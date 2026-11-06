@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_material": {
+    "has_copper": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "netlab:serial_dte_cable"
+            "items": "minecraft:copper_ingot"
           }
         ]
       }
@@ -20,7 +20,7 @@
   },
   "requirements": [
     [
-      "has_material",
+      "has_copper",
       "has_the_recipe"
     ]
   ],

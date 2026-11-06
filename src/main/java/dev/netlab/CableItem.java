@@ -20,7 +20,7 @@ public final class CableItem extends RoutedCableItem {
         return d==null||index<0||index>=d.ports.size()||d.ports.get(index).hidden||d.ports.get(index).virtual?"":d.identity+":"+d.portName(index)+":"+h.portEpoch(port);
     }
     @Override protected boolean occupied(DeviceEntity h,int port){return h.links.containsKey(port);}
-    @Override protected void disconnect(DeviceEntity h,int port){h.disconnect(port);}
+    @Override protected void disconnect(DeviceEntity h,int port,Player player){h.disconnect(port,player);}
     @Override protected List<WallCablePath.Point> path(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors){return CableGeometry.route(a,ap,b,bp,anchors);}
     @Override protected Connection connect(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors){
         if(a==b&&ap/128==bp/128)return new Connection(false,"Выбери другое устройство или другую ячейку шкафа.");

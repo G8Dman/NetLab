@@ -10,6 +10,11 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public final class CableInteraction {
     public static void onBlock(PlayerInteractEvent.RightClickBlock event){
+        var player=event.getEntity();
+        if(player.isShiftKeyDown()&&player.getItemInHand(event.getHand()).isEmpty()&&event.getLevel().getBlockEntity(event.getPos()) instanceof DeviceEntity host){
+            int power=PowerGeometry.clicked(host,event.getHitVec(),player),port=CableGeometry.clickedPort(host,event.getHitVec(),player);boolean energy=host.powerLinks.containsKey(power),data=host.links.containsKey(port);
+            if(energy||data){if(!event.getLevel().isClientSide&&player.mayBuild()){if(energy)PowerSystem.disconnect(host,power,player);else host.disconnect(port,player);player.displayClientMessage(Component.literal("Кабель отключён."),true);}event.setCanceled(true);event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));return;}
+        }
         if(event.getEntity().getItemInHand(event.getHand()).getItem() instanceof RoutedCableItem cable){
             cable.useOn(new net.minecraft.world.item.context.UseOnContext(event.getEntity(),event.getHand(),event.getHitVec()));
             event.setCanceled(true);event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide));return;

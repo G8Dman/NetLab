@@ -28,7 +28,7 @@ public class FabricationRuntimeCheck {
         }
         for(var entry:NetLab.ITEMS.getEntries()){
             String module=Hardware.CATALOG.keySet().stream().filter(m->ModuleItem.itemId(m).equals(entry.getId().getPath())).findFirst().orElse(null);
-            Item item=module!=null?new ModuleItem(new Item.Properties(),module):BuiltInRegistries.BLOCK.containsKey(entry.getId())?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new Item(new Item.Properties());Registry.register(BuiltInRegistries.ITEM,entry.getId(),item);if(item instanceof BlockItem blockItem)blockItem.registerBlocks(Item.BY_BLOCK,item);
+            String cable=entry.getId().getPath();Item item=cable.equals("power_cable")||cable.equals("wall_power_cable")?new PowerCableItem(new Item.Properties(),cable.equals("wall_power_cable")):cable.endsWith("_cable")?new CableItem(new Item.Properties(),cable.equals("ethernet_cable")?"copper":cable.substring(0,cable.length()-6)):module!=null?new ModuleItem(new Item.Properties(),module):BuiltInRegistries.BLOCK.containsKey(entry.getId())?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new Item(new Item.Properties());Registry.register(BuiltInRegistries.ITEM,entry.getId(),item);if(item instanceof BlockItem blockItem)blockItem.registerBlocks(Item.BY_BLOCK,item);
         }
         Registry.register(BuiltInRegistries.MENU,ResourceLocation.fromNamespaceAndPath("netlab","module_assembler"),new MenuType<>(ModuleAssemblerMenu::new,FeatureFlags.VANILLA_SET));
         for(int index=0;index<ModuleFabrication.MODULES.size();index++){

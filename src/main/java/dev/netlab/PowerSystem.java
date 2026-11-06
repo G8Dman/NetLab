@@ -11,20 +11,21 @@ import java.util.*;
 
 /** FE cabinet -> rack PSU -> rear board inputs. All allocation happens on the server thread. */
 public final class PowerSystem {
-    public record Peer(long pos,int port,String localId,String remoteId,boolean surface,List<WallCablePath.Point> anchors){
-        public Peer {anchors=List.copyOf(anchors);}
+    public record Peer(long pos,int port,String localId,String remoteId,boolean surface,List<WallCablePath.Point> anchors,String circuit){
+        public Peer(long pos,int port,String localId,String remoteId,boolean surface,List<WallCablePath.Point> anchors){this(pos,port,localId,remoteId,surface,anchors,"");}
+        public Peer {anchors=List.copyOf(anchors);if(circuit==null)circuit="";}
     }
     public static CompoundTag savePeer(int port,Peer peer){
         var t=new CompoundTag();t.putInt("port",port);t.putLong("target",peer.pos);t.putInt("remote",peer.port);t.putString("localId",peer.localId);t.putString("remoteId",peer.remoteId);
-        t.putBoolean("surface",peer.surface);CableRouteNbt.write(t,peer.anchors);return t;
+        t.putBoolean("surface",peer.surface);t.putString("circuit",peer.circuit);CableRouteNbt.write(t,peer.anchors);return t;
     }
     public static Peer loadPeer(CompoundTag t){
         var anchors=CableRouteNbt.read(t);if(anchors==null)return null;
-        return new Peer(t.getLong("target"),t.getInt("remote"),t.getString("localId"),t.getString("remoteId"),t.getBoolean("surface"),t.getBoolean("surface")?anchors:List.of());
+        return new Peer(t.getLong("target"),t.getInt("remote"),t.getString("localId"),t.getString("remoteId"),t.getBoolean("surface"),t.getBoolean("surface")?anchors:List.of(),t.getString("circuit"));
     }
     public static void prepare(Device d){if(PowerModel.board(d))Hardware.ensure(d).energyRequired=true;LaptopBattery.prepare(d);}
     public static String identity(DeviceEntity h,int port){if(PowerGeometry.jack(h,port)==null)return "";if(port>=PowerGeometry.BOARD_IN){var d=port==PowerGeometry.BOARD_IN?h.device:h.upperDevice;return d==null?"":d.identity;}return port>=PowerGeometry.PSU_IN?h.rackSupplyId:h.device.identity;}
-    public static DeviceEntity peer(DeviceEntity h,int port){var p=h.powerLinks.get(port);if(p==null||h.getLevel()==null)return null;var pos=BlockPos.of(p.pos);if(!h.getLevel().hasChunkAt(pos)||!(h.getLevel().getBlockEntity(pos) instanceof DeviceEntity other)||other.isRemoved())return null;var back=other.powerLinks.get(p.port);return back!=null&&back.pos==h.getBlockPos().asLong()&&back.port==port&&identity(h,port).equals(p.localId)&&identity(other,p.port).equals(p.remoteId)&&back.localId.equals(p.remoteId)&&back.remoteId.equals(p.localId)?other:null;}
+    public static DeviceEntity peer(DeviceEntity h,int port){var p=h.powerLinks.get(port);if(p==null||h.getLevel()==null)return null;var pos=BlockPos.of(p.pos);if(!h.getLevel().hasChunkAt(pos)||!(h.getLevel().getBlockEntity(pos) instanceof DeviceEntity other)||other.isRemoved())return null;var back=other.powerLinks.get(p.port);return back!=null&&back.pos==h.getBlockPos().asLong()&&back.port==port&&back.circuit.equals(p.circuit)&&CableInventory.active(h,port,p.pos,p.port,true,p.circuit)&&identity(h,port).equals(p.localId)&&identity(other,p.port).equals(p.remoteId)&&back.localId.equals(p.remoteId)&&back.remoteId.equals(p.localId)?other:null;}
     public static String connect(DeviceEntity a,int ap,DeviceEntity b,int bp){
         return connect(a,ap,b,bp,List.of());
     }
@@ -41,9 +42,11 @@ public final class PowerSystem {
         String aid=identity(a,ap),bid=identity(b,bp);boolean surface=anchors!=null;var points=surface?List.copyOf(anchors):List.<WallCablePath.Point>of();
         a.powerLinks.put(ap,new Peer(b.getBlockPos().asLong(),bp,aid,bid,surface,points));b.powerLinks.put(bp,new Peer(a.getBlockPos().asLong(),ap,bid,aid,surface,points.reversed()));a.changed();b.changed();return "Кабель питания подключён; креплений: "+points.size();
     }
-    public static void disconnect(DeviceEntity h,int port){var p=h.powerLinks.remove(port);if(p!=null&&h.getLevel()!=null&&h.getLevel().hasChunkAt(BlockPos.of(p.pos))&&h.getLevel().getBlockEntity(BlockPos.of(p.pos)) instanceof DeviceEntity other){var back=other.powerLinks.get(p.port);if(back!=null&&back.pos==h.getBlockPos().asLong()&&back.port==port){other.powerLinks.remove(p.port);other.changed();}}h.changed();}
+    public static void disconnect(DeviceEntity h,int port){disconnect(h,port,null);}
+    public static void disconnect(DeviceEntity h,int port,net.minecraft.world.entity.player.Player recipient){var p=h.powerLinks.remove(port);if(p!=null)CableInventory.refund(h,port,p,recipient);if(p!=null&&h.getLevel()!=null&&h.getLevel().hasChunkAt(BlockPos.of(p.pos))&&h.getLevel().getBlockEntity(BlockPos.of(p.pos)) instanceof DeviceEntity other){var back=other.powerLinks.get(p.port);if(back!=null&&back.pos==h.getBlockPos().asLong()&&back.port==port&&back.circuit.equals(p.circuit)){other.powerLinks.remove(p.port);other.changed();CableInventory.acknowledge(h,port,p);}}h.changed();}
     public static void disconnectAll(DeviceEntity h){for(int port:new ArrayList<>(h.powerLinks.keySet()))disconnect(h,port);}
-    public static boolean removeSupply(DeviceEntity h){if(!h.rackSupply)return false;for(int port:new ArrayList<>(h.powerLinks.keySet()))if(port>=310&&port<328)disconnect(h,port);h.rackSupply=false;h.rackPowered=false;h.rackSupplyId="";h.changed();return true;}
+    public static boolean removeSupply(DeviceEntity h){return removeSupply(h,null);}
+    public static boolean removeSupply(DeviceEntity h,net.minecraft.world.entity.player.Player recipient){if(!h.rackSupply)return false;for(int port:new ArrayList<>(h.powerLinks.keySet()))if(port>=310&&port<328)disconnect(h,port,recipient);h.rackSupply=false;h.rackPowered=false;h.rackSupplyId="";h.changed();return true;}
     public static void capabilities(RegisterCapabilitiesEvent event){event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK,NetLab.DEVICE.get(),(h,side)->Set.of("energy","energy_source").contains(h.device.kind)||LaptopBattery.laptop(h.device)?storage(h):null);}
     private static IEnergyStorage storage(DeviceEntity h){return new IEnergyStorage(){
         public int receiveEnergy(int amount,boolean simulate){if(!canReceive()||h.getLevel()==null||h.getLevel().isClientSide)return 0;long now=h.getLevel().getGameTime();if(h.energyReceivedTick!=now){h.energyReceivedTick=now;h.energyReceived=0;}boolean laptop=LaptopBattery.laptop(h.device);int value=laptop?LaptopBattery.receive(h.device,amount,LaptopBattery.CHARGE_RATE-h.energyReceived,true):PowerModel.receive(h.energy,amount,PowerModel.INPUT_RATE-h.energyReceived);if(!simulate&&value>0){if(laptop)LaptopBattery.receive(h.device,value,LaptopBattery.CHARGE_RATE-h.energyReceived,false);else h.energy+=value;h.energyReceived+=value;h.setChanged();}return value;}

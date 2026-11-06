@@ -1,6 +1,6 @@
-# NetLab Mobile 0.3.0-alpha
+# NetLab Mobile 0.3.1-alpha
 
-Для NetLab 0.20.0-alpha+, Minecraft 1.21.1, NeoForge 21.1.265 и Java 21.
+Для NetLab 0.21.0-alpha+, Minecraft 1.21.1, NeoForge 21.1.265 и Java 21.
 
 ## С чего начать
 

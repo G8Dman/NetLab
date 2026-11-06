@@ -106,6 +106,7 @@ public final class NetLab {
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(Simulation::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(Simulation::clear);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(PowerSystem::tick);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(CableInventory::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Post e)->cables(c->c.preview(e)));
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e)->cables(c->c.clear(e.getEntity().getUUID())));
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent e)->cables(c->c.clear(e.getEntity().getUUID())));

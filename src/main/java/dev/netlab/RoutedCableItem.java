@@ -19,11 +19,11 @@ public abstract class RoutedCableItem extends Item {
     protected record Connection(boolean success,String message){}
     private record Pending(ResourceKey<Level> level,BlockPos pos,int port,String identity,List<WallCablePath.Point> anchors,long touched,int axis){}
     private final Map<UUID,Pending> pending=new HashMap<>();
-    protected RoutedCableItem(Properties properties){super(properties);}
+    protected RoutedCableItem(Properties properties){super(properties.stacksTo(64));}
     protected abstract int pick(DeviceEntity host,BlockHitResult hit,Player player);
     protected abstract String identity(DeviceEntity host,int port);
     protected abstract boolean occupied(DeviceEntity host,int port);
-    protected abstract void disconnect(DeviceEntity host,int port);
+    protected abstract void disconnect(DeviceEntity host,int port,Player player);
     protected abstract List<WallCablePath.Point> path(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors);
     protected abstract Connection connect(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors);
     protected abstract String portHint();
@@ -62,7 +62,7 @@ public abstract class RoutedCableItem extends Item {
         var hit=new BlockHitResult(context.getClickLocation(),context.getClickedFace(),context.getClickedPos(),false);
         int port=h==null?-1:pick(h,hit,player);
         if(player.isShiftKeyDown()){
-            clear(player.getUUID());if(port>=0)disconnect(h,port);
+            clear(player.getUUID());if(port>=0)disconnect(h,port,player);
             message(player,port>=0?"Кабель отключён; выбор очищен.":"Прокладка отменена; выбор очищен.");return InteractionResult.CONSUME;
         }
         var first=pending.get(player.getUUID());
@@ -96,7 +96,7 @@ public abstract class RoutedCableItem extends Item {
         }
         var start=source(level,first);
         if(start==null){clear(player.getUUID());message(player,"Начальный разъём выгружен, заменён или занят. Начни маршрут заново.");return InteractionResult.CONSUME;}
-        var result=connect(start,first.port,h,port,first.anchors);if(result.success)clear(player.getUUID());message(player,result.message);
+        var result=connect(start,first.port,h,port,first.anchors);if(result.success){CableInventory.install(start,first.port,h,port,context.getItemInHand(),player.isCreative());clear(player.getUUID());}message(player,result.message);
         return InteractionResult.CONSUME;
     }
     @Override public final InteractionResultHolder<ItemStack> use(Level level,Player player,InteractionHand hand){
@@ -105,5 +105,6 @@ public abstract class RoutedCableItem extends Item {
     }
     @Override public void appendHoverText(ItemStack stack,TooltipContext context,List<Component> lines,TooltipFlag flag){
         lines.add(Component.literal("ПКМ: порт → точки на стенах → порт"));lines.add(Component.literal("Shift+ПКМ: отменить / отключить порт"));lines.add(Component.literal("До 32 креплений; маршрут сохраняется в мире"));
+        lines.add(Component.literal("Выживание: 1 кабель на соединение, возврат при отключении"));
     }
 }

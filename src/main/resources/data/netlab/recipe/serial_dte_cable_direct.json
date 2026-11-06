@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ICR",
+    "RBI",
+    "RCI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "netlab:basic_circuit_board"
+    }
+  },
+  "result": {
+    "id": "netlab:serial_dte_cable",
+    "count": 1
+  }
+}

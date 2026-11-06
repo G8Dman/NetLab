@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CRC",
+    "RBR",
+    "CRC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "B": {
+      "item": "netlab:basic_circuit_board"
+    }
+  },
+  "result": {
+    "id": "netlab:crossover_cable",
+    "count": 1
+  }
+}

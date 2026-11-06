@@ -20,12 +20,12 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 
 | Готовый файл | Скачать |
 |---|---|
-| NetLab 0.20.0 | [netlab-0.20.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.20.0-alpha.jar) |
-| Automation 0.7.1 | [netlab-automation-0.7.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.1-alpha.jar) |
-| Mobile 0.3.0 | [netlab-mobile-0.3.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.3.0-alpha.jar) |
-| Sputnik 0.2.1 | [netlab-sputnik-0.2.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.2.1-alpha.jar) |
+| NetLab 0.21.0 | [netlab-0.21.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.21.0-alpha.jar) |
+| Automation 0.7.2 | [netlab-automation-0.7.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.2-alpha.jar) |
+| Mobile 0.3.1 | [netlab-mobile-0.3.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.3.1-alpha.jar) |
+| Sputnik 0.2.2 | [netlab-sputnik-0.2.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.2.2-alpha.jar) |
 
-**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.20.0/NetLab-1.21.1-mods.zip).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.21.0/NetLab-1.21.1-mods.zip).
 
 Контрольные суммы: [SHA256SUMS.txt](SHA256SUMS.txt). Состав комплекта и зависимости: [MODS.json](MODS.json).
 
@@ -42,14 +42,14 @@ Rinku сам скачивает Chromium под текущую ОС при пе�
 
 | Мод | Версия | Что добавляет |
 |---|---|---|
-| **NetLab** | `0.20.0-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
-| **NetLab Automation** | `0.7.1-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение. |
-| **NetLab Mobile** | `0.3.0-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
-| **NetLab Sputnik** | `0.2.1-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
+| **NetLab** | `0.21.0-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
+| **NetLab Automation** | `0.7.2-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение. |
+| **NetLab Mobile** | `0.3.1-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
+| **NetLab Sputnik** | `0.2.2-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
 
-Версии дополнений из этого комплекта требуют основной **NetLab 0.20.0-alpha или новее**. Они устанавливаются независимо друг от друга.
+Версии дополнений из этого комплекта требуют основной **NetLab 0.21.0-alpha или новее**. Они устанавливаются независимо друг от друга.
 
-Обновление **0.20.0**: [аккумулятор ноутбука, терминал телефона и рецепты всех дополнений](docs/UPDATE-0.20.0.md).
+Обновление **0.21.0**: [крафт, расход и возврат кабелей](docs/UPDATE-0.21.0.md).
 
 ## NetLab · от разъёма до маршрута
 
@@ -171,3 +171,5 @@ tools/          генераторы ресурсов и вспомогател�
 Cisco Sky подготовлен отдельно от модов: [страница ресурспака](https://github.com/G8Dman/NetLab-Cisco-Sky). В его репозитории находятся готовый ZIP, исходные файлы и инструкция установки. Ресурспак не требует NetLab или NeoForge.
 
 Ноутбук работает от аккумулятора 48 000 FE (20 минут при 20 TPS), заряжается через задний DC / FE и сохраняет настройки, модули и заряд в выпавшем предмете. [Как заряжать и переносить](docs/POWER-AND-PORTABLE.md).
+
+Кабели складываются по 64; в выживании одно соединение расходует один предмет, при отключении он возвращается. Shift+ПКМ по занятому порту работает также пустой рукой. Все 15 типов имеют крафт; [инструкция и список](docs/CABLES-CRAFTING.md).

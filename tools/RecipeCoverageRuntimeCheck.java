@@ -28,7 +28,7 @@ public final class RecipeCoverageRuntimeCheck {
         SputnikRuntimeCheck.main(args);var registries=RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);var ops=RegistryOps.create(JsonOps.INSTANCE,registries);
         for(String addon:List.of("main","automation","mobile","sputnik")){String namespace=addon.equals("main")?"netlab":"netlab"+addon;var root=Path.of("src",addon,"resources/data",namespace,"recipe");
             try(var files=Files.list(root)){for(var file:files.filter(f->f.toString().endsWith(".json")).sorted().toList()){
-                var data=JsonParser.parseString(Files.readString(file)).getAsJsonObject();var recipe=Recipe.CODEC.parse(ops,data).getOrThrow();var out=recipe.getResultItem(registries);check(!out.isEmpty(),"real recipe result: "+file);
+                var data=JsonParser.parseString(Files.readString(file)).getAsJsonObject();var recipe=Recipe.CODEC.parse(ops,data).getOrThrow();var out=recipe.getResultItem(registries);check(!out.isEmpty(),"real recipe result: "+file);check(out.getCount()<=out.getMaxStackSize(),"recipe output fits an actual item stack: "+file);
                 for(String ingredient:ingredients(data)){check(BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(ingredient)),"registered ingredient "+ingredient);check(ingredient.startsWith("minecraft:")||ingredient.startsWith("netlab:")||ingredient.startsWith(namespace+":"),"addon recipe works without other optional addons: "+file);}
                 CraftingInput in=null;if(recipe instanceof CraftingRecipe crafting){in=input(data);check(crafting.matches(in,null),"advertised grid matches "+file);var result=crafting.assemble(in,registries);check(result.is(out.getItem())&&result.getCount()==out.getCount(),"exact item and quantity "+file);
                     var missing=new ArrayList<>(in.items());for(int i=0;i<missing.size();i++)if(!missing.get(i).isEmpty()){missing.set(i,ItemStack.EMPTY);break;}check(!crafting.matches(CraftingInput.of(in.width(),in.height(),missing),null),"missing material rejects craft "+file);
@@ -48,6 +48,7 @@ public final class RecipeCoverageRuntimeCheck {
         }
         check(entries.stream().noneMatch(e->BuiltInRegistries.ITEM.getKey(e.output().getItem()).toString().equals("netlab:creative_energy_source")),"intentional creative generator remains without survival recipe");
         check(entries.stream().noneMatch(e->BuiltInRegistries.ITEM.getKey(e.output().getItem()).toString().equals("netlabmobile:sim_card")),"authenticated SIM cannot be forged on a crafting table");
+        int cables=0;for(var item:BuiltInRegistries.ITEM)if(item instanceof RoutedCableItem&&!BuiltInRegistries.ITEM.getKey(item).getPath().equals("wall_power_cable")){check(entries.stream().anyMatch(e->e.output().is(item)),"every physical cable has a real crafting recipe: "+BuiltInRegistries.ITEM.getKey(item));cables++;}check(cables==15,"all fifteen physical cable types are covered across addons");
         System.out.println(checks+" recipe checks passed: "+entries.size()+" recipes; "+items+" survival-obtainable items across four mods. No game launched.");
     }
 }

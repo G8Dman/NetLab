@@ -21,9 +21,10 @@ public final class PowerCableItem extends RoutedCableItem {
     @Override protected int pick(DeviceEntity h,BlockHitResult hit,Player p){return PowerGeometry.clicked(h,hit,p);}
     @Override protected String identity(DeviceEntity h,int port){return PowerSystem.identity(h,port);}
     @Override protected boolean occupied(DeviceEntity h,int port){return h.powerLinks.containsKey(port);}
-    @Override protected void disconnect(DeviceEntity h,int port){PowerSystem.disconnect(h,port);}
+    @Override protected void disconnect(DeviceEntity h,int port,Player player){PowerSystem.disconnect(h,port,player);}
     @Override protected List<WallCablePath.Point> path(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors){return PowerGeometry.fixedRoute(a,ap,b,bp,anchors);}
     @Override protected Connection connect(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors){
+        if(a.powerLinks.containsKey(ap)||b.powerLinks.containsKey(bp))return new Connection(false,"Разъём питания занят. Shift+ПКМ — отключить.");
         var message=PowerSystem.connect(a,ap,b,bp,anchors);var peer=a.powerLinks.get(ap);
         return new Connection(peer!=null&&peer.pos()==b.getBlockPos().asLong()&&peer.port()==bp,message);
     }

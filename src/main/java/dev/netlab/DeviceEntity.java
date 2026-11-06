@@ -26,7 +26,8 @@ public class DeviceEntity extends BlockEntity {
   public Device portDevice(int encoded){return encoded>=128?upperDevice:device;}
   public String portLabel(int encoded){Device d=portDevice(encoded);return d==null?"Empty":d.portName(encoded%128);}
   public static final int DEFAULT_CABLE_COLOR = 0x237de6;
-  public record Peer(long pos, int port, int color, String name,String cable,List<WallCablePath.Point> anchors) {
+  public record Peer(long pos, int port, int color, String name,String cable,List<WallCablePath.Point> anchors,String circuit) {
+    public Peer(long pos,int port,int color,String name,String cable,List<WallCablePath.Point> anchors){this(pos,port,color,name,cable,anchors,"");}
     public Peer(long pos,int port,int color,String name,String cable){this(pos,port,color,name,cable,List.of());}
     public Peer(long pos, int port) {
       this(pos, port, DEFAULT_CABLE_COLOR, "","auto");
@@ -37,13 +38,14 @@ public class DeviceEntity extends BlockEntity {
       name = cleanName(name);
       if(cable==null||cable.isBlank())cable="auto";
       anchors=List.copyOf(anchors);
+      if(circuit==null)circuit="";
     }
   }
   public static CompoundTag saveCablePeer(int port,Peer peer){
-    var tag=new CompoundTag();tag.putInt("port",port);tag.putLong("target",peer.pos);tag.putInt("remote",peer.port);tag.putInt("color",peer.color);tag.putString("name",peer.name);tag.putString("cable",peer.cable);CableRouteNbt.write(tag,peer.anchors);return tag;
+    var tag=new CompoundTag();tag.putInt("port",port);tag.putLong("target",peer.pos);tag.putInt("remote",peer.port);tag.putInt("color",peer.color);tag.putString("name",peer.name);tag.putString("cable",peer.cable);tag.putString("circuit",peer.circuit);CableRouteNbt.write(tag,peer.anchors);return tag;
   }
   public static Peer loadCablePeer(CompoundTag tag){
-    var anchors=CableRouteNbt.read(tag);return anchors==null?null:new Peer(tag.getLong("target"),tag.getInt("remote"),tag.contains("color",Tag.TAG_INT)?tag.getInt("color"):DEFAULT_CABLE_COLOR,tag.getString("name"),tag.getString("cable"),anchors);
+    var anchors=CableRouteNbt.read(tag);return anchors==null?null:new Peer(tag.getLong("target"),tag.getInt("remote"),tag.contains("color",Tag.TAG_INT)?tag.getInt("color"):DEFAULT_CABLE_COLOR,tag.getString("name"),tag.getString("cable"),anchors,tag.getString("circuit"));
   }
   public static String cleanName(String text) {
     String clean = text == null ? "" : text.replaceAll("[\\p{Cntrl}§]", "").strip();
@@ -67,6 +69,7 @@ public class DeviceEntity extends BlockEntity {
     super.onLoad();
     if(level instanceof ServerLevel server)for(int slot=0;slot<2;slot++){var d=slot==0?device:upperDevice;if(d!=null&&d.kind.equals("router")){var vpn=dev.netlab.api.VpnStore.get(server);if(MemoryCards.present(d)&&MemoryCards.card(d).active){vpn.migrate(slotId(slot),d);MemoryCards.sync(d);}vpn.restore(slotId(slot),d);}}
     PowerSystem.initialize(this);
+    CableInventory.loaded(this);
     synchronized (LOADED) {
       LOADED.computeIfAbsent(level, l -> new HashSet<>()).add(worldPosition);
     }
@@ -99,10 +102,10 @@ public class DeviceEntity extends BlockEntity {
         || !(level.getBlockEntity(BlockPos.of(peer.pos)) instanceof DeviceEntity other))
       return false;
     Peer back = other.links.get(peer.port);
-    if (back == null || back.pos != worldPosition.asLong() || back.port != port)
+    if (back == null || back.pos != worldPosition.asLong() || back.port != port||!peer.circuit.equals(back.circuit)||!CableInventory.active(this,port,peer.pos,peer.port,false,peer.circuit))
       return false;
-    links.put(port, new Peer(peer.pos, peer.port, color, name,peer.cable,peer.anchors));
-    other.links.put(peer.port, new Peer(worldPosition.asLong(), port, color, name,peer.cable,peer.anchors.reversed()));
+    links.put(port, new Peer(peer.pos, peer.port, color, name,peer.cable,peer.anchors,peer.circuit));
+    other.links.put(peer.port, new Peer(worldPosition.asLong(), port, color, name,peer.cable,peer.anchors.reversed(),peer.circuit));
     changed();
     other.changed();
     return true;
@@ -141,14 +144,18 @@ public class DeviceEntity extends BlockEntity {
     return s.toString();
   }
   public void disconnect(int port) {
+    disconnect(port,null);
+  }
+  public void disconnect(int port,net.minecraft.world.entity.player.Player recipient) {
     var peer = links.remove(port);
-    if(peer!=null)connectionChanged(port);
+    if(peer!=null){CableInventory.refund(this,port,peer,recipient);connectionChanged(port);}
     if (peer != null && level != null && level.hasChunkAt(BlockPos.of(peer.pos))
         && level.getBlockEntity(BlockPos.of(peer.pos)) instanceof DeviceEntity other) {
       var reverse = other.links.get(peer.port);
-      if (reverse != null && reverse.pos == worldPosition.asLong() && reverse.port == port) {
+      if (reverse != null && reverse.pos == worldPosition.asLong() && reverse.port == port&&reverse.circuit.equals(peer.circuit)) {
         {other.links.remove(peer.port);other.connectionChanged(peer.port);}
         other.changed();
+        CableInventory.acknowledge(this,port,peer);
       }
     }
     changed();
