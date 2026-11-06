@@ -16,6 +16,7 @@ public final class Automation {
     static {dev.netlab.automation.core.ServerHardware.register();}
     public static final DeferredRegister.Blocks BLOCKS=DeferredRegister.createBlocks(ID);
     public static final DeferredRegister.Items ITEMS=DeferredRegister.createItems(ID);
+    public static final DeferredItem<dev.netlab.api.PortableModules.ModuleItem> PHONE_MANAGER=ITEMS.register("phone_automation_module",()->new dev.netlab.api.PortableModules.ModuleItem(new Item.Properties().stacksTo(1),"CISCO-POCKET-AUTOMATION","automation","Модуль автоматики Cisco Pocket"));
     public static final DeferredRegister<BlockEntityType<?>> ENTITIES=DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE,ID);
     public static final DeferredRegister<CreativeModeTab> TABS=DeferredRegister.create(Registries.CREATIVE_MODE_TAB,ID);
     public static final DeferredBlock<AutomationBlock> INTERFACE=block("multiinterface","endpoint");
@@ -31,6 +32,14 @@ public final class Automation {
     private static boolean thermalIntegrated;
     public static synchronized void integrateThermal(){
         if(thermalIntegrated)return;thermalIntegrated=true;
+        dev.netlab.api.PortableModules.register(new dev.netlab.api.PortableModules.Definition("CISCO-POCKET-AUTOMATION","automation","Управление автоматикой",PHONE_MANAGER));
+        dev.netlab.NetLab.EXTRA_MODULE_ITEMS.add(PHONE_MANAGER);
+        dev.netlab.api.PortableHosts.BINDERS.put("automation",(player,host,bay)->{
+            var node=AutomationNode.of(host,bay);
+            if(!player.mayBuild()||node==null||!node.device.kind.equals("server")||!node.owns(player.getUUID()))throw new IllegalArgumentException("Нажми модулем по своему серверу автоматики");
+            if(node.passwordHash.isBlank()||node.ip().isBlank())throw new IllegalArgumentException("Сначала настрой IP и management password на сервере");
+            return new dev.netlab.core.HandsetConfiguration.Binding(node.device.identity,node.ip(),player.serverLevel().dimension().location().toString());
+        });
         dev.netlab.MemoryCards.PHYSICAL.add(ServerThermal::preserve);dev.netlab.MemoryCards.APPLY.add(ServerThermal::preserve);
         dev.netlab.FrontPanel.EXTRA_STATUS.add((host,bay)->{var d=bay==0?host.device:host.upperDevice;return d==null?"":ServerThermal.summary(d);});
     }
@@ -44,7 +53,7 @@ public final class Automation {
         dev.netlab.api.RackDevices.GUARDS.add((player,host,slot)->{var a=AutomationNode.of(host,slot);return a==null||a.owns(player.getUUID());});
         BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);
         TABS.register("automation",()->CreativeModeTab.builder().title(Component.literal("NetLab Automation")).icon(()->SERVER.get().asItem().getDefaultInstance())
-            .displayItems((p,o)->{o.accept(INTERFACE.get());o.accept(SERVER.get());o.accept(ANALYZER.get());}).build());
+            .displayItems((p,o)->{o.accept(INTERFACE.get());o.accept(SERVER.get());o.accept(ANALYZER.get());o.accept(PHONE_MANAGER.get());}).build());
         TABS.register(bus);bus.addListener(AutomationPackets::register);bus.addListener(ManagementPackets::register);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(AutomationPrograms::tick);
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ServerThermal::tick);

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "netlabautomation:item/module_nl_server_buffer"
+  }
+}

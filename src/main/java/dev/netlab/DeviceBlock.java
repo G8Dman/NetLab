@@ -94,7 +94,7 @@ public class DeviceBlock extends Block implements EntityBlock {
   @Override
   protected ItemInteractionResult useItemOn(ItemStack stack, BlockState s, Level l, BlockPos p, Player player,
       InteractionHand hand, BlockHitResult hit) {
-    if (stack.getItem() instanceof ScrewdriverItem||stack.getItem() instanceof PortableTerminalItem||stack.getItem() instanceof PowerCableItem||stack.getItem() instanceof RackSupplyItem)return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+    if (stack.getItem() instanceof ScrewdriverItem||stack.getItem() instanceof PortableTerminalItem||stack.getItem() instanceof PowerCableItem||stack.getItem() instanceof RackSupplyItem||stack.getItem() instanceof dev.netlab.api.PortableModules.ModuleItem)return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
     if (stack.getItem() instanceof CableItem)
       return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
     if (rack && stack.getItem() instanceof BlockItem bi

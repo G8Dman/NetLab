@@ -21,8 +21,9 @@ public final class Study {
         for(var t:network.traffic){
             if(network.deferCounters)Simulation.counters(level,network,t);
             var a=BlockPos.of(t.from().device());var b=BlockPos.of(t.to().device());int ap=t.from().port(),bp=t.to().port();
-            if(a.getY()<level.getMinBuildHeight()){a=a.above(1024);ap+=128;}
-            if(b.getY()<level.getMinBuildHeight()){b=b.above(1024);bp+=128;}
+            var pa=dev.netlab.api.PortableHosts.find(level,t.from().device());var pb=dev.netlab.api.PortableHosts.find(level,t.to().device());
+            if(pa!=null){a=BlockPos.containing(pa.location());ap=-1;}else if(a.getY()<level.getMinBuildHeight()){a=a.above(1024);ap+=128;}
+            if(pb!=null){b=BlockPos.containing(pb.location());bp=-1;}else if(b.getY()<level.getMinBuildHeight()){b=b.above(1024);bp+=128;}
             var actual=network.wirePayloads.get(t);
             var hint=actual!=null&&actual.encrypted()?new TrafficMark(t.protocol().startsWith("LTE-AIR/")?"RADIO_ENCRYPTED":"VPN","",0):mark.hop(t.protocol(),tunnel);
             events.add(new Event(a.asLong(),ap,b.asLong(),bp,t.protocol(),t.vlan(),t.dropped(),t.start(),t.finish(),t.bytes(),hint.phase(),hint.item(),hint.count()));

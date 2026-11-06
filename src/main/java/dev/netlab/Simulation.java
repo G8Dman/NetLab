@@ -20,8 +20,8 @@ public final class Simulation {
     public static <T> CompletableFuture<T> after(ServerLevel level,long due,Supplier<T> action){
         return state(level).queue.submit(now(level),due,action);
     }
-    public static DeviceEntity entity(ServerLevel l,long id){var p=BlockPos.of(id);if(p.getY()<l.getMinBuildHeight())p=p.above(1024);return l.hasChunkAt(p)&&l.getBlockEntity(p) instanceof DeviceEntity e?e:null;}
-    public static int encoded(ServerLevel l,Network.Endpoint e){return e.port()+(BlockPos.of(e.device()).getY()<l.getMinBuildHeight()?128:0);}
+    public static DeviceEntity entity(ServerLevel l,long id){var portable=dev.netlab.api.PortableHosts.find(l,id);if(portable!=null)return portable;var p=BlockPos.of(id);if(p.getY()<l.getMinBuildHeight())p=p.above(1024);return l.hasChunkAt(p)&&l.getBlockEntity(p) instanceof DeviceEntity e?e:null;}
+    public static int encoded(ServerLevel l,Network.Endpoint e){return e.port()+(dev.netlab.api.PortableHosts.find(l,e.device())==null&&BlockPos.of(e.device()).getY()<l.getMinBuildHeight()?128:0);}
     public static BooleanSupplier witness(ServerLevel l,Network n,Network.Traffic t){
         for(var hook:dev.netlab.api.TopologyExtensions.WITNESSES){var custom=hook.get(l,t);if(custom!=null)return custom;}
         var a=entity(l,t.from().device());var b=entity(l,t.to().device());if(a==null||b==null)return ()->false;
@@ -46,5 +46,5 @@ public final class Simulation {
         return ()->witnesses.stream().allMatch(BooleanSupplier::getAsBoolean)&&n.deliveryGuards.stream().allMatch(BooleanSupplier::getAsBoolean);
     }
     public static void tick(ServerTickEvent.Post event){for(var l:event.getServer().getAllLevels()){var s=STATES.get(l);if(s!=null)s.queue.advance(now(l),2048);}}
-    public static void clear(net.neoforged.neoforge.event.server.ServerStoppedEvent event){STATES.clear();}
+    public static void clear(net.neoforged.neoforge.event.server.ServerStoppedEvent event){STATES.clear();dev.netlab.api.PortableHosts.clear();}
 }

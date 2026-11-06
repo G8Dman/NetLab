@@ -20,6 +20,7 @@ public final class ManagementService {
     private static final String HISTORY="netlabautomation:successfulServers";
     private static List<String> history(ServerPlayer player){var saved=player.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG).getList(HISTORY,net.minecraft.nbt.Tag.TAG_STRING);return ServerHistory.clean(saved.stream().map(net.minecraft.nbt.Tag::getAsString).toList());}
     private static JsonArray historyJson(ServerPlayer player){var out=new JsonArray();history(player).forEach(out::add);return out;}
+    private static JsonArray historyFor(ServerPlayer player,DeviceEntity host){if(host instanceof dev.netlab.api.PortableHosts.Host portable&&portable.binding()!=null){var out=new JsonArray();out.add(portable.binding().address());return out;}return historyJson(player);}
     private static void rememberServer(ServerPlayer player,String address){var saved=new net.minecraft.nbt.ListTag();ServerHistory.success(history(player),address).forEach(ip->saved.add(net.minecraft.nbt.StringTag.valueOf(ip)));var persisted=player.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG);persisted.put(HISTORY,saved);player.getPersistentData().put(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG,persisted);}
     private static final Map<UUID,Session> SESSIONS=new HashMap<>();
     private static final Map<UUID,Long> PENDING=new HashMap<>(),ATTEMPTS=new HashMap<>();
@@ -31,8 +32,12 @@ public final class ManagementService {
     }
     public static void clear(){SESSIONS.clear();PENDING.clear();ATTEMPTS.clear();}
     public static void tick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event){if(event.getServer().getTickCount()%20!=0)return;for(var key:new ArrayList<>(SESSIONS.keySet())){var p=event.getServer().getPlayerList().getPlayer(key);try{if(p==null)throw new IllegalArgumentException();valid(p,SESSIONS.get(key));}catch(IllegalArgumentException e){SESSIONS.remove(key);PENDING.remove(key);}}PENDING.keySet().removeIf(key->event.getServer().getPlayerList().getPlayer(key)==null);ATTEMPTS.keySet().removeIf(key->event.getServer().getPlayerList().getPlayer(key)==null);}
-    private static void pc(ServerPlayer player,DeviceEntity pc){if(pc.isRemoved()||player.serverLevel()!=pc.getLevel()||player.distanceToSqr(pc.getBlockPos().getCenter())>64||!pc.device.kind.equals("pc")||!Hardware.powered(pc.device)||!ManagementAccess.installed(pc.device))throw new IllegalArgumentException("Нужны включённый ПК/ноутбук рядом и модуль CISCO-AUTOMATION в app0");}
-    private static void valid(ServerPlayer player,Session s){pc(player,s.pc);if(s.pcDevice!=s.pc.device||s.server.isRemoved()||!Hardware.powered(s.server.device)||s.pcEpoch!=Hardware.ensure(s.pc.device).epoch||s.serverEpoch!=Hardware.ensure(s.server.device).epoch||!s.passwordHash.equals(s.server.passwordHash)||s.expires<player.serverLevel().getGameTime()&&!PENDING.containsKey(player.getUUID())||!AutomationService.local(s.pc,0,s.server))throw new IllegalArgumentException("Сеанс закрыт: устройство, пароль или локальная сеть изменились");if(PENDING.containsKey(player.getUUID()))s.expires=player.serverLevel().getGameTime()+6000;}
+    private static void pc(ServerPlayer player,DeviceEntity pc){dev.netlab.api.PortableHosts.require(player,pc,"CISCO-AUTOMATION");}
+    private static boolean reachesServer(DeviceEntity pc,AutomationNode server){
+        if(pc instanceof dev.netlab.api.PortableHosts.Host)return dev.netlab.api.PortableHosts.bound(pc,server.device.identity)&&pc.network().routePath(pc.slotId(0),server.ip()).success();
+        return AutomationService.local(pc,0,server);
+    }
+    private static void valid(ServerPlayer player,Session s){pc(player,s.pc);if(s.pcDevice!=s.pc.device||s.server.isRemoved()||!Hardware.powered(s.server.device)||s.pcEpoch!=Hardware.ensure(s.pc.device).epoch||s.serverEpoch!=Hardware.ensure(s.server.device).epoch||!s.passwordHash.equals(s.server.passwordHash)||s.expires<player.serverLevel().getGameTime()&&!PENDING.containsKey(player.getUUID())||!reachesServer(s.pc,s.server))throw new IllegalArgumentException("Сеанс закрыт: устройство, пароль или локальная сеть изменились");if(PENDING.containsKey(player.getUUID()))s.expires=player.serverLevel().getGameTime()+6000;}
     private static String text(JsonObject q,String key){return q.has(key)?q.get(key).getAsString().strip():"";}
     private static int number(JsonObject q,String key,int fallback,int min,int max){int value=q.has(key)?q.get(key).getAsInt():fallback;if(value<min||value>max)throw new IllegalArgumentException(key+": "+min+".."+max);return value;}
     private static String ip(JsonObject q,String key){String value=text(q,key);Device.ip(value);return value;}
@@ -49,9 +54,9 @@ public final class ManagementService {
         return ApplicationTransport.sendAsync(player.serverLevel(),reply?b:a,reply?a:b,bytes,s.server.requireVpn).thenApply(r->{valid(player,s);if(!r.success())throw new IllegalArgumentException("Сеть: "+r.status());return JsonParser.parseString(new String(r.payload(),StandardCharsets.UTF_8)).getAsJsonObject();});
     }
     public static void handle(ServerPlayer player,ManagementPackets.Request request){
-        var level=player.serverLevel();if(!level.hasChunkAt(request.pc())||!(level.getBlockEntity(request.pc()) instanceof DeviceEntity host))return;
+        var level=player.serverLevel();var host=dev.netlab.api.PortableHosts.resolve(player,request.pc());if(host==null){error(player,request.pc(),"Устройство недоступно; держи телефон в руке");return;}
         try{pc(player,host);}catch(IllegalArgumentException e){error(player,request.pc(),e.getMessage());return;}
-        if(request.action().equals("history")){var out=new JsonObject();out.addProperty("historyOnly",true);out.add("history",historyJson(player));PacketDistributor.sendToPlayer(player,new ManagementPackets.State(request.pc(),out.toString()));return;}
+        if(request.action().equals("history")){var out=new JsonObject();out.addProperty("historyOnly",true);out.add("history",historyFor(player,host));if(host instanceof dev.netlab.api.PortableHosts.Host portable&&portable.binding()!=null){out.addProperty("boundServer",portable.binding().address());var bound=new JsonArray();bound.add(portable.binding().address());out.add("history",bound);}PacketDistributor.sendToPlayer(player,new ManagementPackets.State(request.pc(),out.toString()));return;}
         if(request.action().equals("logout")){SESSIONS.remove(player.getUUID());PENDING.remove(player.getUUID());return;}
         if(PENDING.containsKey(player.getUUID()))return;long id=++serial;PENDING.put(player.getUUID(),id);
         CompletableFuture<JsonObject> future;
@@ -60,7 +65,7 @@ public final class ManagementService {
             if(request.action().equals("login")){
                 long now=level.getGameTime();if(now-ATTEMPTS.getOrDefault(player.getUUID(),now-40)<40)throw new IllegalArgumentException("Подожди две секунды перед следующим входом");ATTEMPTS.put(player.getUUID(),now);
                 var server=AutomationService.find(level,ip(q,"server"));if(!server.device.kind.equals("server")||server.passwordHash.isBlank())throw new IllegalArgumentException("На сервере сначала configure terminal → management password ПАРОЛЬ");
-                if(!AutomationService.local(host,0,server))throw new IllegalArgumentException("Для входа сервер должен быть в той же LAN/VLAN без маршрутизатора");
+                if(!reachesServer(host,server))throw new IllegalArgumentException(host instanceof dev.netlab.api.PortableHosts.Host?"Нужен маршрут к серверу, к которому привязан модуль телефона":"Для входа сервер должен быть в той же LAN/VLAN без маршрутизатора");
                 var session=new Session(host,server,now);var login=q.deepCopy();login.addProperty("op","MANAGEMENT_LOGIN");
                 future=wire(player,session,false,login).thenCompose(received->{current(player,id);if(!ServerPassword.verify(text(received,"password"),server.passwordHash))throw new IllegalArgumentException("Неверный пароль сервера");SESSIONS.put(player.getUUID(),session);return CompletableFuture.completedFuture((Void)null).thenCompose(v->AutomationService.catalog(server)).handle((catalog,error)->{session.catalog=error==null?catalog:new JsonObject();return state(session,error==null?"Вход выполнен":AutomationService.reason(error));});}).thenCompose(out->{current(player,id);return wire(player,session,true,out);});
             }else{
@@ -69,7 +74,7 @@ public final class ManagementService {
                 future=wire(player,session,false,body).thenCompose(received->{current(player,id);if(SESSIONS.get(player.getUUID())!=session)throw new IllegalArgumentException("Сеанс изменился");return execute(session,request.action(),received);}).thenApply(status->state(session,status)).thenCompose(out->{current(player,id);return wire(player,session,true,out);});
             }
         }catch(RuntimeException error){future=CompletableFuture.failedFuture(error);}
-        future.whenComplete((result,error)->{if(!PENDING.remove(player.getUUID(),id))return;if(error!=null)error(player,request.pc(),AutomationService.reason(error));else{if(request.action().equals("login"))rememberServer(player,result.get("server").getAsString());result.add("history",historyJson(player));PacketDistributor.sendToPlayer(player,new ManagementPackets.State(request.pc(),result.toString()));}});
+        future.whenComplete((result,error)->{if(!PENDING.remove(player.getUUID(),id))return;if(error!=null)error(player,request.pc(),AutomationService.reason(error));else{if(request.action().equals("login"))rememberServer(player,result.get("server").getAsString());result.add("history",historyFor(player,host));PacketDistributor.sendToPlayer(player,new ManagementPackets.State(request.pc(),result.toString()));}});
     }
     private static void current(ServerPlayer p,long id){if(!Objects.equals(PENDING.get(p.getUUID()),id))throw new CancellationException("Запрос отменён");}
     private static CompletableFuture<String> execute(Session s,String action,JsonObject q){

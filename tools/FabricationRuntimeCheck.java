@@ -60,7 +60,7 @@ public class FabricationRuntimeCheck {
             // Recipe parsing additionally checks all custom result and ingredient item IDs.
             for(var entry:dev.netlab.automation.Automation.ITEMS.getEntries())if(!BuiltInRegistries.ITEM.containsKey(entry.getId())){
                 String module=dev.netlab.automation.core.ServerHardware.MODULES.stream().filter(m->ModuleItem.itemId(m).equals(entry.getId().getPath())).findFirst().orElse(null);
-                Item item=module==null?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new ModuleItem(new Item.Properties(),module);
+                Item item=entry.getId().getPath().equals("phone_automation_module")?new dev.netlab.api.PortableModules.ModuleItem(new Item.Properties(),"CISCO-POCKET-AUTOMATION","automation","Phone automation"):module==null?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new ModuleItem(new Item.Properties(),module);
                 Registry.register(BuiltInRegistries.ITEM,entry.getId(),item);if(item instanceof BlockItem b)b.registerBlocks(Item.BY_BLOCK,item);
             }
             try(var files=java.nio.file.Files.list(java.nio.file.Path.of(folder))){for(var file:files.filter(p->p.toString().endsWith(".json")).toList()){

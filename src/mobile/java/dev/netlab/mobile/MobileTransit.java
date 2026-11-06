@@ -10,8 +10,8 @@ import java.util.function.BooleanSupplier;
 /** One logical L3 bearer, with real queues and witnesses for every physical stage. */
 public final class MobileTransit {
     public static BooleanSupplier witness(ServerLevel l,Network.Traffic t){
-        if(!t.protocol().startsWith("LTE-AIR/"))return null;
-        var ue=MobileService.leases(l).values().stream().filter(x->x.ue!=null&&(x.ue.id()==t.from().device()||x.ue.id()==t.to().device())).findFirst().orElse(null);
+        var ue=MobileService.leases(l).values().stream().filter(x->x.endpointId()==t.from().device()||x.endpointId()==t.to().device()).findFirst().orElse(null);
+        if(!t.protocol().startsWith("LTE-AIR/")&&(ue==null||t.from().device()!=ue.core.id()&&t.to().device()!=ue.core.id()))return null;
         if(ue==null)return ()->false;var cell=ue.cell;return ()->MobileService.valid(l,ue)&&ue.cell==cell;
     }
     private static Network.Endpoint end(MobileRef ref,int port){return new Network.Endpoint(ref.id(),port);}
@@ -21,10 +21,10 @@ public final class MobileTransit {
         var t=new Network.Traffic(from,to,protocol,1,false,slot.start(),slot.finish(),bytes);n.traffic.add(t);n.deliveryGuards.add(Simulation.witness(l,n,t));return slot.finish();
     }
     public static long send(ServerLevel l,Network n,Network.Wire wire,Network.Endpoint from,long ready,int bytes,String protocol){
-        var lease=MobileService.leases(l).values().stream().filter(x->x.ue!=null&&(x.ue.id()==wire.a().device()||x.ue.id()==wire.b().device())).findFirst().orElse(null);
+        var lease=MobileService.leases(l).values().stream().filter(x->x.endpointId()==wire.a().device()||x.endpointId()==wire.b().device()).findFirst().orElse(null);
         if(lease==null||!MobileService.valid(l,lease)){n.deliveryGuards.add(()->false);return ready;}
-        boolean uplink=from.device()==lease.ue.id();var cell=lease.cell;long time=ready;
-        var ue=end(lease.ue,dev.netlab.mobile.core.MobileHardware.cellular(lease.ue.device()));var antenna=end(cell.antenna(),0);var rruRF=end(cell.rru(),1);var rruFH=end(cell.rru(),0);var bbu=end(cell.bbu(),cell.bbuPort());
+        boolean uplink=from.device()==lease.endpointId();var cell=lease.cell;long time=ready;
+        var ue=new Network.Endpoint(lease.endpointId(),lease.cellularPort());var antenna=end(cell.antenna(),0);var rruRF=end(cell.rru(),1);var rruFH=end(cell.rru(),0);var bbu=end(cell.bbu(),cell.bbuPort());
         double capacity=uplink?1:5;String air="LTE-AIR/"+(uplink?"UL":"DL")+"/"+protocol;
         // One sector queue in each direction; concurrent users share capacity rather than receiving independent links.
         var queue=new Network.Endpoint(cell.antenna().id(),uplink?1000:1001);

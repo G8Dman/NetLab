@@ -24,6 +24,7 @@ public final class ManagementScreen extends Screen {
     private final List<String[]> labels=new ArrayList<>();
     private final Map<String,String> endpointNames=new HashMap<>();
     private JsonArray recentServers=new JsonArray();
+    private String boundServer="";
     private boolean historyRequested,hideEmptySlots,fluidMode,tankInspector;
     private record IconAt(ItemStack stack,int x,int y){}
     private final List<IconAt> choiceIcons=new ArrayList<>();
@@ -45,7 +46,7 @@ public final class ManagementScreen extends Screen {
     private Button button(String text,int x,int y,int width,Runnable action){return addRenderableWidget(Button.builder(Component.literal(text),b->{remember();action.run();}).bounds(x,y,width,19).build());}
     private void send(String action,JsonObject q){if(busy){status="Дождись завершения текущего сетевого запроса";return;}busy=true;pendingAction=action;status="Запрос отправлен по сети…";PacketDistributor.sendToServer(new ManagementPackets.Request(pc,token,action,q.toString()));}
     private JsonObject form(){remember();var q=new JsonObject();for(var e:values.entrySet())q.addProperty(e.getKey(),e.getValue());return q;}
-    public void update(String json){var reply=JsonParser.parseString(json).getAsJsonObject();if(reply.has("history"))recentServers=reply.getAsJsonArray("history");if(reply.has("historyOnly"))return;busy=false;if(reply.has("status"))status=reply.get("status").getAsString();if(reply.has("logout")&&reply.get("logout").getAsBoolean()){token="";state=new JsonObject();endpointNames.clear();}if(reply.has("token")){token=reply.get("token").getAsString();state=reply;for(var entry:array("endpoints")){var node=entry.getAsJsonObject();endpointNames.put(node.get("ip").getAsString(),node.get("name").getAsString());}}
+    public void update(String json){var reply=JsonParser.parseString(json).getAsJsonObject();if(reply.has("history"))recentServers=reply.getAsJsonArray("history");boolean bindingChanged=false;if(reply.has("boundServer")){String address=reply.get("boundServer").getAsString();bindingChanged=!boundServer.equals(address);boundServer=address;set("server",boundServer);if(fields.containsKey("server"))fields.get("server").setEditable(false);}if(reply.has("historyOnly")){if(bindingChanged){status="Введи пароль привязанного сервера";rebuild();}return;}busy=false;if(reply.has("status"))status=reply.get("status").getAsString();if(reply.has("logout")&&reply.get("logout").getAsBoolean()){token="";state=new JsonObject();endpointNames.clear();}if(reply.has("token")){token=reply.get("token").getAsString();state=reply;for(var entry:array("endpoints")){var node=entry.getAsJsonObject();endpointNames.put(node.get("ip").getAsString(),node.get("name").getAsString());}}
         boolean items=openItemsAfterInspect&&pendingAction.equals("inspect")&&reply.has("token")&&matchingSnapshot();String reopen=reopenDropdown;
         if(pendingAction.equals("ruleDelete")||pendingAction.equals("ruleAdd")||pendingAction.equals("refresh"))ruleIndex=-1;if(pendingAction.equals("patternDelete")||pendingAction.equals("patternAdd")||pendingAction.equals("refresh"))patternIndex=-1;
         openItemsAfterInspect=false;reopenDropdown="";pendingAction="";rebuild();
@@ -59,7 +60,7 @@ public final class ManagementScreen extends Screen {
         if(token.isEmpty()){
             if(!historyRequested){historyRequested=true;PacketDistributor.sendToServer(new ManagementPackets.Request(pc,"","history","{}"));}
             int x=width/2-130,y=Math.max(58,height/2-48);
-            var server=field("server","IP сервера (та же LAN/VLAN)",x,y,226,"");button("▼",x+232,y,28,()->openServerHistory(x,y+20));var password=field("password","Пароль сервера",x,y+38,260,"");
+            var server=field("server",boundServer.isEmpty()?"IP сервера (та же LAN/VLAN)":"Привязанный сервер",x,y,226,boundServer);if(!boundServer.isEmpty())server.setEditable(false);button("▼",x+232,y,28,()->openServerHistory(x,y+20));var password=field("password","Пароль сервера",x,y+38,260,"");
             server.setResponder(text->{values.put("server",text);values.remove("password");password.setValue("");});
             password.setFormatter((text,cursor)->net.minecraft.util.FormattedCharSequence.forward("*".repeat(text.length()),Style.EMPTY));
             button("Войти",x,y+65,125,()->{var q=form();send("login",q);values.remove("password");password.setValue("");});button("Назад",x+135,y+65,125,this::onClose);return;

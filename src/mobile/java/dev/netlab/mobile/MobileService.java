@@ -17,12 +17,15 @@ public final class MobileService {
         public String client,simId,ip,apn,status="";public MobileRef ue,core;public MobileRadio.Cell cell;public RadioModel.Signal signal;public long expires;
         public CryptoChannel upTx,upRx,downTx,downRx;
         public long ueEpoch,coreEpoch,bbuEpoch,rruEpoch;
+        public DeviceEntity terminal(){return ue!=null?ue.host():PhoneDevices.host(core.level(),client);}
+        public long endpointId(){var host=terminal();return host==null?Long.MIN_VALUE:ue!=null?ue.id():host.slotId(0);}
+        public int cellularPort(){return ue!=null?MobileHardware.cellular(ue.device()):0;}
     }
     private static final Map<ServerLevel,Map<String,Lease>> LEASES=new WeakHashMap<>();
     private static final Map<ServerLevel,Set<String>> PENDING=new WeakHashMap<>();
     private static final Map<ServerLevel,Map<String,String>> STATUS=new WeakHashMap<>();
     static Map<String,Lease> leases(ServerLevel level){return LEASES.computeIfAbsent(level,l->new HashMap<>());}
-    public static void clear(){LEASES.clear();PENDING.clear();STATUS.clear();}
+    public static void clear(){LEASES.clear();PENDING.clear();STATUS.clear();PhoneDevices.clear();}
     public static void forget(ServerLevel level,String client){leases(level).remove(client);}
     public static String reason(Throwable error){while(error.getCause()!=null)error=error.getCause();return error.getMessage()==null?"Ошибка регистрации":error.getMessage();}
     public static String key(MobileRef pc){return "pc:"+pc.device().identity;}
@@ -34,7 +37,7 @@ public final class MobileService {
         if(Hardware.ensure(lease.core.device()).epoch!=lease.coreEpoch||Hardware.ensure(lease.cell.bbu().device()).epoch!=lease.bbuEpoch||Hardware.ensure(lease.cell.rru().device()).epoch!=lease.rruEpoch||lease.ue!=null&&Hardware.ensure(lease.ue.device()).epoch!=lease.ueEpoch)return false;
         var s=lease.core.state();var sub=s.subscribers.entries.get(lease.simId);if(sub==null||!sub.active||!s.apn.equals(lease.apn))return false;
         if(lease.ue!=null){var u=lease.ue.state();return lease.ue.live()&&Hardware.powered(lease.ue.device())&&MobileHardware.modem(lease.ue.device())&&u.clientEnabled&&u.sim!=null&&u.sim.id.equals(lease.simId)&&u.sim.key.equals(sub.key);}
-        return true;
+        return PhoneDevices.matches(l,lease.client,lease.simId,sub.key);
     }
     public static void disconnect(MobileRef pc){
         leases(pc.level()).remove(key(pc));var state=pc.state();state.clientEnabled=false;
@@ -47,7 +50,7 @@ public final class MobileService {
         if(pc.device().wireless!=null){pc.device().wireless.clientSsid="";pc.device().wireless.associated=Long.MIN_VALUE;}
         pc.changed(state);refresh(pc.level(),key(pc),pc,Vec3.atCenterOf(pc.host().getBlockPos()),state.sim,MobileRadio.cells(pc.level()));
     }
-    public static void phone(ServerPlayer player,net.minecraft.world.item.ItemStack phone){var sim=MobileItems.sim(phone);if(sim==null)return;refresh(player.serverLevel(),"phone:"+MobileItems.phoneId(phone),null,player.position(),sim,MobileRadio.cells(player.serverLevel()));}
+    public static void phone(ServerPlayer player,net.minecraft.world.item.ItemStack phone){PhoneDevices.prepare(player,phone);var sim=MobileItems.sim(phone);if(sim==null)return;refresh(player.serverLevel(),"phone:"+MobileItems.phoneId(phone),null,player.position(),sim,MobileRadio.cells(player.serverLevel()));}
     private static void refresh(ServerLevel level,String key,MobileRef ue,Vec3 position,SimCredentials sim,List<MobileRadio.Cell> cells){
         if(PENDING.computeIfAbsent(level,l->new HashSet<>()).contains(key))return;
         MobileRadio.Reception chosen=null;MobileRef core=null;
@@ -66,25 +69,29 @@ public final class MobileService {
         }).thenAccept(v->{
             if(!epc.live()||!MobileRadio.live(selected.cell()))throw new IllegalArgumentException("Сеть изменилась во время регистрации");
             if(ue!=null&&(!ue.live()||!ue.state().clientEnabled||ue.state().sim==null||!ue.state().sim.id.equals(sim.id)))throw new IllegalArgumentException("Абонент отключён");
+            if(ue==null&&!PhoneDevices.matches(level,key,sim.id,sim.key))throw new IllegalArgumentException("Телефон убран или SIM изменилась во время регистрации");
             // Recheck at commit: simultaneous attach requests cannot duplicate a SIM lease.
             for(var other:leases(level).values())if(!other.client.equals(key)&&other.simId.equals(sim.id)&&valid(level,other))throw new IllegalArgumentException("SIM уже используется");
             var c=epc.state();var sub=c.subscribers.entries.get(sim.id);if(sub==null||!sub.active)throw new IllegalArgumentException("SIM отозвана");
             var lease=new Lease();lease.client=key;lease.simId=sim.id;lease.apn=sim.apn;lease.ip=c.subscribers.address(sub,c.subscriberGateway);lease.core=epc;lease.ue=ue;lease.cell=selected.cell();lease.signal=selected.signal();lease.expires=level.getGameTime()+80;epc.changed(c);leases(level).put(key,lease);
             byte[] ul=CryptoChannel.derive(sim.key,(nonce+"UL").getBytes(StandardCharsets.UTF_8)),dl=CryptoChannel.derive(sim.key,(nonce+"DL").getBytes(StandardCharsets.UTF_8));lease.upTx=new CryptoChannel(ul);lease.upRx=new CryptoChannel(ul);lease.downTx=new CryptoChannel(dl);lease.downRx=new CryptoChannel(dl);
             lease.coreEpoch=Hardware.ensure(epc.device()).epoch;lease.bbuEpoch=Hardware.ensure(lease.cell.bbu().device()).epoch;lease.rruEpoch=Hardware.ensure(lease.cell.rru().device()).epoch;lease.ueEpoch=ue==null?0:Hardware.ensure(ue.device()).epoch;
-            if(ue!=null){int port=MobileHardware.cellular(ue.device());var p=ue.device().ports.get(port);p.up=true;p.ip=lease.ip;p.mask="255.255.255.0";ue.device().preferredPort=port;ue.device().gateway=c.subscriberGateway;ue.host().changed();}
+            if(ue!=null){int port=MobileHardware.cellular(ue.device());var p=ue.device().ports.get(port);p.up=true;p.ip=lease.ip;p.mask="255.255.255.0";ue.device().preferredPort=port;ue.device().gateway=c.subscriberGateway;ue.host().changed();}else PhoneDevices.attached(lease);
         }).whenComplete((v,e)->{PENDING.get(level).remove(key);if(e!=null){leases(level).remove(key);status(level,key,reason(e));}});
     }
     private static CompletableFuture<Void> transport(MobileRef from,MobileRef to,String text){return ApplicationTransport.sendAsync(from.level(),new ApplicationTransport.Endpoint(from.host(),from.bay()),new ApplicationTransport.Endpoint(to.host(),to.bay()),text.getBytes(StandardCharsets.UTF_8),false).thenApply(r->{if(!r.success())throw new IllegalArgumentException(r.status());return null;});}
     public static void topology(Level level,Network n){if(!(level instanceof ServerLevel l))return;
-        for(var lease:new ArrayList<>(leases(l).values()))if(lease.ue!=null&&valid(l,lease)&&n.devices.containsKey(lease.ue.id())&&n.devices.containsKey(lease.core.id())){
-            int up=MobileHardware.cellular(lease.ue.device()),cp=MobileHardware.cellular(lease.core.device());var p=lease.core.device().ports.get(cp);p.up=true;p.ip=lease.core.state().subscriberGateway;p.mask="255.255.255.0";
-            n.wires.add(new Network.Wire(new Network.Endpoint(lease.ue.id(),up),new Network.Endpoint(lease.core.id(),cp),lease.signal.distance(),"cellular"));
+        for(var lease:new ArrayList<>(leases(l).values()))if(valid(l,lease)&&n.devices.containsKey(lease.core.id())){
+            var terminal=lease.terminal();if(terminal==null)continue;
+            if(lease.ue==null)n.devices.put(lease.endpointId(),terminal.device);
+            if(!n.devices.containsKey(lease.endpointId()))continue;
+            int up=lease.cellularPort(),cp=MobileHardware.cellular(lease.core.device());var p=lease.core.device().ports.get(cp);p.up=true;p.ip=lease.core.state().subscriberGateway;p.mask="255.255.255.0";
+            n.wires.add(new Network.Wire(new Network.Endpoint(lease.endpointId(),up),new Network.Endpoint(lease.core.id(),cp),lease.signal.distance(),"cellular"));
         }n.linkTransits.put("cellular",(network,wire,from,ready,bytes,protocol)->MobileTransit.send(l,network,wire,from,ready,bytes,protocol));
     }
     public static void tick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event){if(event.getServer().getTickCount()%20!=0)return;for(var l:event.getServer().getAllLevels()){
         leases(l).entrySet().removeIf(e->!valid(l,e.getValue()));var cells=MobileRadio.cells(l);
         for(var ref:MobileRef.loaded(l))if(ref.device().kind.equals("pc")&&Hardware.powered(ref.device())&&MobileHardware.modem(ref.device())){var s=ref.state();if(s.clientEnabled&&s.sim!=null)refresh(l,key(ref),ref,Vec3.atCenterOf(ref.host().getBlockPos()),s.sim,cells);}
-        for(var p:l.players())for(var stack:List.of(p.getMainHandItem(),p.getOffhandItem()))if(stack.is(Mobile.PHONE.get())&&MobileItems.sim(stack)!=null)refresh(l,"phone:"+MobileItems.phoneId(stack),null,p.position(),MobileItems.sim(stack),cells);
+        for(var p:l.players())for(var stack:List.of(p.getMainHandItem(),p.getOffhandItem()))if(stack.is(Mobile.PHONE.get())&&MobileItems.sim(stack)!=null){PhoneDevices.prepare(p,stack);refresh(l,"phone:"+MobileItems.phoneId(stack),null,p.position(),MobileItems.sim(stack),cells);}
     }}
 }

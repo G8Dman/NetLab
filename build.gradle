@@ -234,7 +234,7 @@ tasks.named('check') { dependsOn coreTest }
 tasks.register('automationJar', Jar) {
     dependsOn automationClasses
     archiveBaseName = 'netlab-automation'
-    archiveVersion = '0.6.1-alpha'
+    archiveVersion = '0.7.0-alpha'
     from sourceSets.automation.output
 }
 tasks.named('assemble') { dependsOn automationJar }
@@ -245,7 +245,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.mobile.output
 tasks.register('mobileJar', Jar) {
     dependsOn mobileClasses
     archiveBaseName = 'netlab-mobile'
-    archiveVersion = '0.1.3-alpha'
+    archiveVersion = '0.2.0-alpha'
     from sourceSets.mobile.output
 }
 tasks.named('assemble') { dependsOn mobileJar }
@@ -255,7 +255,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.sputnik.output
 tasks.register('sputnikJar', Jar) {
     dependsOn sputnikClasses
     archiveBaseName = 'netlab-sputnik'
-    archiveVersion = '0.1.4-alpha'
+    archiveVersion = '0.2.0-alpha'
     from sourceSets.sputnik.output
 }
 tasks.named('assemble') { dependsOn sputnikJar }

@@ -72,7 +72,16 @@ public final class CableRenderer implements BlockEntityRenderer<DeviceEntity> {
             }
         });
         if(StudyClient.visible&&DiagnosticsOverlay.wearing())for(var flight:StudyClient.flights()){
-            var event=flight.event();if(event.from()!=d.getBlockPos().asLong())continue;
+            var event=flight.event();
+            if(event.protocol().startsWith("LTE-AIR/")&&(event.fromPort()<0||event.toPort()<0)){
+                boolean up=event.fromPort()<0;if((up?event.to():event.from())!=d.getBlockPos().asLong())continue;
+                double progress=(StudyClient.time()-flight.start())/flight.duration();if(progress<0||progress>1)continue;
+                var atPhone=Vec3.atLowerCornerOf(BlockPos.of(up?event.from():event.to()).subtract(d.getBlockPos())).add(.5,.7,.5);
+                var atAntenna=new Vec3(.5,.7,.5);var at=up?atPhone.lerp(atAntenna,progress):atAntenna.lerp(atPhone,progress);
+                var vc=buffers.getBuffer(RenderType.entitySolid(TEXTURE));int color=packetColor(event,true);
+                tube(vc,stack.last(),at.add(-.06,0,0),at.add(.06,0,0),0xf000f0,color);tube(vc,stack.last(),at.add(0,-.06,0),at.add(0,.06,0),0xf000f0,color);continue;
+            }
+            if(event.from()!=d.getBlockPos().asLong())continue;
             var source=d.portDevice(event.fromPort());int sp=event.fromPort()%128;
             boolean cellular=event.protocol().startsWith("LTE-AIR/");
             if(source==null||sp>=source.ports.size()||!cellular&&!source.ports.get(sp).medium.equals("wireless"))continue;

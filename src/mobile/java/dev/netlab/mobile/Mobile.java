@@ -26,6 +26,7 @@ public final class Mobile {
     public static final Supplier<BlockEntityType<MobileEntity>> ENTITY=ENTITIES.register("mobile_device",()->BlockEntityType.Builder.of(MobileEntity::new,ANTENNA.get(),RRU.get(),BBU.get(),CORE.get(),STATION.get()).build(null));
     public static final DeferredItem<Item> BLANK_SIM=ITEMS.register("blank_sim",()->new Item(new Item.Properties()));
     public static final DeferredItem<Item> SIM=ITEMS.register("sim_card",()->new Item(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<dev.netlab.api.PortableModules.ModuleItem> PHONE_DIAGNOSTICS=ITEMS.register("phone_diagnostics_module",()->new dev.netlab.api.PortableModules.ModuleItem(new Item.Properties().stacksTo(1),"CISCO-POCKET-NET","diagnostics","Модуль диагностики Cisco Pocket"));
     public static final DeferredItem<PhoneItem> PHONE=ITEMS.register("cisco_pocket",()->new PhoneItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<CableItem> RF=ITEMS.register("rf_cable",()->new CableItem(new Item.Properties().stacksTo(1),"rf"));
     public static final Map<String,DeferredItem<ModuleItem>> MODULE_ITEMS=new LinkedHashMap<>();
@@ -34,7 +35,7 @@ public final class Mobile {
     private static boolean integrated;
     public Mobile(IEventBus bus){
         BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);TABS.register(bus);
-        TABS.register("mobile",()->CreativeModeTab.builder().title(Component.literal("NetLab Mobile")).icon(()->PHONE.get().getDefaultInstance()).displayItems((p,o)->{o.accept(ANTENNA.get());o.accept(RRU.get());o.accept(BBU.get());o.accept(CORE.get());o.accept(STATION.get());o.accept(RF.get());o.accept(BLANK_SIM.get());o.accept(PHONE.get());MODULE_ITEMS.values().forEach(m->o.accept(m.get()));}).build());
+        TABS.register("mobile",()->CreativeModeTab.builder().title(Component.literal("NetLab Mobile")).icon(()->PHONE.get().getDefaultInstance()).displayItems((p,o)->{o.accept(ANTENNA.get());o.accept(RRU.get());o.accept(BBU.get());o.accept(CORE.get());o.accept(STATION.get());o.accept(RF.get());o.accept(BLANK_SIM.get());o.accept(PHONE.get());o.accept(PHONE_DIAGNOSTICS.get());MODULE_ITEMS.values().forEach(m->o.accept(m.get()));}).build());
         integrate();
         bus.addListener(MobilePackets::register);bus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event)->event.register(MobileChunks.TICKETS));
         var events=net.neoforged.neoforge.common.NeoForge.EVENT_BUS;events.addListener(MobileService::tick);events.addListener(MobileChunks::tick);events.addListener(MobileDemo::register);
@@ -43,6 +44,8 @@ public final class Mobile {
     }
     public static synchronized void integrate(){
         if(integrated)return;integrated=true;
+        PortableModules.register(new PortableModules.Definition("CISCO-POCKET-NET","diagnostics","Диагностика и пакеты",PHONE_DIAGNOSTICS));
+        NetLab.EXTRA_MODULE_ITEMS.add(PHONE_DIAGNOSTICS);
         RackDevices.register(MobileHardware.BBU,BBU);RackDevices.register(MobileHardware.CORE,CORE);
         for(String kind:List.of(MobileHardware.BBU,MobileHardware.CORE))RackDevices.INITIALIZERS.put(kind,MobileHardware::initialize);
         RackDevices.INSTALLED.add(i->{if(i.host().getLevel() instanceof net.minecraft.server.level.ServerLevel level){var ref=MobileRef.of(i.host(),i.slot());if(ref!=null&&ref.device().kind.startsWith("mobile_")){var s=ref.state();if(s.owner.isEmpty())s.owner=i.player().getUUID().toString();ref.changed(s);MobileChunks.register(level,i.host().getBlockPos());}}});
