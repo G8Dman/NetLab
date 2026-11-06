@@ -46,6 +46,7 @@ public class DeviceBlock extends Block implements EntityBlock {
     return new DeviceEntity(pos, state);
   }
   @Override public void setPlacedBy(Level l,BlockPos p,BlockState s,net.minecraft.world.entity.LivingEntity placer,ItemStack stack){
+    if(placer instanceof ServerPlayer player)ItemConfigurations.reconcile(player,stack);
     if(!l.isClientSide&&l.getBlockEntity(p) instanceof DeviceEntity host&&(stack.has(NetLab.CONFIGURATION.get())||stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,net.minecraft.world.item.component.CustomData.EMPTY).copyTag().contains("netlabDevice"))){
       host.device=dev.netlab.api.RackDevices.restore(stack,kind);PowerSystem.attached(host,0);host.changed();
     }
@@ -94,7 +95,7 @@ public class DeviceBlock extends Block implements EntityBlock {
   @Override
   protected ItemInteractionResult useItemOn(ItemStack stack, BlockState s, Level l, BlockPos p, Player player,
       InteractionHand hand, BlockHitResult hit) {
-    if (stack.getItem() instanceof ScrewdriverItem||stack.getItem() instanceof PortableTerminalItem||stack.getItem() instanceof PowerCableItem||stack.getItem() instanceof RackSupplyItem||stack.getItem() instanceof dev.netlab.api.PortableModules.ModuleItem)return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+    if (stack.getItem() instanceof ScrewdriverItem||stack.getItem() instanceof PortableTerminalItem||stack.getItem() instanceof PowerCableItem||stack.getItem() instanceof RackSupplyItem||stack.getItem() instanceof dev.netlab.api.PortableModules.ModuleItem||PortableTerminals.CARRIER_ITEMS.stream().anyMatch(test->test.test(stack)))return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
     if (stack.getItem() instanceof CableItem)
       return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
     if (rack && stack.getItem() instanceof BlockItem bi
@@ -140,7 +141,7 @@ public class DeviceBlock extends Block implements EntityBlock {
     return drops;
   }
   @Override public BlockState playerWillDestroy(Level level,BlockPos pos,BlockState state,Player player){
-    if(kind.equals("pc")&&!level.isClientSide&&player.isCreative()&&level.getBlockEntity(pos) instanceof DeviceEntity host)popResource(level,pos,MemoryCards.deviceItem(this,host.device));
+    if(kind.equals("pc")&&!level.isClientSide&&player.isCreative()&&level.getBlockEntity(pos) instanceof DeviceEntity host){var item=MemoryCards.deviceItem(this,host.device);if(player instanceof ServerPlayer server)ItemConfigurations.reconcile(server,item);popResource(level,pos,item);}
     return super.playerWillDestroy(level,pos,state,player);
   }
 }

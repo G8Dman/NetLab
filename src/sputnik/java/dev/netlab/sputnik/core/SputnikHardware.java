@@ -11,7 +11,7 @@ public final class SputnikHardware {
     public static synchronized void init(){if(initialized)return;initialized=true;
         for(String k:KINDS)DeviceKinds.EXTRA.put(k,new DeviceKinds.Features(!Set.of(DISH,VSAT,SPEAKER).contains(k),!Set.of(DISH,VSAT,SPEAKER).contains(k),true,k.equals(HUB)?16:k.equals(GATEWAY)?8:k.equals(MODEM)?6:k.equals(ODU)?8:k.equals(SPEAKER)?1:0,Set.of(HUB,MODEM).contains(k)));
         for(String id:MODULES)Hardware.CATALOG.put(id,new Hardware.Module(id,id,"application",0,0,false,0));
-        Hardware.CREATIVE_ONLY.addAll(MODULES);var slots=new LinkedHashMap<String,String>();slots.put("control0",CONTROL);slots.put("tx0",TX);slots.put("rx0",RX);Hardware.EXTRA_SLOTS.put("Sputnik HUB",slots);
+        var slots=new LinkedHashMap<String,String>();slots.put("control0",CONTROL);slots.put("tx0",TX);slots.put("rx0",RX);Hardware.EXTRA_SLOTS.put("Sputnik HUB",slots);
         for(String m:List.of("coax_tx","coax_rx","sat_rf_tx","sat_rf_rx","audio","satellite")){CableKind.EXTRA_MEDIA.put(m,m);CableKind.EXTRA_NAMES.put(m,switch(m){case "coax_tx"->"Коаксиальный кабель TX";case "coax_rx"->"Коаксиальный кабель RX";case "sat_rf_tx"->"Радиокабель BUC → антенна";case "sat_rf_rx"->"Радиокабель антенна → LNB";case "audio"->"Аудиокабель 3,5 мм";default->"Спутниковый канал";});}
         for(String k:KINDS)PortLayout.PROFILES.put(k,SputnikHardware::profile);
     }

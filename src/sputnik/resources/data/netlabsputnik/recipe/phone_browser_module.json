@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " L ",
+    "BMB",
+    " G "
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:glass_pane"
+    },
+    "B": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "netlabsputnik:phone_browser_module",
+    "count": 1
+  }
+}

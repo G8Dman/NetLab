@@ -66,7 +66,7 @@ public final class MemoryCards {
         if(!present(d))throw new IllegalArgumentException("Карта не установлена");sync(d);var stack=cardItem(d);d.extensions.remove(KEY);if(!p.addItem(stack))p.drop(stack,false);
     }
     public static ItemStack cardItem(Device d){if(!present(d))return ItemStack.EMPTY;var stack=new ItemStack(NetLab.MEMORY_CARD.get());var tag=new CompoundTag();var c=card(d);c.active=false;tag.putString("cisConfig",JSON.toJson(c));seal(stack,tag);return stack;}
-    public static ItemStack deviceItem(net.minecraft.world.level.block.Block block,Device d){sync(d);var stack=new ItemStack(block);var tag=new CompoundTag();StoredJson.put(tag,"netlabDevice",JSON.toJson(saved(d)));seal(stack,tag);return stack;}
+    public static ItemStack deviceItem(net.minecraft.world.level.block.Block block,Device d){sync(d);var stack=new ItemStack(block);var tag=new CompoundTag();StoredJson.put(tag,"netlabDevice",JSON.toJson(saved(d)));seal(stack,tag);if(LaptopBattery.laptop(d)){var label=stack.get(DataComponents.CUSTOM_DATA).copyTag();label.putInt("laptopBattery",LaptopBattery.stored(d)*100/LaptopBattery.CAPACITY);stack.set(DataComponents.CUSTOM_DATA,CustomData.of(label));}return stack;}
     public static void read(Device d){
         if(!present(d)||card(d).image.isBlank())throw new IllegalArgumentException("Нет записанной карты");var c=card(d);var image=decode(c.image);
         if(!image.kind.equals(d.kind)||!Hardware.ensure(image).profile.equals(Hardware.ensure(d).profile))throw new IllegalArgumentException("Нужно устройство того же типа и шасси");

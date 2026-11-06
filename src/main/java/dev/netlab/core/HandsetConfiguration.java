@@ -8,7 +8,7 @@ public final class HandsetConfiguration {
         public Binding {UUID.fromString(identity);Device.ip(address);if(dimension==null||!dimension.matches("[a-z0-9_.-]+:[a-z0-9_./-]+"))throw new IllegalArgumentException("Некорректное измерение сервера");}
     }
     public record Installed(String code,Binding binding) implements java.io.Serializable {}
-    public static final List<String> SLOTS=List.of("diagnostics","browser","automation");
+    public static final List<String> SLOTS=List.of("diagnostics","browser","automation","terminal");
     public Map<String,Installed> modules=new LinkedHashMap<>();
     public long epoch;
     public boolean has(String slot){return modules!=null&&modules.containsKey(slot);}

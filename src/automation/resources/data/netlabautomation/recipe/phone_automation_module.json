@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "BMB",
+    " G "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:comparator"
+    },
+    "B": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "netlabautomation:phone_automation_module",
+    "count": 1
+  }
+}

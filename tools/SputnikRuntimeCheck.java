@@ -32,7 +32,7 @@ public class SputnikRuntimeCheck {
     }
     static void handsets(){
         var regs=RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-        check(PortableModules.DEFINITIONS.keySet().containsAll(List.of("diagnostics","automation","browser")),"independent addons contribute three phone applications");
+        check(PortableModules.DEFINITIONS.keySet().containsAll(List.of("diagnostics","automation","browser","terminal")),"independent addons contribute phone applications and local Console");
         check(Sputnik.PHONE_BROWSER.getId().getNamespace().equals(Sputnik.ID),"phone browser module belongs to Sputnik, not Mobile");
         check(dev.netlab.mobile.Mobile.PHONE_DIAGNOSTICS.getId().getNamespace().equals(dev.netlab.mobile.Mobile.ID),"phone diagnostics belongs to Mobile");
         var phone=new ItemStack(dev.netlab.mobile.Mobile.PHONE.get());String id=dev.netlab.mobile.MobileItems.phoneId(phone);
@@ -40,7 +40,7 @@ public class SputnikRuntimeCheck {
         var config=new HandsetConfiguration();var binding=new HandsetConfiguration.Binding(UUID.randomUUID().toString(),"192.168.77.10","minecraft:overworld");
         for(var def:PortableModules.DEFINITIONS.values())config.install(def.slot(),new HandsetConfiguration.Installed(def.code(),def.slot().equals("automation")?binding:null));
         dev.netlab.mobile.PhoneDevices.save(phone,config);var copy=ItemStack.parse(regs,phone.save(regs)).orElseThrow();var saved=dev.netlab.mobile.PhoneDevices.configuration(copy);
-        check(saved.modules.size()==3&&saved.epoch==3&&saved.boundTo(binding.identity(),binding.dimension()),"all phone modules and server binding survive real item NBT");
+        check(saved.modules.size()==4&&saved.epoch==4&&saved.boundTo(binding.identity(),binding.dimension()),"all phone modules and server binding survive real item NBT");
         check(dev.netlab.mobile.MobileItems.phoneId(copy).equals(id)&&dev.netlab.mobile.MobileItems.sim(copy).key.equals(sim.key),"installing phone modules preserves physical phone ID and SIM credentials");
         check(dev.netlab.mobile.PhoneDevices.matchesSim(copy,sim.id,sim.key),"phone lease accepts the real physical SIM");
         check(!dev.netlab.mobile.PhoneDevices.matchesSim(copy,UUID.randomUUID().toString(),sim.key)&&!dev.netlab.mobile.PhoneDevices.matchesSim(copy,sim.id,"wrong key"),"another SIM or key cannot inherit phone registration");

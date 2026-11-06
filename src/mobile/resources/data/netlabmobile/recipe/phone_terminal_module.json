@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " M ",
+    "BTB",
+    " G "
+  ],
+  "key": {
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "B": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "T": {
+      "item": "netlab:portable_terminal"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "netlabmobile:phone_terminal_module",
+    "count": 1
+  }
+}

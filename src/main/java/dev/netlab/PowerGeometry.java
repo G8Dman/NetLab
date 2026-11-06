@@ -12,6 +12,7 @@ public final class PowerGeometry {
     public static List<Jack> jacks(DeviceEntity h){var list=new ArrayList<Jack>();boolean rack=((DeviceBlock)h.getBlockState().getBlock()).rack;
         if(h.device.kind.equals("energy"))for(int i=0;i<4;i++)list.add(new Jack(ENERGY_OUT+i,.2+i*.2,.5,1.003,.12,true));
         if(rack&&h.rackSupply){list.add(new Jack(PSU_IN,.11,.095,.96,.06,false));for(int i=0;i<8;i++)list.add(new Jack(PSU_OUT+i,.29+i*.085,.095,.96,.055,true));}
+        if(LaptopBattery.laptop(h.device))list.add(new Jack(BOARD_IN,.20,.045,.88,.075,false));
         for(int bay=0;bay<(rack?2:1);bay++){var d=bay==0?h.device:h.upperDevice;if(!PowerModel.board(d))continue;double x=d.kind.equals("endpoint")?.50:.82,y=d.kind.equals("endpoint")?.20:.125,z=.895;if(rack){x=.06+x*.88;y+=(bay==0?.12:.62);z=.825;}list.add(new Jack(BOARD_IN+bay,x,y,z,.10,false));}
         return List.copyOf(list);
     }

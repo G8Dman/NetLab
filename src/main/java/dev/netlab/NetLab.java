@@ -85,7 +85,8 @@ public final class NetLab {
     }
     private static DeferredBlock<DeviceBlock> device(String name,String kind,boolean rack) {
         var block=BLOCKS.register(name,()->new DeviceBlock(BlockBehaviour.Properties.of().strength(2).noOcclusion(),kind,rack));
-        if(!name.startsWith("rack_")) ITEMS.registerSimpleBlockItem(name,block);
+        if(name.equals("laptop"))ITEMS.register(name,()->new LaptopItem(block.get(),new Item.Properties()));
+        else if(!name.startsWith("rack_")) ITEMS.registerSimpleBlockItem(name,block);
         return block;
     }
     private static DeferredBlock<net.minecraft.world.level.block.Block> materialBlock(String name,Supplier<net.minecraft.world.level.block.Block> factory){

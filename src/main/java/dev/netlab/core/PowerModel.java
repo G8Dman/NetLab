@@ -13,6 +13,7 @@ public final class PowerModel {
         public int energy;
         private final Map<String,Integer> used=new HashMap<>();
         public Budget(int energy){this.energy=Math.max(0,energy);}
+        public int draw(String psu,int maximum){int value=Math.max(0,Math.min(maximum,Math.min(energy,PSU_RATE-used.getOrDefault(psu,0))));if(value>0){energy-=value;used.merge(psu,value,Integer::sum);}return value;}
         public boolean supply(String psu,int demand){int spent=used.getOrDefault(psu,0);if(demand<0||demand>PSU_RATE||energy<Math.max(1,demand)||spent+demand>PSU_RATE)return false;energy-=demand;used.put(psu,spent+demand);return true;}
     }
 }

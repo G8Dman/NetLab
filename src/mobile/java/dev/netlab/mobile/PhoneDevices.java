@@ -23,7 +23,7 @@ public final class PhoneDevices {
         String id=MobileItems.phoneId(phone);var e=ENTRIES.get(key(player,id));
         if(e==null||e.host.owner!=player||e.host.getLevel()!=player.serverLevel()){
             ENTRIES.entrySet().removeIf(old->!old.getValue().host.present());
-            e=new Entry();var device=new Device("pc");device.identity=id;device.hostname="CiscoPocket";device.ports.clear();var cellular=new Device.Port(false);cellular.name="Cellular0";cellular.medium="cellular";cellular.maxMbps=10;device.ports.add(cellular);device.preferredPort=0;
+            e=new Entry();var device=new Device("pc");device.identity=id;device.hostname="CiscoPocket";Hardware.ensure(device).profile="Cisco Pocket";device.ports.clear();var cellular=new Device.Port(false);cellular.name="Cellular0";cellular.medium="cellular";cellular.maxMbps=10;device.ports.add(cellular);device.preferredPort=0;
             e.host=new PortableHosts.Host(player,id,device,()->!held(player,id).isEmpty(),()->MobileService.lease(player.serverLevel(),"phone:"+id)!=null,module->{var item=held(player,id);if(item.isEmpty())return false;String slot=module.equals("CISCO-AUTOMATION")?"automation":module;return configuration(item).has(slot);},()->{var item=held(player,id);return item.isEmpty()?null:configuration(item).binding();});
             ENTRIES.put(key(player,id),e);
         }
@@ -48,6 +48,7 @@ public final class PhoneDevices {
         var def=PortableModules.DEFINITIONS.get(slot);if(def==null)throw new IllegalArgumentException("Нужно соответствующее дополнение");
         ItemStack found=ItemStack.EMPTY;for(var item:player.getInventory().items)if(item.is(def.item().get())){found=item;break;}
         if(found.isEmpty())throw new IllegalArgumentException("Нужен модуль: "+def.title());var config=configuration(phone);
+        ItemConfigurations.reconcile(player,found);
         config.install(slot,new HandsetConfiguration.Installed(def.code(),PortableModules.binding(found)));save(phone,config);found.shrink(1);prepare(player,phone);
     }
     public static void eject(ServerPlayer player,ItemStack phone,String slot){

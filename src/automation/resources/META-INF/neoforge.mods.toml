@@ -3,13 +3,13 @@ loaderVersion="[1,)"
 license="All Rights Reserved"
 [[mods]]
 modId="netlabautomation"
-version="0.7.0-alpha"
+version="0.7.1-alpha"
 displayName="NetLab Automation"
 description='''Network-controlled inventories, device capabilities, logistics and interception for NetLab.'''
 [[dependencies.netlabautomation]]
 modId="netlab"
 type="required"
-versionRange="[0.19.0-alpha,)"
+versionRange="[0.20.0-alpha,)"
 ordering="AFTER"
 side="BOTH"
 [[dependencies.netlabautomation]]

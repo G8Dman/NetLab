@@ -202,6 +202,7 @@ public final class CoreTest {
     checks += ItemPacketTest.run();
     checks += MobileTest.run();
     checks += PhoneNetworkTest.run();
+    checks += PortableDevicesTest.run();
     checks += ServerThermalTest.run();
     checks += SputnikTest.run();
     checks += dev.netlab.sputnik.client.NativeBrowserLibrariesTest.run();

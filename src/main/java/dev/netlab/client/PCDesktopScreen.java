@@ -56,6 +56,7 @@ public final class PCDesktopScreen extends Screen {
     }
     @Override public void renderBackground(GuiGraphics g,int x,int y,float dt) {}
     @Override public void render(GuiGraphics g,int x,int y,float dt) {
+        if(minecraft.level!=null&&minecraft.level.getBlockEntity(pos) instanceof dev.netlab.DeviceEntity host)device=host.device;
         g.fill(0,0,width,height,0xff102332);
         g.drawCenteredString(font,title,width/2,15,0xffffff);
         g.drawCenteredString(font,"Адаптер: "+device.portName(dev.netlab.core.Wireless.clientPort(device)),width/2,29,0x99ddee);
@@ -64,6 +65,7 @@ public final class PCDesktopScreen extends Screen {
         g.drawString(font,"Subnet mask",width/2-150,top+32,0xffffff);
         g.drawString(font,"Gateway",width/2-150,top+58,0xffffff);
         g.drawCenteredString(font,status,width/2,top+208,0xffaaaa);
+        if(dev.netlab.core.LaptopBattery.laptop(device))g.drawCenteredString(font,dev.netlab.core.LaptopBattery.status(device),width/2,height-12,0x88e7a7);
         super.render(g,x,y,dt);
     }
     @Override public boolean isPauseScreen(){return false;}

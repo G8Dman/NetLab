@@ -24,7 +24,7 @@ public final class MobileTest {
         check(CableKind.compatible("fiber",bbu,2,rru,0),"optical fronthaul connects BBU to RRU");check(!CableKind.compatible("fiber",bbu,0,rru,0),"Ethernet uplink cannot masquerade as fronthaul");
         check(CableKind.compatible("rf",ant,0,rru,1),"RF coax connects antenna and RRU");check(!CableKind.compatible("copper",ant,0,rru,1),"Ethernet cable cannot replace coax");
         check(ConsoleLink.compatible(pc,1,bbu,1),"laptop RS232 can configure BBU");check(ConsoleLink.compatible(pc,1,rru,3),"RRU console supported");
-        for(String module:MobileHardware.MODULES)check(Hardware.CREATIVE_ONLY.contains(module)&&!ModuleFabrication.MODULES.contains(module),"mobile module has no assembler recipe "+module);
+        for(String module:MobileHardware.MODULES)check(!Hardware.CREATIVE_ONLY.contains(module)&&!ModuleFabrication.MODULES.contains(module),"mobile module uses its addon crafting recipe, not the basic assembler "+module);
         var sim=new SimCredentials();sim.issuer="core-A";sim.operator="00101";sim.label="Student";var subscribers=new SubscriberRegistry();
         var sub=subscribers.provision(sim);check(!sub.active,"new SIM is not active before acknowledgement");check(subscribers.provision(sim)==sub&&subscribers.entries.size()==1,"retry cannot duplicate subscriber");
         var clone=new SimCredentials();clone.id=sim.id;fails(()->subscribers.provision(clone),"same SIM identity with different key rejected");

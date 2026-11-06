@@ -3,7 +3,7 @@ package dev.netlab.mobile.core;
 import dev.netlab.core.*;
 import java.util.*;
 
-/** Pure registration: mobile equipment is creative-only until recipes are explicitly requested. */
+/** Pure hardware registration; material recipes live in the Mobile data pack. */
 public final class MobileHardware {
     public static final String BBU="mobile_bbu",CORE="mobile_core",RRU="mobile_rru",ANTENNA="mobile_antenna",STATION="mobile_sim_station";
     public static final String MODEM="CISCO-LTE-MODEM",CONTROL="NL-MOB-CONTROL",BASEBAND="NL-MOB-BASEBAND",FRONTHAUL="NL-MOB-FRONTHAUL";
@@ -13,7 +13,6 @@ public final class MobileHardware {
         if(initialized)return;initialized=true;
         DeviceKinds.EXTRA.put(BBU,new DeviceKinds.Features(true,true,true,12,false));DeviceKinds.EXTRA.put(CORE,new DeviceKinds.Features(true,true,true,16,true));
         DeviceKinds.EXTRA.put(RRU,new DeviceKinds.Features(true,true,true,8,false));DeviceKinds.EXTRA.put(STATION,new DeviceKinds.Features(true,true,true,4,false));DeviceKinds.EXTRA.put(ANTENNA,new DeviceKinds.Features(false,false,true,0,false));
-        Hardware.CREATIVE_ONLY.addAll(MODULES);
         Hardware.CATALOG.put(CONTROL,new Hardware.Module(CONTROL,"MOB-CONTROL","application",0,0,false,0));
         Hardware.CATALOG.put(BASEBAND,new Hardware.Module(BASEBAND,"MOB-BASEBAND","application",0,0,false,0));
         Hardware.CATALOG.put(FRONTHAUL,new Hardware.Module(FRONTHAUL,"MOB-FRONTHAUL","fronthaul",3,1000,false,0));

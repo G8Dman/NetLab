@@ -71,7 +71,8 @@ public final class Console {
         || ("ppp".startsWith(words[0])
             && java.util.Arrays.stream(words).skip(1).anyMatch(w -> !w.isEmpty() && "password".startsWith(w)))
         || command.toLowerCase(Locale.ROOT).matches(".*\\b(secret|password)\\b.*")
-        || command.toLowerCase(Locale.ROOT).startsWith("mobile pair ");
+        || command.toLowerCase(Locale.ROOT).startsWith("mobile pair ")
+        || command.toLowerCase(Locale.ROOT).matches("sat\\s+(key|subscriber)\\s+.*");
   }
   public CommandGrammar.Completion complete(Device d, String prefix) {
     return pending.isEmpty()

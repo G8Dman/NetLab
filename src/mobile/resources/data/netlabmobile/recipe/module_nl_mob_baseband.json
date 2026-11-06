@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GQG",
+    "QMQ",
+    "GBG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "B": {
+      "item": "netlab:advanced_circuit_board"
+    }
+  },
+  "result": {
+    "id": "netlabmobile:module_nl_mob_baseband",
+    "count": 1
+  }
+}

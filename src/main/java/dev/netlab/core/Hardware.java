@@ -49,6 +49,7 @@ public final class Hardware implements Serializable {
     public static Hardware ensure(Device d){if(d.hardware==null){d.hardware=new Hardware();d.hardware.profile=d.kind.equals("traffic")?"Traffic Controller":d.kind.equals("pc")?"Laptop-PT":d.kind.equals("ap")?"AccessPoint-PT":d.kind.equals("router")?"NetLab modular router":"Switch-PT";}return d.hardware;}
     public static boolean powered(Device d){return d.hardware==null||d.hardware.powered&&(!d.hardware.energyRequired||d.hardware.energySupplied);}
     public static String powerProblem(Device d){
+        if(LaptopBattery.laptop(d)&&LaptopBattery.stored(d)==0)return "Аккумулятор разряжен. Подключи задний DC / FE к питанию.";
         if(d.hardware!=null&&d.hardware.profile.equals("3650-24PS")&&!d.hardware.modules.containsValue("AC-POWER-SUPPLY"))
             return "Установи AC-POWER-SUPPLY в слот power0 или power1.";
         if(d.hardware!=null&&d.hardware.energyRequired&&!d.hardware.energySupplied)return "Нет питания FE. Подключи задний разъём к OUT блока питания шкафа; его IN — к энергошкафу.";
