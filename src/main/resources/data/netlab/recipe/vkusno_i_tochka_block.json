@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GGG",
+    "ORB",
+    "GGG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:green_concrete"
+    },
+    "O": {
+      "item": "minecraft:orange_dye"
+    },
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "B": {
+      "item": "minecraft:bread"
+    }
+  },
+  "result": {
+    "id": "netlab:vkusno_i_tochka_block",
+    "count": 1
+  }
+}

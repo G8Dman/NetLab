@@ -27,5 +27,6 @@
   "item.netlab.wall_power_cable": "Power Cable",
   "itemGroup.netlab.modules": "NetLab modules",
   "block.netlab.creative_energy_source": "Creative Generator",
-  "item.netlab.advanced_circuit_board": "Advanced CISCO Circuit Board"
+  "item.netlab.advanced_circuit_board": "Advanced CISCO Circuit Board",
+  "block.netlab.vkusno_i_tochka_block": "Vkusno i tochka"
 }

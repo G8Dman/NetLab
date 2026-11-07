@@ -55,7 +55,12 @@ def main():
                 'platforms': ['Windows 10/11 x64', 'Linux x64'], 'mods': entries,
                 'external_dependencies': [{'id': 'rinku', 'version': '3.0.4', 'loader': 'NeoForge',
                     'minecraft': '1.21.1', 'side': 'client', 'required_by': 'netlabsputnik',
-                    'url': 'https://modrinth.com/mod/rinku/version/JOrwMXrE', 'included': False}]}
+                    'url': 'https://modrinth.com/mod/rinku/version/JOrwMXrE', 'included': False}],
+                'optional_integrations': [
+                    {'id': 'carryon', 'tested_version': '2.2.6.13', 'feature': 'Carry a disconnected NetLab rack with installed devices', 'included': False},
+                    {'id': 'minecolonies', 'tested_version': '1.1.1414', 'feature': 'Vkusno i tochka restaurant/cookery style, levels 1-5', 'included': False,
+                     'dependencies': ['structurize', 'blockui', 'domum_ornamentum', 'multipiston'],
+                     'installation': 'https://minecolonies.com/wiki/installation/'}]}
     (ROOT / 'MODS.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     (ROOT / 'SHA256SUMS.txt').write_text(''.join(e['sha256'] + '  ' + e['file'] + '\n' for e in entries), encoding='utf-8')
     print('Ready-to-install folder: mods/ (exactly four NetLab JARs, no third-party mods)')

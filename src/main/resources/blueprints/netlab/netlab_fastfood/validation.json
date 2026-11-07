@@ -1,0 +1,192 @@
+[
+  {
+    "kind": "cook",
+    "level": 1,
+    "file": "fundamentals/cook1.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 842,
+    "furnaces": 3,
+    "seats": 4,
+    "racks": 1
+  },
+  {
+    "kind": "cook",
+    "level": 2,
+    "file": "fundamentals/cook2.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1031,
+    "furnaces": 4,
+    "seats": 8,
+    "racks": 2
+  },
+  {
+    "kind": "cook",
+    "level": 3,
+    "file": "fundamentals/cook3.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1228,
+    "furnaces": 5,
+    "seats": 8,
+    "racks": 3
+  },
+  {
+    "kind": "cook",
+    "level": 4,
+    "file": "fundamentals/cook4.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1294,
+    "furnaces": 6,
+    "seats": 12,
+    "racks": 4
+  },
+  {
+    "kind": "cook",
+    "level": 5,
+    "file": "fundamentals/cook5.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1317,
+    "furnaces": 6,
+    "seats": 12,
+    "racks": 4
+  },
+  {
+    "kind": "cookery",
+    "level": 1,
+    "file": "craftsmanship/luxury/cookery1.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 842,
+    "furnaces": 3,
+    "seats": 4,
+    "racks": 1
+  },
+  {
+    "kind": "cookery",
+    "level": 2,
+    "file": "craftsmanship/luxury/cookery2.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1031,
+    "furnaces": 4,
+    "seats": 8,
+    "racks": 2
+  },
+  {
+    "kind": "cookery",
+    "level": 3,
+    "file": "craftsmanship/luxury/cookery3.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1228,
+    "furnaces": 5,
+    "seats": 8,
+    "racks": 3
+  },
+  {
+    "kind": "cookery",
+    "level": 4,
+    "file": "craftsmanship/luxury/cookery4.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1294,
+    "furnaces": 6,
+    "seats": 12,
+    "racks": 4
+  },
+  {
+    "kind": "cookery",
+    "level": 5,
+    "file": "craftsmanship/luxury/cookery5.blueprint",
+    "dimensions": [
+      25,
+      12,
+      25
+    ],
+    "anchor": [
+      5,
+      1,
+      9
+    ],
+    "blocks": 1317,
+    "furnaces": 6,
+    "seats": 12,
+    "racks": 4
+  }
+]

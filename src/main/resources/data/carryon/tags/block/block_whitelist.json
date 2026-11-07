@@ -1,0 +1,4 @@
+{
+  "replace": false,
+  "values": ["netlab:rack", "netlab:rack_router", "netlab:rack_switch"]
+}

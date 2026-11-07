@@ -27,5 +27,6 @@
   "item.netlab.wall_power_cable": "Кабель питания",
   "itemGroup.netlab.modules": "NetLab модули",
   "block.netlab.creative_energy_source": "Творческий генератор",
-  "item.netlab.advanced_circuit_board": "Улучшенная плата CISCO"
+  "item.netlab.advanced_circuit_board": "Улучшенная плата CISCO",
+  "block.netlab.vkusno_i_tochka_block": "Вкусно и точка"
 }

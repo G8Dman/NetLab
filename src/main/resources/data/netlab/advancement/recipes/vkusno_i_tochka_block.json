@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_bread": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:bread"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_bread"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "netlab:vkusno_i_tochka_block"
+    ]
+  }
+}

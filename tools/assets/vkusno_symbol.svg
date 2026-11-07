@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Vkusno i tochka geometric fan block</title>
+  <rect width="64" height="64" fill="#205e45"/>
+  <path d="M0 0H64V3H3V64H0Z" fill="#39765c"/>
+  <path d="M61 3H64V64H3V61H61Z" fill="#143e2d"/>
+  <circle cx="12" cy="44" r="7" fill="#e8410f"/>
+  <path d="M15 13H27L38 51H26Z M34 13H46L57 51H45Z" fill="#ef7403"/>
+</svg>

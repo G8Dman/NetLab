@@ -9,10 +9,10 @@
   "mods": [
     {
       "id": "netlab",
-      "version": "0.21.0-alpha",
-      "file": "mods/netlab-0.21.0-alpha.jar",
-      "bytes": 743327,
-      "sha256": "10d6c4b5dc5dfa5fc0c137ed8856ddedebcd48408aa6e43e97c856d2684a1f83"
+      "version": "0.21.1-alpha",
+      "file": "mods/netlab-0.21.1-alpha.jar",
+      "bytes": 784203,
+      "sha256": "0f95cda3c253516450f9e62795d724137d893d49200fbc97fb194129a2f08fea"
     },
     {
       "id": "netlabautomation",
@@ -46,6 +46,27 @@
       "required_by": "netlabsputnik",
       "url": "https://modrinth.com/mod/rinku/version/JOrwMXrE",
       "included": false
+    }
+  ],
+  "optional_integrations": [
+    {
+      "id": "carryon",
+      "tested_version": "2.2.6.13",
+      "feature": "Carry a disconnected NetLab rack with installed devices",
+      "included": false
+    },
+    {
+      "id": "minecolonies",
+      "tested_version": "1.1.1414",
+      "feature": "Vkusno i tochka restaurant/cookery style, levels 1-5",
+      "included": false,
+      "dependencies": [
+        "structurize",
+        "blockui",
+        "domum_ornamentum",
+        "multipiston"
+      ],
+      "installation": "https://minecolonies.com/wiki/installation/"
     }
   ]
 }

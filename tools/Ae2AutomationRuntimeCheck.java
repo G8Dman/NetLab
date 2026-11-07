@@ -108,6 +108,7 @@ public final class Ae2AutomationRuntimeCheck {
         System.setProperty("mixin.bootstrapService",Bootstrap.class.getName());
         MixinBootstrap.init(); MixinEnvironment.getCurrentEnvironment().setSide(MixinEnvironment.Side.SERVER);
         Mixins.addConfiguration("netlabautomation.mixins.json");
+        Mixins.addConfiguration("netlab.mixins.json");
         var transformer=((Service)MixinService.getService()).transformer();
         if(args.length>0 && args[0].equals("without-ae2")) {
             String name="dev.netlab.automation.compat.Ae2AutomationPolicy";
