@@ -16,10 +16,10 @@
     },
     {
       "id": "netlabautomation",
-      "version": "0.7.2-alpha",
-      "file": "mods/netlab-automation-0.7.2-alpha.jar",
-      "bytes": 233214,
-      "sha256": "1db6e190ddb88b2e766ebe4d7c0a74da2f27bdc0e96d472a6fbd87f97284d8d0"
+      "version": "0.7.3-alpha",
+      "file": "mods/netlab-automation-0.7.3-alpha.jar",
+      "bytes": 245123,
+      "sha256": "c834a80ab287d188faf91035e78fba3aaa207e2e2c1ebf13b5223734d4031e3c"
     },
     {
       "id": "netlabmobile",

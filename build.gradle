@@ -234,7 +234,7 @@ tasks.named('check') { dependsOn coreTest }
 tasks.register('automationJar', Jar) {
     dependsOn automationClasses
     archiveBaseName = 'netlab-automation'
-    archiveVersion = '0.7.2-alpha'
+    archiveVersion = '0.7.3-alpha'
     from sourceSets.automation.output
 }
 tasks.named('assemble') { dependsOn automationJar }

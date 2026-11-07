@@ -1,0 +1,3 @@
+# Optional pack rule. Copy into minecraft/config/ (or server config/).
+# Keep manual ME storage; use NetLab for automation.
+disableAe2Automation = true

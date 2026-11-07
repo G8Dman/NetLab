@@ -43,7 +43,10 @@ public final class Automation {
         dev.netlab.MemoryCards.PHYSICAL.add(ServerThermal::preserve);dev.netlab.MemoryCards.APPLY.add(ServerThermal::preserve);
         dev.netlab.FrontPanel.EXTRA_STATUS.add((host,bay)->{var d=bay==0?host.device:host.upperDevice;return d==null?"":ServerThermal.summary(d);});
     }
-    public Automation(IEventBus bus){
+    public Automation(IEventBus bus, net.neoforged.fml.ModContainer container){
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER,dev.netlab.automation.compat.Ae2AutomationPolicy.CONFIG);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST,dev.netlab.automation.compat.Ae2AutomationPolicy::interact);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(dev.netlab.automation.compat.Ae2AutomationPolicy::opened);
         MODULE_ITEMS.values().forEach(item->dev.netlab.NetLab.EXTRA_MODULE_ITEMS.add(item));
         integrateThermal();
         dev.netlab.api.RackDevices.register("server",SERVER);

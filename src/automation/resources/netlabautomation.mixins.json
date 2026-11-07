@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8.7",
+  "package": "dev.netlab.automation.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "Ae2TransferMixin",
+    "Ae2TickMixin",
+    "Ae2CraftingMixin",
+    "Ae2CraftingCpuMixin",
+    "Ae2FormationMixin",
+    "Ae2ExternalItemsMixin"
+  ],
+  "injectors": { "defaultRequire": 1 }
+}

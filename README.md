@@ -21,11 +21,13 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 | Готовый файл | Скачать |
 |---|---|
 | NetLab 0.21.0 | [netlab-0.21.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.21.0-alpha.jar) |
-| Automation 0.7.2 | [netlab-automation-0.7.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.2-alpha.jar) |
+| Automation 0.7.3 | [netlab-automation-0.7.3-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.3-alpha.jar) |
 | Mobile 0.3.2 | [netlab-mobile-0.3.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.3.2-alpha.jar) |
 | Sputnik 0.2.2 | [netlab-sputnik-0.2.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.2.2-alpha.jar) |
 
-**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-mobile-0.3.2/NetLab-1.21.1-mods.zip).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-automation-0.7.3/NetLab-1.21.1-mods.zip).
+
+В сборках с AE2 можно [отключить только его автоматизацию](docs/UPDATE-AUTOMATION-0.7.3.md), сохранив ручное ME-хранилище. [Пример серверной конфигурации](config-examples/netlabautomation-server.toml); по умолчанию ограничение выключено.
 
 Контрольные суммы: [SHA256SUMS.txt](SHA256SUMS.txt). Состав комплекта и зависимости: [MODS.json](MODS.json).
 
@@ -43,7 +45,7 @@ Rinku сам скачивает Chromium под текущую ОС при пе�
 | Мод | Версия | Что добавляет |
 |---|---|---|
 | **NetLab** | `0.21.0-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
-| **NetLab Automation** | `0.7.2-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение. |
+| **NetLab Automation** | `0.7.3-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение; необязательный запрет автоматизации AE2 с сохранением ручного ME-хранилища. |
 | **NetLab Mobile** | `0.3.2-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
 | **NetLab Sputnik** | `0.2.2-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
 
