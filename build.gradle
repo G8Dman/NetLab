@@ -245,7 +245,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.mobile.output
 tasks.register('mobileJar', Jar) {
     dependsOn mobileClasses
     archiveBaseName = 'netlab-mobile'
-    archiveVersion = '0.3.1-alpha'
+    archiveVersion = '0.3.2-alpha'
     from sourceSets.mobile.output
 }
 tasks.named('assemble') { dependsOn mobileJar }

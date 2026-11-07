@@ -20,7 +20,7 @@ public final class PhoneDevices {
     private static String key(ServerPlayer player,String id){return player.getUUID()+"/"+id;}
     public static ItemStack held(ServerPlayer player,String id){for(var item:List.of(player.getMainHandItem(),player.getOffhandItem()))if(item.is(Mobile.PHONE.get())&&MobileItems.privateTag(item).getString("phoneId").equals(id))return item;return ItemStack.EMPTY;}
     public static PortableHosts.Host prepare(ServerPlayer player,ItemStack phone){
-        String id=MobileItems.phoneId(phone);var e=ENTRIES.get(key(player,id));
+        MobileItemStorage.reconcile(player,phone);String id=MobileItems.phoneId(phone);var e=ENTRIES.get(key(player,id));
         if(e==null||e.host.owner!=player||e.host.getLevel()!=player.serverLevel()){
             ENTRIES.entrySet().removeIf(old->!old.getValue().host.present());
             e=new Entry();var device=new Device("pc");device.identity=id;device.hostname="CiscoPocket";Hardware.ensure(device).profile="Cisco Pocket";device.ports.clear();var cellular=new Device.Port(false);cellular.name="Cellular0";cellular.medium="cellular";cellular.maxMbps=10;device.ports.add(cellular);device.preferredPort=0;

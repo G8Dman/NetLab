@@ -25,7 +25,7 @@ public final class Mobile {
     public static final DeferredBlock<MobileBlock> ANTENNA=block("sector_antenna",MobileHardware.ANTENNA),RRU=block("radio_unit",MobileHardware.RRU),BBU=block("baseband_unit",MobileHardware.BBU),CORE=block("mobile_core",MobileHardware.CORE),STATION=block("sim_station",MobileHardware.STATION);
     public static final Supplier<BlockEntityType<MobileEntity>> ENTITY=ENTITIES.register("mobile_device",()->BlockEntityType.Builder.of(MobileEntity::new,ANTENNA.get(),RRU.get(),BBU.get(),CORE.get(),STATION.get()).build(null));
     public static final DeferredItem<Item> BLANK_SIM=ITEMS.register("blank_sim",()->new Item(new Item.Properties()));
-    public static final DeferredItem<Item> SIM=ITEMS.register("sim_card",()->new Item(new Item.Properties().stacksTo(1)));
+    public static final DeferredItem<SimCardItem> SIM=ITEMS.register("sim_card",()->new SimCardItem(new Item.Properties().stacksTo(1)));
     public static final DeferredItem<dev.netlab.api.PortableModules.ModuleItem> PHONE_DIAGNOSTICS=ITEMS.register("phone_diagnostics_module",()->new dev.netlab.api.PortableModules.ModuleItem(new Item.Properties().stacksTo(1),"CISCO-POCKET-NET","diagnostics","Модуль диагностики Cisco Pocket"));
     public static final DeferredItem<dev.netlab.api.PortableModules.ModuleItem> PHONE_TERMINAL=ITEMS.register("phone_terminal_module",()->new dev.netlab.api.PortableModules.ModuleItem(new Item.Properties().stacksTo(1),"CISCO-POCKET-CONSOLE","terminal","Модуль терминала Cisco Pocket"));
     public static final DeferredItem<PhoneItem> PHONE=ITEMS.register("cisco_pocket",()->new PhoneItem(new Item.Properties().stacksTo(1)));
@@ -42,6 +42,8 @@ public final class Mobile {
         var events=net.neoforged.neoforge.common.NeoForge.EVENT_BUS;events.addListener(MobileService::tick);events.addListener(MobileChunks::tick);events.addListener(MobileDemo::register);
         events.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Post event)->RF.get().preview(event));
         events.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent event)->{MobileService.clear();MobilePackets.clear();RF.get().clear();});
+        events.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event)->{if(event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player)MobileItemStorage.inventory(player);});
+        events.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event)->{if(event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player)MobileItemStorage.inventory(player);});
     }
     public static synchronized void integrate(){
         if(integrated)return;integrated=true;

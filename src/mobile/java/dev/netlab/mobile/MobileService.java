@@ -50,7 +50,7 @@ public final class MobileService {
         if(pc.device().wireless!=null){pc.device().wireless.clientSsid="";pc.device().wireless.associated=Long.MIN_VALUE;}
         pc.changed(state);refresh(pc.level(),key(pc),pc,Vec3.atCenterOf(pc.host().getBlockPos()),state.sim,MobileRadio.cells(pc.level()));
     }
-    public static void phone(ServerPlayer player,net.minecraft.world.item.ItemStack phone){PhoneDevices.prepare(player,phone);var sim=MobileItems.sim(phone);if(sim==null)return;refresh(player.serverLevel(),"phone:"+MobileItems.phoneId(phone),null,player.position(),sim,MobileRadio.cells(player.serverLevel()));}
+    public static void phone(ServerPlayer player,net.minecraft.world.item.ItemStack phone){MobileItemStorage.reconcile(player,phone);PhoneDevices.prepare(player,phone);var sim=MobileItems.sim(phone);if(sim==null)return;refresh(player.serverLevel(),"phone:"+MobileItems.phoneId(phone),null,player.position(),sim,MobileRadio.cells(player.serverLevel()));}
     private static void refresh(ServerLevel level,String key,MobileRef ue,Vec3 position,SimCredentials sim,List<MobileRadio.Cell> cells){
         if(PENDING.computeIfAbsent(level,l->new HashSet<>()).contains(key))return;
         MobileRadio.Reception chosen=null;MobileRef core=null;
@@ -92,6 +92,6 @@ public final class MobileService {
     public static void tick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event){if(event.getServer().getTickCount()%20!=0)return;for(var l:event.getServer().getAllLevels()){
         leases(l).entrySet().removeIf(e->!valid(l,e.getValue()));var cells=MobileRadio.cells(l);
         for(var ref:MobileRef.loaded(l))if(ref.device().kind.equals("pc")&&Hardware.powered(ref.device())&&MobileHardware.modem(ref.device())){var s=ref.state();if(s.clientEnabled&&s.sim!=null)refresh(l,key(ref),ref,Vec3.atCenterOf(ref.host().getBlockPos()),s.sim,cells);}
-        for(var p:l.players())for(var stack:List.of(p.getMainHandItem(),p.getOffhandItem()))if(stack.is(Mobile.PHONE.get())&&MobileItems.sim(stack)!=null){PhoneDevices.prepare(p,stack);refresh(l,"phone:"+MobileItems.phoneId(stack),null,p.position(),MobileItems.sim(stack),cells);}
+        for(var p:l.players())for(var stack:List.of(p.getMainHandItem(),p.getOffhandItem()))if(stack.is(Mobile.PHONE.get())){MobileItemStorage.reconcile(p,stack);if(MobileItems.sim(stack)!=null){PhoneDevices.prepare(p,stack);refresh(l,"phone:"+MobileItems.phoneId(stack),null,p.position(),MobileItems.sim(stack),cells);}}
     }}
 }
