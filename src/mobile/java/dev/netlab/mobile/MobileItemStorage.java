@@ -50,6 +50,9 @@ public final class MobileItemStorage extends SavedData {
         revision=Math.max(revision,Math.max(0,label.getLong(REVISION)))+1;
         label.putString(TOKEN,key);label.putLong(REVISION,revision);
         var record=new CompoundTag();record.putString("item",id);record.putLong("revision",revision);
+        String legacy=previous.getString("legacyFingerprint");
+        if(legacy.isBlank())legacy=previous.isEmpty()?label.getString("netlabConfigFingerprint"):previous.getCompound("public").getString("netlabConfigFingerprint");
+        record.putString("legacyFingerprint",legacy);
         record.put("data",data.copy());record.put("public",label.copy());items.put(key,record);
         stack.set(DataComponents.CUSTOM_DATA,CustomData.of(label));setDirty();return true;
     }
@@ -62,7 +65,7 @@ public final class MobileItemStorage extends SavedData {
             String fingerprint=label.getString("netlabConfigFingerprint");
             if(fingerprint.matches("[a-f0-9]{64}"))for(String candidate:items.getAllKeys()){
                 var found=items.getCompound(candidate);
-                if(found.getString("item").equals(id)&&found.getCompound("public").getString("netlabConfigFingerprint").equals(fingerprint)){record=found;break;}
+                if(found.getString("item").equals(id)&&(found.getCompound("public").getString("netlabConfigFingerprint").equals(fingerprint)||found.getString("legacyFingerprint").equals(fingerprint))){record=found;break;}
             }
         }
         var data=MobileItems.privateTag(stack);

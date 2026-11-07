@@ -77,6 +77,13 @@ public final class MobilePersistenceRuntimeCheck {
         var legacy=MobileItems.sim(sim);var oldLabel=legacy.get(DataComponents.CUSTOM_DATA).copyTag();oldLabel.remove("netlabMobileItem");oldLabel.remove("netlabMobileRevision");legacy.set(DataComponents.CUSTOM_DATA,CustomData.of(oldLabel));
         store.rememberStack(legacy);var legacyEcho=PortableDevicesRuntimeCheck.wire(MobileItems.sim(sim),registries);store.reconcileStack(legacyEcho);
         check(MobileItems.sim(legacyEcho).id.equals(sim.id),"pre-fix fingerprint-only SIM can migrate from an existing world record");
+        var upgradingPhone=new ItemStack(Mobile.PHONE.get());String upgradingId=MobileItems.phoneId(upgradingPhone);
+        var preUpgradeEcho=PortableDevicesRuntimeCheck.wire(upgradingPhone,registries);var preUpgradeAfterEject=preUpgradeEcho.copy();
+        store.rememberStack(upgradingPhone);MobileItems.setPhoneSim(upgradingPhone,sim);store.rememberStack(upgradingPhone);
+        store=reload(store,registries);store.reconcileStack(preUpgradeEcho);
+        check(MobileItems.phoneId(preUpgradeEcho).equals(upgradingId)&&MobileItems.sim(preUpgradeEcho).id.equals(sim.id),"first pre-upgrade echo without a vault token restores latest state after SIM insertion");
+        MobileItems.setPhoneSim(upgradingPhone,null);store.rememberStack(upgradingPhone);store=reload(store,registries);store.reconcileStack(preUpgradeAfterEject);
+        check(MobileItems.phoneId(preUpgradeAfterEject).equals(upgradingId)&&MobileItems.sim(preUpgradeAfterEject)==null,"original pre-upgrade fingerprint cannot undo a later ejection");
         System.out.println(checks+" SIM handoff, logout, stale inventory, world-NBT and private-wire checks passed; no game launched.");
     }
 }
