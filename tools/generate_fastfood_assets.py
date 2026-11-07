@@ -26,10 +26,9 @@ def main():
     write(DATA / f'netlab/loot_table/blocks/{ID}.json', {'type': 'minecraft:block', 'pools': [{
         'rolls': 1, 'entries': [{'type': 'minecraft:item', 'name': f'netlab:{ID}'}],
         'conditions': [{'condition': 'minecraft:survives_explosion'}]}]})
-    write(DATA / f'netlab/recipe/{ID}.json', {'type': 'minecraft:crafting_shaped', 'category': 'building',
-        'pattern': ['GGG', 'ORB', 'GGG'], 'key': {
-            'G': {'item': 'minecraft:green_concrete'}, 'O': {'item': 'minecraft:orange_dye'},
-            'R': {'item': 'minecraft:red_dye'}, 'B': {'item': 'minecraft:bread'}},
+    write(DATA / f'netlab/recipe/{ID}.json', {'type': 'minecraft:crafting_shapeless', 'category': 'building',
+        'ingredients': [{'item': 'netlab:ciscium_block'}, {'item': 'minecraft:orange_dye'},
+            {'item': 'minecraft:red_dye'}, {'item': 'minecraft:bread'}],
         'result': {'id': f'netlab:{ID}', 'count': 1}})
     write(DATA / f'netlab/advancement/recipes/{ID}.json', {'parent': 'minecraft:recipes/root',
         'criteria': {'has_bread': {'trigger': 'minecraft:inventory_changed', 'conditions': {'items': [{'items': ['minecraft:bread']}]}}},
