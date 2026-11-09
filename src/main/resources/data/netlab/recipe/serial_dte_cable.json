@@ -6,11 +6,26 @@
       "item": "netlab:serial_dce_cable"
     },
     {
+      "item": "netlab:serial_dce_cable"
+    },
+    {
+      "item": "netlab:serial_dce_cable"
+    },
+    {
+      "item": "netlab:serial_dce_cable"
+    },
+    {
+      "item": "netlab:serial_dce_cable"
+    },
+    {
+      "item": "netlab:serial_dce_cable"
+    },
+    {
       "item": "minecraft:paper"
     }
   ],
   "result": {
     "id": "netlab:serial_dte_cable",
-    "count": 1
+    "count": 6
   }
 }

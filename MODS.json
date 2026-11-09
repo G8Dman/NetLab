@@ -9,10 +9,10 @@
   "mods": [
     {
       "id": "netlab",
-      "version": "0.23.0-alpha",
-      "file": "mods/netlab-0.23.0-alpha.jar",
-      "bytes": 811824,
-      "sha256": "d87276c3ff22a232bde4f1dddcdc50b07fd22f2329cfc3f3aaf72e8d7b3aced8"
+      "version": "0.23.1-alpha",
+      "file": "mods/netlab-0.23.1-alpha.jar",
+      "bytes": 811848,
+      "sha256": "d0f810f14055834e668d122983dffdd11b8086d004299f9435032014b12b0ba9"
     },
     {
       "id": "netlabautomation",
@@ -23,24 +23,24 @@
     },
     {
       "id": "netlabmobile",
-      "version": "0.4.1-alpha",
-      "file": "mods/netlab-mobile-0.4.1-alpha.jar",
+      "version": "0.4.2-alpha",
+      "file": "mods/netlab-mobile-0.4.2-alpha.jar",
       "bytes": 178336,
-      "sha256": "5a3af2a0b35f17e0e92725e99d69c28d231c952ab12f4821a3f6580cd167922a"
+      "sha256": "094c0ad414b7c9e1b961728f9a0cb272f13ea10c5f37f0aec4cdab20d2db5d67"
     },
     {
       "id": "netlabsputnik",
-      "version": "0.3.1-alpha",
-      "file": "mods/netlab-sputnik-0.3.1-alpha.jar",
-      "bytes": 190886,
-      "sha256": "7ffd3642d131e5e891bb64dfc4ac84e5d0fea42977d18a38428910da4250eb77"
+      "version": "0.3.2-alpha",
+      "file": "mods/netlab-sputnik-0.3.2-alpha.jar",
+      "bytes": 190884,
+      "sha256": "49f7d44ffb2e2f34d39637810d51d1f4a064a80715f01e1ac7cb28636ceca057"
     },
     {
       "id": "netlabmedia",
-      "version": "0.1.1-alpha",
-      "file": "mods/netlab-media-0.1.1-alpha.jar",
+      "version": "0.1.2-alpha",
+      "file": "mods/netlab-media-0.1.2-alpha.jar",
       "bytes": 181279,
-      "sha256": "d1c0a2c7027704cd490c58a640b584a9faecd67ebaed0762c0ea6e04a54064c8"
+      "sha256": "28ddce653a9872da9ed6c06fe473b5d2eb6f28d666fafc2a0412e54d0fb93312"
     },
     {
       "id": "netlabacademy",

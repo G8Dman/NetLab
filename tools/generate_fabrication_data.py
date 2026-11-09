@@ -21,12 +21,16 @@ def unlock(root, namespace, name, recipe, ingredient):
 def shaped(name, pattern, materials, namespace='netlab', root=MAIN):
     result = f'{namespace}:{name}'
     write(root, f'{namespace}/recipe/{name}.json', {'type': 'minecraft:crafting_shaped', 'category': 'misc', 'pattern': pattern,
-          'key': {k: {'item': v} for k, v in materials.items()}, 'result': {'id': result, 'count': 1}})
+          'key': {k: {'item': v} for k, v in materials.items()}, 'result': {'id': result, 'count': 6 if result.endswith('_cable') else 1}})
     unlock(root, namespace, name, result, 'netlab:basic_circuit_board' if 'netlab:basic_circuit_board' in materials.values() else next(iter(materials.values())))
 
 def shapeless(name, ingredients, result=None, count=1):
+    result = result or f'netlab:{name}'
+    if result.endswith('_cable'):
+        count = 6
+        ingredients = [item for item in ingredients for _ in range(6 if item.endswith('_cable') else 1)]
     write(MAIN, f'netlab/recipe/{name}.json', {'type': 'minecraft:crafting_shapeless', 'category': 'misc',
-          'ingredients': [{'item': x} for x in ingredients], 'result': {'id': result or f'netlab:{name}', 'count': count}})
+          'ingredients': [{'item': x} for x in ingredients], 'result': {'id': result, 'count': count}})
     unlock(MAIN, 'netlab', name, f'netlab:{name}', ingredients[0])
 
 def self_drop(namespace, block, result=None, root=MAIN):

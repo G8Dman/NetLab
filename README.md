@@ -20,14 +20,14 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 
 | Готовый файл | Скачать |
 |---|---|
-| NetLab 0.23.0 | [netlab-0.23.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.23.0-alpha.jar) |
+| NetLab 0.23.1 | [netlab-0.23.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.23.1-alpha.jar) |
 | Automation 0.7.4 | [netlab-automation-0.7.4-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.4-alpha.jar) |
-| Mobile 0.4.1 | [netlab-mobile-0.4.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.4.1-alpha.jar) |
-| Sputnik 0.3.1 | [netlab-sputnik-0.3.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.3.1-alpha.jar) |
-| Media 0.1.1 | [netlab-media-0.1.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-media-0.1.1-alpha.jar) |
+| Mobile 0.4.2 | [netlab-mobile-0.4.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.4.2-alpha.jar) |
+| Sputnik 0.3.2 | [netlab-sputnik-0.3.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.3.2-alpha.jar) |
+| Media 0.1.2 | [netlab-media-0.1.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-media-0.1.2-alpha.jar) |
 | Academy 0.1.0 | [netlab-academy-0.1.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-academy-0.1.0-alpha.jar) |
 
-**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все шесть модов одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.23.0/NetLab-1.21.1-mods.zip).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все шесть модов одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.23.1/NetLab-1.21.1-mods.zip).
 
 В сборках с AE2 можно [отключить только его автоматизацию](docs/UPDATE-AUTOMATION-0.7.3.md), сохранив ручное ME-хранилище. [Пример серверной конфигурации](config-examples/netlabautomation-server.toml); по умолчанию ограничение выключено.
 
@@ -47,14 +47,16 @@ Rinku сам скачивает Chromium под текущую ОС при пе�
 
 | Мод | Версия | Что добавляет |
 |---|---|---|
-| **NetLab** | `0.23.0-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
+| **NetLab** | `0.23.1-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
 | **NetLab Automation** | `0.7.4-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение; необязательный запрет автоматизации AE2 с сохранением ручного ME-хранилища. |
-| **NetLab Mobile** | `0.4.1-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
-| **NetLab Sputnik** | `0.3.1-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
-| **NetLab Media** | `0.1.1-alpha` | IPTV-каналы, приставки, телевизоры, аудиоразветвитель и IP-телефонию через микрофон, включая Cisco Pocket. |
+| **NetLab Mobile** | `0.4.2-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
+| **NetLab Sputnik** | `0.3.2-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
+| **NetLab Media** | `0.1.2-alpha` | IPTV-каналы, приставки, телевизоры, аудиоразветвитель и IP-телефонию через микрофон, включая Cisco Pocket. |
 | **NetLab Academy** | `0.1.0-alpha` | 215 учебных достижений, 29 шагов основного курса и живой прогресс прямо в «Библии по CISCO». Ветки отсутствующих аддонов не загружаются. |
 
 Этот комплект дополнений требует **NetLab 0.23.0-alpha или новее**. Academy, Automation, Mobile и Sputnik можно ставить отдельно с основным модом; Media дополнительно требует Sputnik и Simple Voice Chat. Для Academy сторонних библиотек нет.
+
+Обновление **0.23.1**: все 17 типов кабелей крафтятся по **6 штук**, включая питание, RF, спутниковые, аудио и HDMI. Переобжимка — партиями **6 → 6**. [Рецепты и использование кабелей](docs/CABLES-CRAFTING.md).
 
 Обновление **0.23.0 / Academy 0.1.0**: учебный маршрут, задания, условия и прогресс встроены в книгу. Поиск ищет по всем разделам и выделяет совпадения в тексте. [Установка, правила зачёта и проверки](docs/UPDATE-ACADEMY-0.1.0.md).
 

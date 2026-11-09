@@ -6,11 +6,26 @@
       "item": "netlab:ethernet_cable"
     },
     {
+      "item": "netlab:ethernet_cable"
+    },
+    {
+      "item": "netlab:ethernet_cable"
+    },
+    {
+      "item": "netlab:ethernet_cable"
+    },
+    {
+      "item": "netlab:ethernet_cable"
+    },
+    {
+      "item": "netlab:ethernet_cable"
+    },
+    {
       "item": "minecraft:red_dye"
     }
   ],
   "result": {
     "id": "netlab:crossover_cable",
-    "count": 1
+    "count": 6
   }
 }

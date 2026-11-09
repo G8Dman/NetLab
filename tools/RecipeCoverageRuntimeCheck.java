@@ -33,6 +33,7 @@ public final class RecipeCoverageRuntimeCheck {
                 CraftingInput in=null;if(recipe instanceof CraftingRecipe crafting){in=input(data);check(crafting.matches(in,null),"advertised grid matches "+file);var result=crafting.assemble(in,registries);check(result.is(out.getItem())&&result.getCount()==out.getCount(),"exact item and quantity "+file);
                     var missing=new ArrayList<>(in.items());for(int i=0;i<missing.size();i++)if(!missing.get(i).isEmpty()){missing.set(i,ItemStack.EMPTY);break;}check(!crafting.matches(CraftingInput.of(in.width(),in.height(),missing),null),"missing material rejects craft "+file);
                 }
+                if(out.getItem() instanceof RoutedCableItem){check(out.getCount()==6,"every cable craft yields exactly six: "+file);if(in!=null){int reused=in.items().stream().filter(x->x.getItem() instanceof RoutedCableItem).mapToInt(ItemStack::getCount).sum();if(reused>0)check(reused==out.getCount(),"cable conversion conserves quantity: "+file);}}
                 entries.add(new Entry(file.toString(),recipe,data,out,in));
             }}
         }

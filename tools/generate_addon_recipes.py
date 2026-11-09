@@ -16,6 +16,8 @@ def write(root, path, value):
 
 
 def recipe(addon, name, pattern, key, count=1):
+    if name.endswith("_cable"):
+        count = 6
     namespace = 'netlab' + addon
     root = ROOT / 'src' / addon / 'resources/data' / namespace
     assert set(''.join(pattern)) - {' '} == set(key), name
@@ -39,7 +41,7 @@ def main():
         ('sim_station', ['ILI', 'PAP', 'IGI'], {'I': I, 'L': L, 'P': 'minecraft:piston', 'A': A, 'G': G}, 1),
         ('blank_sim', ['PGP', 'PRP'], {'P': P, 'G': 'minecraft:gold_nugget', 'R': R}, 4),
         ('cisco_pocket', ['ILI', 'CAC', 'IRI'], {'I': I, 'L': L, 'C': C, 'A': A, 'R': R}, 1),
-        ('rf_cable', ['CSC', 'CSC'], {'C': C, 'S': 'minecraft:string'}, 8),
+        ('rf_cable', ['CSC', 'CSC'], {'C': C, 'S': 'minecraft:string'}, 6),
         ('module_nl_mob_control', ['GCG', 'RBR', 'GMG'], {'G': G, 'C': 'minecraft:comparator', 'R': R, 'B': A, 'M': M}, 1),
         ('module_nl_mob_baseband', ['GQG', 'QMQ', 'GBG'], {'G': G, 'Q': Q, 'M': M, 'B': A}, 1),
         ('module_nl_mob_fronthaul', ['GFG', 'CBC', 'GRG'], {'G': G, 'F': 'netlab:module_glc_lh_smd', 'C': C, 'B': A, 'R': R}, 1),
@@ -65,7 +67,7 @@ def main():
     for name, pattern in [('coax_tx_cable', ['GCG', 'SRS']), ('coax_rx_cable', ['SRS', 'GCG']),
                           ('sat_rf_tx_cable', ['CRC', 'SGS']), ('sat_rf_rx_cable', ['SGS', 'CRC']),
                           ('audio_cable', ['C C', 'SGS'])]:
-        recipe('sputnik', name, pattern, {k: v for k, v in {'G': 'minecraft:gold_nugget', 'C': C, 'S': 'minecraft:string', 'R': R}.items() if k in ''.join(pattern)}, 8)
+        recipe('sputnik', name, pattern, {k: v for k, v in {'G': 'minecraft:gold_nugget', 'C': C, 'S': 'minecraft:string', 'R': R}.items() if k in ''.join(pattern)}, 6)
     recipe('automation', 'phone_automation_module', [' C ', 'BMB', ' G '], {'C': 'minecraft:comparator', 'B': A, 'M': M, 'G': G})
     write(ROOT / 'src/mobile/resources/assets/netlabmobile', 'models/item/phone_terminal_module.json', {
         'parent': 'minecraft:item/generated', 'textures': {'layer0': 'netlabmobile:item/module_nl_mob_control'}})

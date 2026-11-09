@@ -40,7 +40,7 @@ def main():
  ('module_nl_media_video',['GLG','QAQ','GRG'],{'G':G,'L':L,'Q':Q,'A':Aboard,'R':'minecraft:redstone_block'},1),
  ('module_nl_media_sessions',['GQG','AMA','GRG'],{'G':G,'Q':Q,'A':Aboard,'M':M,'R':R},1),
  ('phone_sip_module',[' Q ','BMB',' G '],{'Q':Q,'B':Aboard,'M':M,'G':G},1),
- ('audio_cable',['CSC',' G '],{'C':C,'S':'minecraft:string','G':'minecraft:gold_nugget'},8),
- ('hdmi_cable',['GQG','CSC'],{'G':'minecraft:gold_nugget','Q':Q,'C':C,'S':'minecraft:string'},8)]:recipe('media',n,pattern,key,count)
+ ('audio_cable',['CSC',' G '],{'C':C,'S':'minecraft:string','G':'minecraft:gold_nugget'},6),
+ ('hdmi_cable',['GQG','CSC'],{'G':'minecraft:gold_nugget','Q':Q,'C':C,'S':'minecraft:string'},6)]:recipe('media',n,pattern,key,count)
  print('Generated 7 Media device models, 5 item models, and 12 survival recipes.')
 if __name__=='__main__':main()

@@ -19,23 +19,35 @@ def main():
     ]:
         result = name.removesuffix('_direct')
         write(data / 'recipe' / (name + '.json'), {'type': 'minecraft:crafting_shaped', 'category': 'misc', 'pattern': pattern,
-              'key': {k: {'item': v} for k, v in key.items()}, 'result': {'id': 'netlab:' + result, 'count': 1}})
+              'key': {k: {'item': v} for k, v in key.items()}, 'result': {'id': 'netlab:' + result, 'count': 6}})
     count = 0
-    for addon in ['main', 'mobile', 'sputnik']:
+    for addon in ['main', 'mobile', 'sputnik', 'media']:
         namespace = 'netlab' if addon == 'main' else 'netlab' + addon
         folder = ROOT / 'src' / addon / 'resources/data' / namespace
         for file in sorted((folder / 'recipe').glob('*.json')):
             recipe = json.loads(file.read_text())
             if not recipe['result']['id'].endswith('_cable'):
                 continue
+            recipe['result']['count'] = 6
+            inputs = recipe.get('ingredients', [])
+            cables = [item for item in inputs if item.get('item', '').endswith('_cable')]
+            if cables:
+                if len(cables) == 1:
+                    recipe['ingredients'] = [item for item in inputs for _ in range(6 if item in cables else 1)]
+                elif len(cables) != 6:
+                    raise ValueError('Unexpected conversion input count: ' + str(file))
+            write(file, recipe)
             identifier = namespace + ':' + file.stem
+            if (folder / 'advancement/recipes' / file.name).exists():
+                count += 1
+                continue
             write(folder / 'advancement/recipes' / file.name, {
                 'parent': 'minecraft:recipes/root',
                 'criteria': {'has_copper': {'trigger': 'minecraft:inventory_changed', 'conditions': {'items': [{'items': 'minecraft:copper_ingot'}]}},
                              'has_the_recipe': {'trigger': 'minecraft:recipe_unlocked', 'conditions': {'recipe': identifier}}},
                 'requirements': [['has_copper', 'has_the_recipe']], 'rewards': {'recipes': [identifier]}})
             count += 1
-    print(f'Generated {count} recipe-book unlocks for 15 physical cable types and direct crossover/DTE recipes.')
+    print(f'Updated {count} cable recipes: six outputs, conversion batches six-to-six, recipe-book unlocks.')
 
 
 if __name__ == '__main__':
