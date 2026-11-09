@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IQL",
+    "AMA",
+    "IGI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "L": {
+      "item": "minecraft:glass_pane"
+    },
+    "A": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "netlabmedia:headend",
+    "count": 1
+  }
+}

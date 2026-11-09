@@ -9,10 +9,10 @@
   "mods": [
     {
       "id": "netlab",
-      "version": "0.21.2-alpha",
-      "file": "mods/netlab-0.21.2-alpha.jar",
-      "bytes": 784181,
-      "sha256": "6cd1977d6b03dd20453a2c92c981f721e4e427f376a9eeadee67dd631d9f13d2"
+      "version": "0.22.0-alpha",
+      "file": "mods/netlab-0.22.0-alpha.jar",
+      "bytes": 784710,
+      "sha256": "c38d9f159625bea241f07e342a9d422883677d8e33236433b84ec84dd9cecb8f"
     },
     {
       "id": "netlabautomation",
@@ -23,17 +23,24 @@
     },
     {
       "id": "netlabmobile",
-      "version": "0.3.2-alpha",
-      "file": "mods/netlab-mobile-0.3.2-alpha.jar",
-      "bytes": 171926,
-      "sha256": "65b143e2b43d966b78a6ee8b46aae2355e361b9243fc1d99dfbbcac89c4200b5"
+      "version": "0.4.0-alpha",
+      "file": "mods/netlab-mobile-0.4.0-alpha.jar",
+      "bytes": 172467,
+      "sha256": "f21e44bc37b233add54066b3e56e824b466044356380fa8e13438fe18e4932ee"
     },
     {
       "id": "netlabsputnik",
-      "version": "0.2.2-alpha",
-      "file": "mods/netlab-sputnik-0.2.2-alpha.jar",
-      "bytes": 179480,
-      "sha256": "44acdbeee75a5294ebefb294c9082df7c8bc5c14eeee4a4585dea3863a752475"
+      "version": "0.3.0-alpha",
+      "file": "mods/netlab-sputnik-0.3.0-alpha.jar",
+      "bytes": 181831,
+      "sha256": "67c9bff86de59c4a749a742d06bc65fb2ae527d6092e49efcf36abe2ab68cfbe"
+    },
+    {
+      "id": "netlabmedia",
+      "version": "0.1.0-alpha",
+      "file": "mods/netlab-media-0.1.0-alpha.jar",
+      "bytes": 165395,
+      "sha256": "6c2d4b89ffa163e53c26f5f6eaf586f9d1680ccf70050dc7dce0b3d30326a48d"
     }
   ],
   "external_dependencies": [
@@ -45,6 +52,17 @@
       "side": "client",
       "required_by": "netlabsputnik",
       "url": "https://modrinth.com/mod/rinku/version/JOrwMXrE",
+      "included": false
+    },
+    {
+      "id": "voicechat",
+      "version": "1.21.1-2.6.27",
+      "loader": "NeoForge",
+      "minecraft": "1.21.1",
+      "side": "both",
+      "required_by": "netlabmedia",
+      "url": "https://modrinth.com/plugin/simple-voice-chat/version/iR08ksVF",
+      "server_udp_port": 24454,
       "included": false
     }
   ],

@@ -49,6 +49,7 @@ public final class Mobile {
         if(integrated)return;integrated=true;
         PortableModules.register(new PortableModules.Definition("CISCO-POCKET-NET","diagnostics","Диагностика и пакеты",PHONE_DIAGNOSTICS));
         PortableModules.register(new PortableModules.Definition("CISCO-POCKET-CONSOLE","terminal","Терминал: история 3 устройств",PHONE_TERMINAL));
+        PortableHosts.SAVERS.add(PhoneDevices::saveApplications);
         PortableTerminals.CARRIER_ITEMS.add(stack->stack.is(PHONE.get()));
         NetLab.EXTRA_MODULE_ITEMS.add(PHONE_DIAGNOSTICS);
         NetLab.EXTRA_MODULE_ITEMS.add(PHONE_TERMINAL);

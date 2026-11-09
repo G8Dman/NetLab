@@ -1,0 +1,24 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "netlabmedia:block/tv",
+      "y": 0,
+      "uvlock": true
+    },
+    "facing=east": {
+      "model": "netlabmedia:block/tv",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south": {
+      "model": "netlabmedia:block/tv",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west": {
+      "model": "netlabmedia:block/tv",
+      "y": 270,
+      "uvlock": true
+    }
+  }
+}

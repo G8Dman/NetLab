@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GQG",
+    "AMA",
+    "GRG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "A": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "netlabmedia:module_nl_media_sessions",
+    "count": 1
+  }
+}

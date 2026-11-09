@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "CNC",
+    "PBP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:oak_planks"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "N": {
+      "item": "minecraft:note_block"
+    },
+    "B": {
+      "item": "netlab:basic_circuit_board"
+    }
+  },
+  "result": {
+    "id": "netlabmedia:speaker",
+    "count": 1
+  }
+}

@@ -1,0 +1,42 @@
+modLoader="javafml"
+loaderVersion="[2,)"
+license="All Rights Reserved"
+[[mods]]
+modId="netlabmedia"
+version="0.1.0-alpha"
+displayName="NetLab Media"
+description='''IPTV headends, synchronized television, audio distribution and routed microphone IP calls.'''
+[[dependencies.netlabmedia]]
+modId="netlab"
+type="required"
+versionRange="[0.22.0-alpha,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabmedia]]
+modId="netlabsputnik"
+type="required"
+versionRange="[0.3.0-alpha,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabmedia]]
+modId="netlabmobile"
+type="optional"
+versionRange="[0.4.0-alpha,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabmedia]]
+modId="voicechat"
+type="required"
+versionRange="[1.21.1-2.6.0,)"
+ordering="AFTER"
+side="BOTH"
+[[dependencies.netlabmedia]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.265,)"
+side="BOTH"
+[[dependencies.netlabmedia]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.2)"
+side="BOTH"

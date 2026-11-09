@@ -206,6 +206,7 @@ public final class CoreTest {
     checks += CableLedgerTest.run();
     checks += ServerThermalTest.run();
     checks += SputnikTest.run();
+    checks += MediaTest.run();
     checks += dev.netlab.sputnik.client.NativeBrowserLibrariesTest.run();
     System.out.println("NetLab: " + checks + " core checks passed");
   }

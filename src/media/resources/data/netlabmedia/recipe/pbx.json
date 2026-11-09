@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "IQI",
+    "AMA",
+    "CGC"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "A": {
+      "item": "netlab:advanced_circuit_board"
+    },
+    "M": {
+      "item": "netlab:cisco_memory_card"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "netlabmedia:pbx",
+    "count": 1
+  }
+}

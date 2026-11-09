@@ -4,6 +4,9 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 if [[ ! -f .tools/sputnik/de.keksuccino.rinku-neoforge-3.0.4-1.21.1-mod.jar ]]; then
     python3 tools/setup_sputnik_browser.py
 fi
+if [[ ! -f .tools/media/voicechat-api-2.6.0.jar ]]; then
+    python3 tools/setup_media_voice.py
+fi
 if [[ -x "$PWD/.tools/jdk-21/bin/java" ]]; then
     export JAVA_HOME="$PWD/.tools/jdk-21"
 elif [[ -z "${JAVA_HOME:-}" ]]; then

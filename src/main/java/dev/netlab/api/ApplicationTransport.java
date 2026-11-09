@@ -26,6 +26,11 @@ public final class ApplicationTransport {
         return sendAsync(level,source,destination,payload,requireVpn,mark,5420);
     }
     public static CompletableFuture<Receipt> sendAsync(ServerLevel level,Endpoint source,Endpoint destination,byte[] payload,boolean requireVpn,TrafficMark mark,int destinationPort){
+        return sendAsync(level,source,destination,payload,requireVpn,mark,destinationPort,"tcp");
+    }
+    /** Media may use UDP; delivery still obeys link queues, ACLs and router VPNs. */
+    public static CompletableFuture<Receipt> sendAsync(ServerLevel level,Endpoint source,Endpoint destination,byte[] payload,boolean requireVpn,TrafficMark mark,int destinationPort,String protocol){
+        if(!java.util.Set.of("tcp","udp").contains(protocol))return fail("TCP or UDP required");
         if(destinationPort<1||destinationPort>65535)return fail("Invalid destination port");
         var sourceDevice=source.device();var destinationDevice=destination.device();
         if(sourceDevice==null||destinationDevice==null)return fail("Empty device bay");
@@ -44,7 +49,7 @@ public final class ApplicationTransport {
             encrypted=tunnel!=null;final boolean protectedDelivery=encrypted;
             Study.publish(n,level);
             var transform=encrypted?new RouterTunnel(tunnel):null;if(transform!=null)n.routerPayload=transform;
-            var delivery=n.transmit(from,ip,"tcp",destinationPort,payload.clone());byte[] wire=encrypted?transform.envelope():payload.clone();var path=delivery.result().path();
+            var delivery=n.transmit(from,ip,protocol,destinationPort,payload.clone());byte[] wire=encrypted?transform.envelope():payload.clone();var path=delivery.result().path();
             var guards=new ArrayList<BooleanSupplier>();
             for(var e:n.traffic){
                 if(!(e.protocol().endsWith("TCP")||e.protocol().endsWith("UDP"))||e.dropped())continue;

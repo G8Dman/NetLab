@@ -23,6 +23,9 @@ public final class WebBrowser extends CefBrowserOsr {
     public volatile String error="",title="",address="about:blank";
     public WebBrowser(CefClient client,CefRequestContext context){super(client,"about:blank",false,context);texture.initialize();popupTexture.initialize();setCloseAllowed();}
     public void readyView(){wasResized(browser_rect_.width,browser_rect_.height);notifyScreenInfoChanged();}
+    /** Upload the latest frame once and reuse its texture for in-world media displays. */
+    public ResourceLocationHandle frameHandle(){Frame f=image.getAndSet(null);if(f!=null)texture.paint(f);return texture.isTextureReady()?new ResourceLocationHandle(texture.getTextureIdentifier()):null;}
+    public record ResourceLocationHandle(net.minecraft.resources.ResourceLocation texture){}
     public void resize(int w,int h){w=Math.clamp(w,64,1920);h=Math.clamp(h,64,1080);if(browser_rect_.width!=w||browser_rect_.height!=h){browser_rect_=new Rectangle(0,0,w,h);wasResized(w,h);}}
     @Override public void onPaint(CefBrowser browser,boolean pop,Rectangle[] dirty,ByteBuffer bytes,int w,int h){if(closed||w<=0||h<=0||w>4096||h>4096)return;byte[] copy=new byte[Math.multiplyExact(Math.multiplyExact(w,h),4)];bytes.duplicate().get(copy);(pop?popup:image).set(new Frame(copy,w,h));}
     @Override public void onPopupShow(CefBrowser b,boolean shown){popupShown=shown;}

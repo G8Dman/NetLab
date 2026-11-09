@@ -15,6 +15,15 @@ import java.util.concurrent.atomic.*;
 
 /** Socket I/O stays off the game thread. TLS remains opaque bytes end-to-end. */
 public final class InternetBridge {
+    /** Optional media endpoints have server-owned viewing leases and their own routed path. */
+    public interface External {
+        boolean allowed(ServerPlayer player,net.minecraft.core.BlockPos address);
+        SputnikRef gateway(ServerPlayer player,SputnikRef host,String address);
+        CompletableFuture<byte[]> transfer(ServerPlayer player,SputnikRef host,SputnikRef gateway,boolean incoming,byte[] bytes);
+    }
+    public static External external;
+    public static boolean externalAllowed(ServerPlayer p,net.minecraft.core.BlockPos pos){return external!=null&&external.allowed(p,pos);}
+
     private record Key(UUID player,int stream){}
     private static final Map<Key,Stream> STREAMS=new ConcurrentHashMap<>();
     private static final ExecutorService IO=Executors.newVirtualThreadPerTaskExecutor();
@@ -33,12 +42,12 @@ public final class InternetBridge {
             existing.writeTail.whenComplete((v,e)->p.server.execute(()->{existing.uploads.decrementAndGet();if(e!=null)close(key,message(e));else reply(p,q.id(),"ACK","",new byte[0]);}));return;}
 
         if(!q.op().equals("OPEN")||existing!=null)return;
-        try{if(STREAMS.size()>=128||STREAMS.keySet().stream().filter(k->k.player.equals(p.getUUID())).count()>=SocksProxy.MAX_STREAMS)throw new IllegalArgumentException("Слишком много соединений браузера");InternetTarget.validate(q.host(),q.port());var host=dev.netlab.api.PortableHosts.resolve(p,q.pc());if(host==null||!SputnikPackets.browserAllowed(p,q.pc())||!host.device.kind.equals("pc")||!Hardware.powered(host.device))throw new IllegalArgumentException("Открой браузер рядом с включённым ПК или ноутбуком");
-            var pc=new SputnikRef(host,0,host.device);var gw=gateway(pc,q.gateway());var stream=new Stream(p,q.id(),pc,gw);STREAMS.put(key,stream);
+        try{if(STREAMS.size()>=128||STREAMS.keySet().stream().filter(k->k.player.equals(p.getUUID())).count()>=(externalAllowed(p,q.pc())?48:SocksProxy.MAX_STREAMS))throw new IllegalArgumentException("Слишком много соединений браузера");InternetTarget.validate(q.host(),q.port());var host=dev.netlab.api.PortableHosts.resolve(p,q.pc());if(host==null||!SputnikPackets.browserAllowed(p,q.pc())||!host.device.kind.equals("pc")&&!externalAllowed(p,q.pc())||!Hardware.powered(host.device))throw new IllegalArgumentException("Открой браузер рядом с включённым ПК или ноутбуком");
+            var pc=new SputnikRef(host,0,host.device);var gw=externalAllowed(p,q.pc())?external.gateway(p,pc,q.gateway()):gateway(pc,q.gateway());var stream=new Stream(p,q.id(),pc,gw);STREAMS.put(key,stream);
             transfer(stream,false,("CONNECT "+q.host()+":"+q.port()).getBytes(StandardCharsets.UTF_8)).whenComplete((bytes,error)->{if(error!=null){close(key,message(error));return;}IO.submit(()->{try{var target=InternetTarget.resolve(q.host(),q.port());var socket=new Socket();stream.socket=socket;socket.connect(target,15000);socket.setSoTimeout(90000);socket.setTcpNoDelay(true);p.server.execute(()->{if(!stream.live()){close(key,"Спутниковый тракт отключён");return;}transfer(stream,true,"CONNECTED".getBytes(StandardCharsets.US_ASCII)).whenComplete((ignored,e)->{if(e!=null)close(key,message(e));else{reply(p,q.id(),"OPEN","",new byte[0]);IO.submit(()->read(key,stream));}});});}catch(Exception e){p.server.execute(()->close(key,message(e)));}});});
         }catch(IllegalArgumentException e){reply(p,q.id(),"ERROR",message(e),new byte[0]);}
     }
-    private static CompletableFuture<byte[]> transfer(Stream s,boolean incoming,byte[] bytes){if(!s.live())return CompletableFuture.failedFuture(new IOException("Спутниковый канал или питание отключены"));var a=incoming?s.gateway:s.pc;var b=incoming?s.pc:s.gateway;
+    private static CompletableFuture<byte[]> transfer(Stream s,boolean incoming,byte[] bytes){if(externalAllowed(s.player,s.pc.host().getBlockPos()))return external.transfer(s.player,s.pc,s.gateway,incoming,bytes);if(!s.live())return CompletableFuture.failedFuture(new IOException("Спутниковый канал или питание отключены"));var a=incoming?s.gateway:s.pc;var b=incoming?s.pc:s.gateway;
         return ApplicationTransport.sendAsync(a.level(),new ApplicationTransport.Endpoint(a.host(),a.bay()),new ApplicationTransport.Endpoint(b.host(),b.bay()),bytes,false,TrafficMark.NONE,1080).thenApply(receipt->{if(!receipt.success()||!s.live())throw new CompletionException(new IOException(receipt.success()?"Канал отключён":receipt.status()));return receipt.payload();});
     }
     private static void read(Key key,Stream s){var window=new Semaphore(64);try{var buffer=new byte[SocksProxy.CHUNK];int n;while(!s.closed.get()&&(n=s.socket.getInputStream().read(buffer))>=0){if(n==0)continue;if(!window.tryAcquire(60,TimeUnit.SECONDS))throw new IOException("Receive window timeout");byte[] part=Arrays.copyOf(buffer,n);var future=new CompletableFuture<Void>();s.pending.add(future);future.whenComplete((v,e)->{s.pending.remove(future);window.release();if(e!=null)s.player.server.execute(()->close(key,message(e)));});

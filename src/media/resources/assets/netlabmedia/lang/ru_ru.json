@@ -1,0 +1,14 @@
+{
+  "block.netlabmedia.headend": "Медиасервер IPTV",
+  "block.netlabmedia.pbx": "Сервер IP-АТС",
+  "block.netlabmedia.stb": "IPTV-приставка",
+  "block.netlabmedia.tv": "Телевизор NetLab",
+  "block.netlabmedia.phone": "IP-телефон Cisco",
+  "block.netlabmedia.audio_splitter": "Аудиоразветвитель 1→4",
+  "block.netlabmedia.speaker": "Колонка Media",
+  "item.netlabmedia.module_nl_media_video": "Плата каналов IPTV — NL-MEDIA-VIDEO",
+  "item.netlabmedia.module_nl_media_sessions": "Плата ёмкости АТС — NL-MEDIA-SESSIONS",
+  "item.netlabmedia.phone_sip_module": "Модуль IP-телефонии Cisco Pocket",
+  "item.netlabmedia.audio_cable": "Аудиокабель 3,5 мм",
+  "item.netlabmedia.hdmi_cable": "Видеокабель HDMI"
+}

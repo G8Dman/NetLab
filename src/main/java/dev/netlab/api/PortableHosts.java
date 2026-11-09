@@ -13,6 +13,10 @@ import java.util.function.*;
 public final class PortableHosts {
     public interface Binder {Binding bind(ServerPlayer player,DeviceEntity host,int bay);}
     public static final Map<String,Binder> BINDERS=new java.util.concurrent.ConcurrentHashMap<>();
+    /** Optional item-backed application configuration, persisted by the host's owning addon. */
+    public static final List<java.util.function.Consumer<Host>> SAVERS=new java.util.concurrent.CopyOnWriteArrayList<>();
+    public static final List<java.util.function.Consumer<Host>> PREPARED=new java.util.concurrent.CopyOnWriteArrayList<>();
+    public static void save(Host host){for(var saver:SAVERS)saver.accept(host);}
     private static final Map<ServerLevel,Map<Long,Host>> HOSTS=new WeakHashMap<>();
     public static final class Host extends DeviceEntity {
         public final ServerPlayer owner;

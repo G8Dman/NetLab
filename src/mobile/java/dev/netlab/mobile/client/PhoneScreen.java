@@ -27,7 +27,7 @@ public final class PhoneScreen extends Screen {
     private EditBox field(String value,int x,int y,int width,int max,java.util.function.Consumer<String> setter){var box=new EditBox(font,x,y,width,20,Component.empty());box.setMaxLength(max);box.setValue(value);box.setResponder(setter);return addRenderableWidget(box);}
     public void update(String json){var next=JsonParser.parseString(json).getAsJsonObject();boolean changed=!java.util.Objects.equals(next.get("modules"),state.get("modules"))||!next.get("ip").equals(state.get("ip"));state=next;if(changed){clearWidgets();init();}}
     private void open(String role){
-        if(!installed(role))return;var app=DesktopApps.APPS.stream().filter(a->role.equals("browser")?a.module().isEmpty()&&a.title().equals("Браузер"):a.module().equals("CISCO-AUTOMATION")).findFirst();
+        if(!installed(role))return;var app=DesktopApps.APPS.stream().filter(a->role.equals("telephony")?a.module().equals("CISCO-POCKET-SIP"):role.equals("browser")?a.module().isEmpty()&&a.title().equals("Браузер"):a.module().equals("CISCO-AUTOMATION")).findFirst();
         if(app.isPresent())app.get().open().accept(BlockPos.of(state.get("endpoint").getAsLong()),this);
     }
     private void packet(String action){var q=new JsonObject();q.addProperty("address",address);q.addProperty("protocol",protocol);q.addProperty("port",port);q.addProperty("payload",payload);send(action,q.toString());}
@@ -41,7 +41,7 @@ public final class PhoneScreen extends Screen {
             field(address,left,128,w-100,15,v->address=v);field(port,left+w-92,128,92,5,v->port=v);field(payload,left,164,w,512,v->payload=v);
             button(protocol,left,190,72,()->{protocol=protocol.equals("UDP")?"TCP":"UDP";clearWidgets();init();});button("Ping",left+80,190,90,()->packet("ping"));button("Отправить пакет",left+178,190,w-178,()->packet("packet"));
         }
-        if(tab==3){button("Браузер Sputnik",left,130,w,()->open("browser")).active=installed("browser")&&!text("ip").isBlank();button("Управление мультиинтерфейсами",left,158,w,()->open("automation")).active=installed("automation")&&!text("ip").isBlank();}
+        if(tab==3){button("Браузер Sputnik",left,130,w,()->open("browser")).active=installed("browser")&&!text("ip").isBlank();button("Управление мультиинтерфейсами",left,158,w,()->open("automation")).active=installed("automation")&&!text("ip").isBlank();button("IP-телефония",left,186,w,()->open("telephony")).active=installed("telephony")&&!text("ip").isBlank();}
         button("Назад",left,height-26,w,this::onClose);
     }
     @Override public void tick(){if(++ticks%20==0)send("refresh","");}
@@ -53,7 +53,7 @@ public final class PhoneScreen extends Screen {
         if(tab==0){line(g,"Регистрация поддерживается, пока телефон находится в руке.",118,0xa5c9d0);int y=160;if(state.has("cells"))for(var cell:state.getAsJsonArray("cells")){if(y>height-58)break;var row=cell.getAsJsonObject();line(g,row.get("name").getAsString()+" | "+row.get("signal").getAsString(),y,0xc5dce0);y+=15;}}
         if(tab==1){int y=126;for(var item:visibleModules()){var row=item.getAsJsonObject();g.drawString(font,font.plainSubstrByWidth(row.get("title").getAsString(),w-124),left,y,0xffffff);String slot=row.get("slot").getAsString();String note=row.has("server")?"Сервер "+row.get("server").getAsString():slot.equals("automation")?"Сначала ПКМ модулем по своему серверу":slot.equals("terminal")?"ПКМ телефоном по Console; без SIM":"Установка из инвентаря игрока";g.drawString(font,font.plainSubstrByWidth(note,w-124),left,y+15,0x9bbfc8);y+=moduleStep;}}
         if(tab==2){if(!installed("diagnostics"))line(g,"Установи модуль диагностики в разделе «Модули».",132,0xffd08d);else{line(g,"IP устройства NetLab",116,0xb8d7dc);g.drawString(font,"Порт",left+w-92,116,0xb8d7dc);line(g,"Данные пакета",153,0xb8d7dc);String output=text("result");int yy=218;for(String row:output.split("\n")){if(yy>height-54)break;line(g,row,yy,0xb2e8c6);yy+=11;}}}
-        if(tab==3){line(g,installed("terminal")?"Терминал: ПКМ телефоном по Console устройства, без SIM.":"Сетевые приложения требуют SIM и соответствующий модуль.",194,0xb8d7dc);if(height>280)line(g,"Браузер добавляет Sputnik, управление — Automation.",211,0xb8d7dc);}
+        if(tab==3&&height>300){line(g,installed("terminal")?"Терминал: ПКМ телефоном по Console устройства, без SIM.":"Сетевые приложения требуют SIM и соответствующий модуль.",218,0xb8d7dc);line(g,"Браузер: Sputnik · управление: Automation · звонки: Media",235,0xb8d7dc);}
         String status=text("status");if(status.isBlank()&&tab==1&&visibleModules().size()<modules().size())status="Колесо мыши — остальные модули";if(status.isBlank()&&tab==2&&height<300)status=text("result").split("\n",2)[0];line(g,status,height-40,0xffc789);super.render(g,mouseX,mouseY,delta);
     }
     @Override public void onClose(){minecraft.setScreen(parent);}

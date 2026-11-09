@@ -25,17 +25,20 @@ public final class PhoneDevices {
             ENTRIES.entrySet().removeIf(old->!old.getValue().host.present());
             e=new Entry();var device=new Device("pc");device.identity=id;device.hostname="CiscoPocket";Hardware.ensure(device).profile="Cisco Pocket";device.ports.clear();var cellular=new Device.Port(false);cellular.name="Cellular0";cellular.medium="cellular";cellular.maxMbps=10;device.ports.add(cellular);device.preferredPort=0;
             e.host=new PortableHosts.Host(player,id,device,()->!held(player,id).isEmpty(),()->MobileService.lease(player.serverLevel(),"phone:"+id)!=null,module->{var item=held(player,id);if(item.isEmpty())return false;String slot=module.equals("CISCO-AUTOMATION")?"automation":module;return configuration(item).has(slot);},()->{var item=held(player,id);return item.isEmpty()?null:configuration(item).binding();});
+            var privateTag=MobileItems.privateTag(phone);if(privateTag.contains("phoneMedia"))device.extensions.put("netlabmedia",StoredJson.get(privateTag,"phoneMedia"));
             ENTRIES.put(key(player,id),e);
         }
         var config=configuration(phone);Hardware.ensure(e.host.device).epoch=config.epoch;
         Hardware.ensure(e.host.device).modules.clear();if(config.has("automation"))Hardware.ensure(e.host.device).modules.put("app0","CISCO-AUTOMATION");
         var lease=MobileService.lease(player.serverLevel(),"phone:"+id);var port=e.host.device.ports.getFirst();port.up=lease!=null;port.ip=lease==null?"":lease.ip;port.mask="255.255.255.0";e.host.device.gateway=lease==null?"":lease.core.state().subscriberGateway;
+        for(var hook:PortableHosts.PREPARED)hook.accept(e.host);
         return e.host;
     }
     public static PortableHosts.Host host(ServerLevel level,String client){
         if(!client.startsWith("phone:"))return null;String id=client.substring(6);
         for(var e:ENTRIES.values())if(e.host.device.identity.equals(id)&&e.host.getLevel()==level&&e.host.present())return e.host;return null;
     }
+    public static void saveApplications(PortableHosts.Host host){var item=held(host.owner,host.device.identity);if(item.isEmpty()||!host.device.extensions.containsKey("netlabmedia"))return;var tag=MobileItems.privateTag(item);StoredJson.put(tag,"phoneMedia",host.device.extensions.get("netlabmedia"));MobileItems.seal(item,tag);}
     public static boolean matchesSim(ItemStack phone,String simId,String simKey){if(phone.isEmpty())return false;var sim=MobileItems.sim(phone);return sim!=null&&sim.id.equals(simId)&&sim.key.equals(simKey);}
     public static boolean matches(ServerLevel level,String client,String simId,String simKey){var h=host(level,client);return h!=null&&matchesSim(held(h.owner,h.device.identity),simId,simKey);}
     public static void attached(MobileService.Lease lease){var h=host(lease.core.level(),lease.client);if(h!=null){var p=h.device.ports.getFirst();p.ip=lease.ip;p.up=true;h.device.gateway=lease.core.state().subscriberGateway;}}

@@ -16,16 +16,17 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 
 ## Готовые JAR — скачать и положить в mods
 
-**[Открыть папку mods с четырьмя готовыми модами](mods/)** — JAR хранятся прямо в Git, сборка исходников не требуется. Один комплект используется на **Windows 10/11 x64 и Linux x64**. В этой папке только моды NetLab; сторонние библиотеки, лаунчеры и Chromium в неё не включены.
+**[Открыть папку mods с пятью готовыми модами](mods/)** — JAR хранятся прямо в Git, сборка исходников не требуется. Один комплект используется на **Windows 10/11 x64 и Linux x64**. В этой папке только моды NetLab; сторонние библиотеки, лаунчеры и Chromium в неё не включены.
 
 | Готовый файл | Скачать |
 |---|---|
-| NetLab 0.21.2 | [netlab-0.21.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.21.2-alpha.jar) |
+| NetLab 0.22.0 | [netlab-0.22.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-0.22.0-alpha.jar) |
 | Automation 0.7.3 | [netlab-automation-0.7.3-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.3-alpha.jar) |
-| Mobile 0.3.2 | [netlab-mobile-0.3.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.3.2-alpha.jar) |
-| Sputnik 0.2.2 | [netlab-sputnik-0.2.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.2.2-alpha.jar) |
+| Mobile 0.4.0 | [netlab-mobile-0.4.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.4.0-alpha.jar) |
+| Sputnik 0.3.0 | [netlab-sputnik-0.3.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.3.0-alpha.jar) |
+| Media 0.1.0 | [netlab-media-0.1.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-media-0.1.0-alpha.jar) |
 
-**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все четыре мода одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.21.2/NetLab-1.21.1-mods.zip).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все пять модов одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.22.0/NetLab-1.21.1-mods.zip).
 
 В сборках с AE2 можно [отключить только его автоматизацию](docs/UPDATE-AUTOMATION-0.7.3.md), сохранив ручное ME-хранилище. [Пример серверной конфигурации](config-examples/netlabautomation-server.toml); по умолчанию ограничение выключено.
 
@@ -36,20 +37,24 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 | Что установить отдельно | Для чего | Где нужно |
 |---|---|---|
 | **Minecraft 1.21.1, NeoForge 21.1.265, полная Java 21** | Все моды NetLab | Клиент и сервер |
-| **[Rinku 3.0.4, NeoForge 1.21.1](https://modrinth.com/mod/rinku/version/JOrwMXrE)** | Chromium-браузер дополнения Sputnik | Только клиент со Sputnik |
+| **[Rinku 3.0.4, NeoForge 1.21.1](https://modrinth.com/mod/rinku/version/JOrwMXrE)** | Chromium-браузер Sputnik и телевизоры Media | Только клиент |
+| **[Simple Voice Chat 1.21.1-2.6.27, NeoForge](https://modrinth.com/plugin/simple-voice-chat/version/iR08ksVF)** | Микрофонные звонки NetLab Media; реальный UDP-порт 24454 | Клиент и сервер с Media |
 
-Rinku сам скачивает Chromium под текущую ОС при первом запуске; для этого нужен интернет. Отдельно ставить Chrome/Chromium в систему не требуется. Если Sputnik не установлен, Rinku не нужен. Для Automation и Mobile дополнительных библиотечных модов не требуется. JEI, Sodium и Iris не являются зависимостями NetLab.
+Rinku сам скачивает Chromium под текущую ОС при первом запуске; для этого нужен интернет. Отдельно ставить Chrome/Chromium в систему не требуется. Если Sputnik не установлен, Rinku не нужен. Media требует NetLab 0.22.0, Sputnik 0.3.0 и Simple Voice Chat; для звонков с Pocket нужен Mobile 0.4.0. Для Automation и Mobile без Media дополнительных библиотечных модов не требуется. JEI, Sodium и Iris не являются зависимостями NetLab.
 
-## Четыре мода — одна лаборатория
+## Пять модов — одна лаборатория
 
 | Мод | Версия | Что добавляет |
 |---|---|---|
-| **NetLab** | `0.21.2-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
+| **NetLab** | `0.22.0-alpha` | Коммутаторы, маршрутизаторы, ПК, ноутбуки, Wi-Fi, физические порты, питание, CLI и наблюдение за пакетами. |
 | **NetLab Automation** | `0.7.3-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение; необязательный запрет автоматизации AE2 с сохранением ручного ME-хранилища. |
-| **NetLab Mobile** | `0.3.2-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
-| **NetLab Sputnik** | `0.2.2-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
+| **NetLab Mobile** | `0.4.0-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
+| **NetLab Sputnik** | `0.3.0-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
+| **NetLab Media** | `0.1.0-alpha` | IPTV-каналы, приставки, телевизоры, аудиоразветвитель и IP-телефонию через микрофон, включая Cisco Pocket. |
 
 Версии дополнений из этого комплекта требуют основной **NetLab 0.21.0-alpha или новее**. Они устанавливаются независимо друг от друга.
+
+Обновление **0.22.0 / Media 0.1.0**: IPTV-каналы с плейлистами, телевизор в мире, аудиоразветвитель, IP-АТС и настоящий микрофонный разговор через сеть NetLab. Два новых раздела «Библии» — [IPTV](docs/NETLAB-IPTV.md) и [IP Телефония](docs/NETLAB-IP-TELEPHONY.md). [Возможности, ограничения и проверки](docs/UPDATE-MEDIA-0.1.0.md).
 
 Обновление **0.21.2**: декоративный блок «Вкусно и точка» теперь крафтится из одного блока цискиума, оранжевого и красного красителей и хлеба в любом порядке.
 
@@ -135,7 +140,7 @@ Rinku сам скачивает Chromium под текущую ОС при пе�
 ./dev.sh build
 ```
 
-Скрипт получает проверенный по SHA-512 API Rinku, выбирает Java 21 и запускает Gradle Wrapper. Команда собирает все четыре JAR в `build/libs/` и выполняет проверки ядра. **Minecraft, сервер, мир и GameTest при этой сборке не запускаются.** Отдельная проверка модели: `./dev.sh coreTest`.
+Скрипт получает проверенный по SHA-512 API Rinku, выбирает Java 21 и запускает Gradle Wrapper. Команда собирает все пять JAR в `build/libs/` и выполняет проверки ядра. **Minecraft, сервер, мир и GameTest при этой сборке не запускаются.** Отдельная проверка модели: `./dev.sh coreTest`.
 
 На Windows из CMD: `dev.cmd build`. Чтобы обновить готовые файлы в Git после сборки: `python tools/package_mods.py`.
 
@@ -144,6 +149,7 @@ src/main/        основной NetLab
 src/automation/  дополнение Automation
 src/mobile/      дополнение Mobile
 src/sputnik/     дополнение Sputnik
+src/media/       дополнение Media (IPTV / IP Телефония)
 src/coreTest/    проверки модели без запуска игры
 docs/           инструкции и отчёты о проверках
 tools/          генераторы ресурсов и вспомогательные проверки
@@ -159,7 +165,7 @@ tools/          генераторы ресурсов и вспомогател�
 
 ## Cisco Pocket: телефон как сетевой клиент
 
-Для телефона NetLab Mobile доступны четыре физических модуля:
+Для телефона NetLab Mobile доступны пять физических модулей (при установке соответствующих дополнений):
 
 | Модуль | Какое дополнение добавляет | Возможности |
 |---|---|---|
@@ -167,6 +173,7 @@ tools/          генераторы ресурсов и вспомогател�
 | Диагностика Cisco Pocket | Mobile | Ping игровых IP, UDP/TCP-пакеты с полезной нагрузкой и наблюдение пути в очках |
 | Браузер Cisco Pocket | Sputnik | Реальные сайты через мобильную сеть и интернет-шлюз провайдера; нужен Rinku на клиенте |
 | Автоматика Cisco Pocket | Automation | Работа с привязанным сервером: интерфейсы, предметы, жидкости, правила и рецепты |
+| IP-телефония | Media | SIP-приложение: регистрация на АТС и голосовые звонки через мобильную сеть |
 
 Модуль автоматики сначала привязывается ПКМ по своему настроенному серверу. Затем телефон → «Модули» → установить предмет из инвентаря. Пароль сервера вводится при входе в приложение и на модуле не хранится. Привязка проверяет физический ID сервера и измерение.
 
