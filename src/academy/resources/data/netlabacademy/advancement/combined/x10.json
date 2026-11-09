@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:combined/root",
+  "parent": "netlabacademy:iptv/t14",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Звук по всей комнате"
     },
     "description": {
-      "text": "Media + Sputnik: из браузера ПК подать звук через разветвитель Media минимум на две колонки с корректным трактом AudioOut → AudioIn."
+      "text": "Совместные задания\nMedia + Sputnik: из браузера ПК подать звук через разветвитель Media минимум на две колонки с корректным трактом AudioOut → AudioIn."
     },
     "frame": "task",
     "show_toast": true,

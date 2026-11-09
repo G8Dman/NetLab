@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:physical/p06",
+  "parent": "netlabacademy:base/b07",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Аккуратная трасса"
     },
     "description": {
-      "text": "Подключить Ethernet с промежуточными точками по стене или поверхности; подтвердить рабочий линк."
+      "text": "Шкаф и питание\nПодключить Ethernet с промежуточными точками по стене или поверхности; подтвердить рабочий линк."
     },
     "frame": "task",
     "show_toast": true,

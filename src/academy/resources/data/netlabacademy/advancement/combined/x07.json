@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:combined/root",
+  "parent": "netlabacademy:automation/a19",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Груз через спутник"
     },
     "description": {
-      "text": "Automation + Sputnik: доставить собственный учебный груз через реально используемый спутниковый участок маршрута."
+      "text": "Совместные задания\nAutomation + Sputnik: доставить собственный учебный груз через реально используемый спутниковый участок маршрута."
     },
     "frame": "task",
     "show_toast": true,

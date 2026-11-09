@@ -3,9 +3,9 @@ loaderVersion="[2,)"
 license="All Rights Reserved"
 [[mods]]
 modId="netlabacademy"
-version="0.1.0-alpha"
+version="0.1.1-alpha"
 displayName="NetLab Academy"
-description='''Learning achievements and live course progress in the CISCO Bible. Optional addon courses follow the server's installed mods.'''
+description='''One connected Minecraft advancement tree and live course progress in the CISCO Bible. Optional addon courses follow the server's installed mods.'''
 [[dependencies.netlabacademy]]
 modId="netlab"
 type="required"

@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:telephony/root",
+  "parent": "netlabacademy:lan/l03",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Своя АТС"
     },
     "description": {
-      "text": "Установить и запитать сервер IP-АТС, подключить LAN и карту CISCO."
+      "text": "IP-телефония\nУстановить и запитать сервер IP-АТС, подключить LAN и карту CISCO."
     },
     "frame": "task",
     "show_toast": true,

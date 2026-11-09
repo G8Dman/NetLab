@@ -8,7 +8,7 @@
       "text": "Пароль редакции"
     },
     "description": {
-      "text": "Через Console задать IP медиасервера и пароль media admin, сохранить настройки."
+      "text": "IPTV\nЧерез Console задать IP медиасервера и пароль media admin, сохранить настройки."
     },
     "frame": "task",
     "show_toast": true,

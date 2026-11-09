@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:combined/root",
+  "parent": "netlabacademy:mobile/m10",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Мобильный интернет через спутник"
     },
     "description": {
-      "text": "Mobile + Sputnik: установить браузерный модуль Pocket и успешно загрузить поддержанный сайт через радиосеть, EPC и спутниковый выход."
+      "text": "Совместные задания\nMobile + Sputnik: установить браузерный модуль Pocket и успешно загрузить поддержанный сайт через радиосеть, EPC и спутниковый выход."
     },
     "frame": "task",
     "show_toast": true,

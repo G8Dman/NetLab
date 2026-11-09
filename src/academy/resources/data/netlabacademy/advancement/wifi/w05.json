@@ -8,7 +8,7 @@
       "text": "Не просто полоски"
     },
     "description": {
-      "text": "Выполнить успешный ping с Wi-Fi-клиента на проводной узел LAN."
+      "text": "Wi-Fi\nВыполнить успешный ping с Wi-Fi-клиента на проводной узел LAN."
     },
     "frame": "task",
     "show_toast": true,

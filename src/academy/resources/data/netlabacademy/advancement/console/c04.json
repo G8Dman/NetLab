@@ -8,7 +8,7 @@
       "text": "Имя вместо Switch"
     },
     "description": {
-      "text": "Задать hostname устройства и подтвердить изменение приглашения либо running-config."
+      "text": "Консоль\nЗадать hostname устройства и подтвердить изменение приглашения либо running-config."
     },
     "frame": "task",
     "show_toast": true,

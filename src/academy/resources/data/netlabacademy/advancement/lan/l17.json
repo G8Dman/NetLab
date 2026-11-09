@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:lan/l06",
+  "parent": "netlabacademy:routing/r05",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Доверяй правильному DHCP"
     },
     "description": {
-      "text": "Настроить DHCP Snooping: настоящий ответ проходит с trusted-порта, ответ собственного тестового постороннего DHCP отбрасывается."
+      "text": "Локальная сеть\nНастроить DHCP Snooping: настоящий ответ проходит с trusted-порта, ответ собственного тестового постороннего DHCP отбрасывается."
     },
     "frame": "task",
     "show_toast": true,

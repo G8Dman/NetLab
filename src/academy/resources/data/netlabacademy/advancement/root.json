@@ -4,10 +4,10 @@
       "id": "minecraft:book"
     },
     "title": {
-      "text": "Консоль"
+      "text": "NetLab"
     },
     "description": {
-      "text": "Библия по CISCO → Обучение"
+      "text": "Единое дерево обучения. Библия по CISCO → Обучение"
     },
     "frame": "task",
     "show_toast": false,

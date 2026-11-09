@@ -287,7 +287,8 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.academy.output
 tasks.register('academyJar', Jar) {
     dependsOn academyClasses
     archiveBaseName = 'netlab-academy'
-    archiveVersion = '0.1.0-alpha'
-    from sourceSets.academy.output
+    archiveVersion = '0.1.1-alpha'
+    // Old Copy-task outputs must never resurrect the retired category tabs.
+    from(sourceSets.academy.output) { exclude 'data/netlabacademy/advancement/*/root.json' }
 }
 tasks.named('assemble') { dependsOn academyJar }

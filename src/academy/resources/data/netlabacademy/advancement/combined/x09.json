@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:combined/root",
+  "parent": "netlabacademy:telephony/v12",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Разговор через GEO"
     },
     "description": {
-      "text": "Media + Sputnik: провести реальный голосовой обмен через спутниковый участок одной АТС; задержка маршрута должна учитываться."
+      "text": "Совместные задания\nMedia + Sputnik: провести реальный голосовой обмен через спутниковый участок одной АТС; задержка маршрута должна учитываться."
     },
     "frame": "task",
     "show_toast": true,

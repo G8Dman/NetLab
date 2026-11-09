@@ -44,10 +44,10 @@
     },
     {
       "id": "netlabacademy",
-      "version": "0.1.0-alpha",
-      "file": "mods/netlab-academy-0.1.0-alpha.jar",
-      "bytes": 220035,
-      "sha256": "c9c142875095158d1999362164e12156a07ec9db5a81815940269787f596fdcc"
+      "version": "0.1.1-alpha",
+      "file": "mods/netlab-academy-0.1.1-alpha.jar",
+      "bytes": 216760,
+      "sha256": "6069d1dd52e4e157e4eb833fffa8acc72664e78217757222599af67e1442020b"
     }
   ],
   "external_dependencies": [

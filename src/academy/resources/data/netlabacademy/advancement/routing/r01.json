@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:routing/root",
+  "parent": "netlabacademy:lan/l03",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Интерфейс маршрутизатора"
     },
     "description": {
-      "text": "Настроить активный IP-интерфейс роутера и получить ответ ping от клиента той же LAN."
+      "text": "Маршрутизация\nНастроить активный IP-интерфейс роутера и получить ответ ping от клиента той же LAN."
     },
     "frame": "task",
     "show_toast": true,

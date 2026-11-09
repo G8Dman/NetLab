@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:console/root",
+  "parent": "netlabacademy:physical/p06",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Первый Console"
     },
     "description": {
-      "text": "Подключить ПК/ноутбук RS232 к Console включённого устройства и открыть Terminal. Допустим альтернативный путь: портативным терминалом нажать на Console."
+      "text": "Консоль\nПодключить ПК/ноутбук RS232 к Console включённого устройства и открыть Terminal. Допустим альтернативный путь: портативным терминалом нажать на Console."
     },
     "frame": "task",
     "show_toast": true,

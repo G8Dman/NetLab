@@ -37,18 +37,18 @@ def generate():
   d=dict(icon=dict(id='minecraft:book' if root else 'minecraft:paper'),title=dict(text=title),description=dict(text=description),frame='task',show_toast=not root,announce_to_chat=False,hidden=False)
   if root:d['background']='minecraft:textures/gui/advancements/backgrounds/stone.png'
   return d
+ # Retire the separate tabs, retaining every actual task ID and its saved evidence.
  for g,name,guide in GROUPS.values():
-  rows=[e for e in entries if e['group']==g]
-  root=dict(display=display(name,'Библия по CISCO → Обучение',True),criteria=dict(course=dict(trigger='minecraft:impossible')))
-  # Integration tabs are OR-of-AND, not a requirement to install every integration.
-  masks=list({tuple(e['mods']) for e in rows})
-  if all(len(x)>1 for x in masks):root['neoforge:conditions']=[dict(type='neoforge:or',values=[dict(type='neoforge:and',values=condition(x)) for x in sorted(masks)])]
-  write(OUT/f'data/netlabacademy/advancement/{g}/root.json',root)
+  (OUT/f'data/netlabacademy/advancement/{g}/root.json').unlink(missing_ok=True)
+ root=dict(display=display('NetLab','Единое дерево обучения. Библия по CISCO → Обучение',True),criteria=dict(course=dict(trigger='minecraft:impossible')))
+ write(OUT/'data/netlabacademy/advancement/root.json',root)
  for e in entries:
-  parents=[p for p in e['parents'] if ids[p]['group']==e['group']]
-  d=dict(parent='netlabacademy:'+(ids[parents[0]]['path'] if parents else e['group']+'/root'),display=display(e['title'],e['task']),criteria=dict(evidence=dict(trigger='minecraft:impossible')))
+  # Connect courses through their actual prerequisites, across section boundaries.
+  # Minecraft draws one parent; the server still enforces ALL logical parents.
+  parent=ids[e['parents'][0]]['path'] if e['parents'] else 'root'
+  d=dict(parent='netlabacademy:'+parent,display=display(e['title'],e['groupTitle']+'\n'+e['task']),criteria=dict(evidence=dict(trigger='minecraft:impossible')))
   if e['mods'][1:]:d['neoforge:conditions']=condition(e['mods'])
   if e['id']=='E03':d['neoforge:conditions'].append({'type':'netlabacademy:ae2_policy'})
   write(OUT/f"data/netlabacademy/advancement/{e['path']}.json",d)
- print(f'Academy: {len(entries)} achievements, {len(GROUPS)} course tabs, {len(MAIN)} main steps')
+ print(f'Academy: {len(entries)} achievements in one connected tree, {len(MAIN)} main steps')
 if __name__=='__main__':generate()

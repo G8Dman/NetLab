@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:lan/root",
+  "parent": "netlabacademy:physical/p06",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Два клиента — одна сеть"
     },
     "description": {
-      "text": "Подключить два включённых ПК/ноутбука к одному коммутатору Ethernet. Должны работать оба физических линка."
+      "text": "Локальная сеть\nПодключить два включённых ПК/ноутбука к одному коммутатору Ethernet. Должны работать оба физических линка."
     },
     "frame": "task",
     "show_toast": true,

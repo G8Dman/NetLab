@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:routing/root",
+  "parent": "netlabacademy:lan/l03",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Соседи по IPv6"
     },
     "description": {
-      "text": "Настроить IPv6 на двух совместимых узлах и выполнить поддержанный IPv6 ping в локальной сети."
+      "text": "Маршрутизация\nНастроить IPv6 на двух совместимых узлах и выполнить поддержанный IPv6 ping в локальной сети."
     },
     "frame": "task",
     "show_toast": true,

@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:wifi/root",
+  "parent": "netlabacademy:lan/l03",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Точка доступа"
     },
     "description": {
-      "text": "Установить и запитать AP, подключить её Ethernet к работающей LAN."
+      "text": "Wi-Fi\nУстановить и запитать AP, подключить её Ethernet к работающей LAN."
     },
     "frame": "task",
     "show_toast": true,

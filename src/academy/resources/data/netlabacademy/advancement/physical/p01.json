@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:physical/root",
+  "parent": "netlabacademy:base/b09",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Всё по местам"
     },
     "description": {
-      "text": "Установить серверный шкаф и закрепить в нём первое устройство."
+      "text": "Шкаф и питание\nУстановить серверный шкаф и закрепить в нём первое устройство."
     },
     "frame": "task",
     "show_toast": true,

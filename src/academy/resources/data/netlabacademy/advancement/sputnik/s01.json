@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:sputnik/root",
+  "parent": "netlabacademy:lan/l03",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Провайдерский комплект"
     },
     "description": {
-      "text": "Подготовить HUB, интернет-шлюз, BUC/LNB, большую антенну, VSAT-модем и абонентскую антенну."
+      "text": "Спутниковая связь\nПодготовить HUB, интернет-шлюз, BUC/LNB, большую антенну, VSAT-модем и абонентскую антенну."
     },
     "frame": "task",
     "show_toast": true,

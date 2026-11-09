@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:diagnostics/root",
+  "parent": "netlabacademy:base/b15",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Пакет на проводе"
     },
     "description": {
-      "text": "В очках отправить ping и получить события его передачи по существующему кабелю."
+      "text": "Диагностика\nВ очках отправить ping и получить события его передачи по существующему кабелю."
     },
     "frame": "task",
     "show_toast": true,

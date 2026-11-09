@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:diagnostics/root",
+  "parent": "netlabacademy:physical/p06",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Контроллер трафика"
     },
     "description": {
-      "text": "Установить контроллер в шкаф, подключить Console и LAN, обеспечить питание."
+      "text": "Диагностика\nУстановить контроллер в шкаф, подключить Console и LAN, обеспечить питание."
     },
     "frame": "task",
     "show_toast": true,

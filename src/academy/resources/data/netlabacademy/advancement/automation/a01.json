@@ -1,5 +1,5 @@
 {
-  "parent": "netlabacademy:automation/root",
+  "parent": "netlabacademy:lan/l03",
   "display": {
     "icon": {
       "id": "minecraft:paper"
@@ -8,7 +8,7 @@
       "text": "Сервер автоматики"
     },
     "description": {
-      "text": "Изготовить сервер Automation, поставить его в шкаф, подключить питание и активную карту CISCO."
+      "text": "Автоматика\nИзготовить сервер Automation, поставить его в шкаф, подключить питание и активную карту CISCO."
     },
     "frame": "task",
     "show_toast": true,
