@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/d09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Отозвать разрешение"
+    },
+    "description": {
+      "text": "Администратором отозвать доступ учебного VLAN-контроллера и подтвердить прекращение действия его полномочий."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

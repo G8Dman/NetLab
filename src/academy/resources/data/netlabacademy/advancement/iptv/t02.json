@@ -1,0 +1,37 @@
+{
+  "parent": "netlabacademy:iptv/t01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Пароль редакции"
+    },
+    "description": {
+      "text": "Через Console задать IP медиасервера и пароль media admin, сохранить настройки."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmedia"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "voicechat"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:base/b05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Консоль в кармане"
+    },
+    "description": {
+      "text": "Изготовить портативный терминал. Подсказка: он очищает историю, но не отменяет настройки устройства."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

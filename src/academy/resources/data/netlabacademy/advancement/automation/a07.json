@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Пульт на компьютере"
+    },
+    "description": {
+      "text": "Установить модуль Automation в ПК/ноутбук, войти по IP и паролю сервера, получить список доступных интерфейсов."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

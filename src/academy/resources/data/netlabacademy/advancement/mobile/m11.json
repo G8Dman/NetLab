@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:mobile/m10",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Диагностика в кармане"
+    },
+    "description": {
+      "text": "Установить диагностический модуль Pocket и успешно пинговать доступный игровой узел через радиосеть."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmobile"
+    }
+  ]
+}

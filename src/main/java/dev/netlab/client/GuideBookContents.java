@@ -8,6 +8,10 @@ import java.util.*;
 
 /** Add-ons supply assets/<namespace>/netlab_guide/*.json, no reverse Java dependency. */
 public final class GuideBookContents {
+    /** Client-only providers can add live sections without dependencies on optional addons. */
+    public static final List<java.util.function.Supplier<List<Section>>> LIVE=new java.util.concurrent.CopyOnWriteArrayList<>();
+    public static final List<Runnable> TICKED=new java.util.concurrent.CopyOnWriteArrayList<>();
+    public static final List<java.util.function.Consumer<String>> OPENED=new java.util.concurrent.CopyOnWriteArrayList<>();
     public record Article(String id,String title,String body){}
     public record Section(String id,String title,int order,List<Article> articles){}
     public static List<Section> load(ResourceManager resources){
@@ -40,6 +44,7 @@ public final class GuideBookContents {
                 +"В разных моделях и версиях Cisco доступность, значения по умолчанию и параметры отличаются. Источники служат ориентиром для поддержанного подмножества; это не сертификация полного соответствия."));
             sections.put(commands.id(),new Section(commands.id(),commands.title(),commands.order(),List.copyOf(articles)));
         }
+        for(var provider:LIVE)try{for(var extra:provider.get())sections.put(extra.id(),extra);}catch(RuntimeException error){LogUtils.getLogger().warn("Cannot load live NetLab guide section",error);}
         return sections.values().stream().sorted(Comparator.comparingInt(Section::order).thenComparing(Section::id)).toList();
     }
     private static void addReference(List<Article> articles,String kind,String label){

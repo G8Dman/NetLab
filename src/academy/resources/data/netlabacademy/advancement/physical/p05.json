@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p04",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Главный ввод"
+    },
+    "description": {
+      "text": "Соединить выход энергошкафа с IN блока питания; подтвердить доступность питания у блока."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

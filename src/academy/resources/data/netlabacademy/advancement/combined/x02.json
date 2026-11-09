@@ -1,0 +1,33 @@
+{
+  "parent": "netlabacademy:combined/x01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Посылка с телефона"
+    },
+    "description": {
+      "text": "Mobile + Automation: из приложения Pocket заказать и завершить реальную передачу между мультиинтерфейсами."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmobile"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

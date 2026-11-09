@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a15",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Логика пережила выключение"
+    },
+    "description": {
+      "text": "Сохранить правила/шаблон на карте, выключить и включить сервер; правило или шаблон снова успешно выполняется."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

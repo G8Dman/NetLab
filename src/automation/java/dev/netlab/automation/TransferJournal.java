@@ -15,6 +15,7 @@ public final class TransferJournal extends SavedData {
         public UUID ticket=UUID.randomUUID(),sourceId,destinationId,owner,controllerId;
         public long source,destination,ready;
         public int destinationSlot=-1;
+        public AutomationLearning.Origin learning;public int learningDelivered;public boolean learningEncrypted,learningSatellite,learningRestored;
         public ItemStack stack=ItemStack.EMPTY;
         public FluidStack fluid=FluidStack.EMPTY;
         public boolean liquid;
@@ -35,11 +36,12 @@ public final class TransferJournal extends SavedData {
     public static TransferJournal get(ServerLevel l){return l.getDataStorage().computeIfAbsent(new Factory<>(TransferJournal::new,TransferJournal::load),"netlab_automation_transfers");}
     private static TransferJournal load(CompoundTag tag,HolderLookup.Provider regs){
         var journal=new TransferJournal();for(var entry:tag.getList("jobs",Tag.TAG_COMPOUND)){var t=(CompoundTag)entry;var j=new Job();
+            if(t.contains("learning"))j.learning=new com.google.gson.Gson().fromJson(t.getString("learning"),AutomationLearning.Origin.class);j.learningDelivered=t.getInt("learningDelivered");j.learningEncrypted=t.getBoolean("learningEncrypted");j.learningSatellite=t.getBoolean("learningSatellite");j.learningRestored=t.getBoolean("learningRestored");
             j.destinationSlot=t.contains("destinationSlot")?t.getInt("destinationSlot"):-1;j.ticket=t.getUUID("ticket");j.sourceId=t.getUUID("sourceId");j.destinationId=t.getUUID("destinationId");j.controllerId=t.getUUID("controllerId");j.owner=t.getUUID("owner");j.source=t.getLong("source");j.destination=t.getLong("destination");j.ready=t.getLong("ready");j.stack=ItemStack.parseOptional(regs,t.getCompound("stack"));j.liquid=t.getBoolean("liquid");j.fluid=FluidStack.parseOptional(regs,t.getCompound("fluid"));j.claim=new Claim(j.amount());j.state=t.getString("state");j.note=t.getString("note");journal.jobs.put(j.ticket,j);
         }if(tag.contains("audit"))journal.audit=new com.google.gson.Gson().fromJson(dev.netlab.StoredJson.get(tag,"audit"),dev.netlab.automation.core.AuditChain.class);return journal;
     }
     @Override public CompoundTag save(CompoundTag tag,HolderLookup.Provider regs){
-        var list=new ListTag();for(var j:jobs.values()){var t=new CompoundTag();t.putInt("destinationSlot",j.destinationSlot);t.putUUID("ticket",j.ticket);t.putUUID("sourceId",j.sourceId);t.putUUID("destinationId",j.destinationId);t.putUUID("controllerId",j.controllerId);t.putUUID("owner",j.owner);t.putLong("source",j.source);t.putLong("destination",j.destination);t.putLong("ready",j.ready);if(!j.stack.isEmpty())t.put("stack",j.stack.save(regs));t.putBoolean("liquid",j.liquid);if(!j.fluid.isEmpty())t.put("fluid",j.fluid.save(regs));t.putString("state",j.state);t.putString("note",j.note);list.add(t);}tag.put("jobs",list);dev.netlab.StoredJson.put(tag,"audit",new com.google.gson.Gson().toJson(audit));return tag;
+        var list=new ListTag();for(var j:jobs.values()){var t=new CompoundTag();if(j.learning!=null)t.putString("learning",new com.google.gson.Gson().toJson(j.learning));t.putInt("learningDelivered",j.learningDelivered);t.putBoolean("learningEncrypted",j.learningEncrypted);t.putBoolean("learningSatellite",j.learningSatellite);t.putBoolean("learningRestored",j.learningRestored);t.putInt("destinationSlot",j.destinationSlot);t.putUUID("ticket",j.ticket);t.putUUID("sourceId",j.sourceId);t.putUUID("destinationId",j.destinationId);t.putUUID("controllerId",j.controllerId);t.putUUID("owner",j.owner);t.putLong("source",j.source);t.putLong("destination",j.destination);t.putLong("ready",j.ready);if(!j.stack.isEmpty())t.put("stack",j.stack.save(regs));t.putBoolean("liquid",j.liquid);if(!j.fluid.isEmpty())t.put("fluid",j.fluid.save(regs));t.putString("state",j.state);t.putString("note",j.note);list.add(t);}tag.put("jobs",list);dev.netlab.StoredJson.put(tag,"audit",new com.google.gson.Gson().toJson(audit));return tag;
     }
     public void add(Job job){
         if(jobs.size()>=512){var it=jobs.values().iterator();while(it.hasNext()&&jobs.size()>=512){if(!it.next().hasCargo())it.remove();}}

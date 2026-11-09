@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:routing/r03",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "RIP нашёл дорогу"
+    },
+    "description": {
+      "text": "Получить изученный маршрут RIP и провести по нему успешный обмен между конечными узлами."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

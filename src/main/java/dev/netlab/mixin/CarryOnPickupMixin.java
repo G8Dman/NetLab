@@ -18,11 +18,13 @@ import java.util.function.BiFunction;
 @Pseudo
 @Mixin(targets="tschipp.carryon.common.carry.PickupHandler",remap=false)
 public abstract class CarryOnPickupMixin {
+    @org.spongepowered.asm.mixin.Unique private static final java.util.Map<java.util.UUID,DeviceEntity> netlab$learning=new java.util.HashMap<>();
     // Keep Carry On's distance and empty-hands checks before looking up any block entity.
     @Inject(method="tryPickUpBlock",at=@At(value="INVOKE",target="Lnet/minecraft/world/level/Level;getBlockEntity(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/entity/BlockEntity;",remap=false),cancellable=true,remap=false)
     private static void netlab$checkRack(ServerPlayer player, BlockPos pos, Level level,
             BiFunction<BlockState,BlockPos,Boolean> protection, CallbackInfoReturnable<Boolean> result) {
         if (level.getBlockEntity(pos) instanceof DeviceEntity host && RackCarry.rack(host)) {
+            if(!dev.netlab.api.LearningEvents.EVENTS.isEmpty())netlab$learning.put(player.getUUID(),host);
             String reason=RackCarry.refusal(player,host);
             if (reason!=null) {
                 player.displayClientMessage(Component.literal(reason),true);
@@ -30,4 +32,6 @@ public abstract class CarryOnPickupMixin {
             }
         }
     }
+    @Inject(method="tryPickUpBlock",at=@At("RETURN"),remap=false)
+    private static void netlab$learnPickup(ServerPlayer player,BlockPos pos,Level level,BiFunction<BlockState,BlockPos,Boolean> protection,CallbackInfoReturnable<Boolean> result){var host=netlab$learning.remove(player.getUUID());if(host!=null&&Boolean.TRUE.equals(result.getReturnValue()))dev.netlab.api.LearningEvents.emit(player,"carryon.rack.picked",host,0,"fingerprint",RackCarry.fingerprint(host),"position",pos.asLong());}
 }

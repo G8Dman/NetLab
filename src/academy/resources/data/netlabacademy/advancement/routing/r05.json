@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:routing/r01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Адрес выдан автоматически"
+    },
+    "description": {
+      "text": "Создать рабочий DHCP-пул и получить на клиенте адрес с правильной маской и параметрами."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

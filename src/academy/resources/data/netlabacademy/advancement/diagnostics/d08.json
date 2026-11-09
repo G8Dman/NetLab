@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/d05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Делегирование VLAN"
+    },
+    "description": {
+      "text": "Выдать доступ к управлению определённым VLAN и войти на втором контроллере с соответствующими полномочиями. Проверять можно одним игроком, два человека не обязательны."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -37,6 +37,7 @@ public final class PortableTerminals {
         if(!RackDevices.allowed(p,e,port/128)){p.displayClientMessage(Component.literal("Устройство принадлежит другому игроку"),true);return;}
         close(p.getUUID());var cli=new dev.netlab.core.Console();var t=new ConsoleAccess.Target(e,d,e.slotId(port/128),cli);var s=new Session(p.serverLevel(),t,carrier);SESSIONS.put(p.getUUID(),s);var n=e.network();var extension=ConsoleExtensions.HANDLERS.get(d.kind);
         String banner=extension!=null?extension.open(new ConsoleExtensions.Context(p,t,n)):d.kind.equals("traffic")?TrafficControllers.open(p.serverLevel(),n,t.id(),cli):cli.open(d)+"\n"+prompt(s);
+        LearningEvents.emit(p,"console.open",e,port/128,"portable",carrier==null,"phone",carrier!=null);
         send(p,s,(carrier==null?"Портативный терминал. Настройки остаются на устройстве; история после закрытия очищается.":"Терминал Cisco Pocket. История трёх последних устройств; авторизация каждый раз заново.")+"\n"+MemoryCards.status(d)+"\n"+banner,true,true);
     }
     public static boolean handle(ServerPlayer p,Packets.Command m){
@@ -44,15 +45,16 @@ public final class PortableTerminals {
         if(m.command().equals("__portable_close")){close(p.getUUID());return true;}
         if(!valid(p,s)){send(p,s,"Портативная сессия закрыта: питание, устройство или доступ изменились.",false,false);close(p.getUUID());return true;}
         if(m.command().length()>256||s.busy)return true;s.lease.touch(s.level.getGameTime());s.busy=true;var t=s.target;var n=t.entity().network();if(s.transcript!=null)s.transcript.remember(m.command(),!t.cli().pending.isEmpty()||dev.netlab.core.Console.sensitive(m.command()));String prefix=prompt(s)+" "+t.cli().echo(m.command());send(p,s,prefix,false,true);
+        var learning=LearningEvents.command(p,t,n,m.command(),true,s.carrier!=null);
         CompletableFuture<String> future;try{var extension=ConsoleExtensions.HANDLERS.get(t.device().kind);String memory=MemoryCards.command(p,t,m.command());future=memory!=null?CompletableFuture.completedFuture(memory):extension!=null?extension.execute(new ConsoleExtensions.Context(p,t,n),m.command()):CompletableFuture.completedFuture(t.device().kind.equals("traffic")?TrafficControllers.execute(s.level,n,t.id(),t.cli(),p.getUUID(),m.command()):t.cli().execute(t.device(),n,t.id(),m.command()));}catch(RuntimeException error){future=CompletableFuture.completedFuture("% "+error.getMessage());}
         t.cli().history.clear();var guard=Simulation.guard(s.level,n);Study.publish(n,s.level);WirelessWorld.changed(s.level,n);ConsoleExtensions.flush(t);
-        future.thenCompose(text->Simulation.after(s.level,Math.max(n.cursor,Simulation.now(s.level)),()->text)).whenComplete((text,error)->{
+        future.thenApply(text->{LearningEvents.finish(learning,text,n);return text;}).thenCompose(text->Simulation.after(s.level,Math.max(n.cursor,Simulation.now(s.level)),()->text)).whenComplete((text,error)->{
             ConsoleExtensions.flush(t);if(SESSIONS.get(p.getUUID())!=s)return;s.busy=false;
             if(!valid(p,s)){send(p,s,"Портативная сессия завершена.",false,false);close(p.getUUID());return;}
             String reply=error!=null?"% "+error.getMessage():guard.getAsBoolean()?text:"Передача прервана изменением сети.";send(p,s,reply+"\n"+prompt(s),false,true);
         });return true;
     }
-    public static boolean complete(ServerPlayer p,Packets.Complete m){var s=SESSIONS.get(p.getUUID());if(s==null||!s.target.entity().getBlockPos().equals(m.pos())||!valid(p,s))return false;s.lease.touch(s.level.getGameTime());var t=s.target;var result=ConsoleExtensions.complete(t,m.prefix());PacketDistributor.sendToPlayer(p,new Packets.Completed(m.pos(),m.prefix(),result.value(),String.join("\n",result.choices())));return true;}
+    public static boolean complete(ServerPlayer p,Packets.Complete m){var s=SESSIONS.get(p.getUUID());if(s==null||!s.target.entity().getBlockPos().equals(m.pos())||!valid(p,s))return false;s.lease.touch(s.level.getGameTime());var t=s.target;var result=ConsoleExtensions.complete(t,m.prefix());if(!result.value().equals(m.prefix()))LearningEvents.emit(p,"console.tab",t.entity(),t.id()==t.entity().slotId(1)?1:0,"value",result.value());PacketDistributor.sendToPlayer(p,new Packets.Completed(m.pos(),m.prefix(),result.value(),String.join("\n",result.choices())));return true;}
     public static void tick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event){if(event.getServer().getTickCount()%20!=0)return;for(var id:new ArrayList<>(SESSIONS.keySet())){var p=event.getServer().getPlayerList().getPlayer(id);var s=SESSIONS.get(id);if(p==null||!valid(p,s)){if(p!=null)send(p,s,"Портативный терминал отключён.",false,false);close(id);}}}
     public static void clear(net.neoforged.neoforge.event.server.ServerStoppedEvent event){for(var id:new ArrayList<>(SESSIONS.keySet()))close(id);}
 }

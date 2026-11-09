@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Пакет на проводе"
+    },
+    "description": {
+      "text": "В очках отправить ping и получить события его передачи по существующему кабелю."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

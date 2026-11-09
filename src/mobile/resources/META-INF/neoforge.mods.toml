@@ -3,13 +3,13 @@ loaderVersion="[1,)"
 license="All Rights Reserved"
 [[mods]]
 modId="netlabmobile"
-version="0.4.0-alpha"
+version="0.4.1-alpha"
 displayName="NetLab Mobile"
 description='''LTE teaching network: antennas, RRU/BBU, EPC, issued SIM cards and mobile clients.'''
 [[dependencies.netlabmobile]]
 modId="netlab"
 type="required"
-versionRange="[0.22.0-alpha,)"
+versionRange="[0.23.0-alpha,)"
 ordering="AFTER"
 side="BOTH"
 [[dependencies.netlabmobile]]

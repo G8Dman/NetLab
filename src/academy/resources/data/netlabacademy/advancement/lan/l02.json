@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Адреса не должны совпадать"
+    },
+    "description": {
+      "text": "Назначить клиентам разные IPv4-адреса одной подсети и подходящие маски. Шлюз для этого стенда не обязателен."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

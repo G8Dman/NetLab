@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:finals/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Сетевой техник"
+    },
+    "description": {
+      "text": "Завершить все 29 шагов основного маршрута, перечисленного ниже. Не требуются ни дополнения, ни сторонние моды."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

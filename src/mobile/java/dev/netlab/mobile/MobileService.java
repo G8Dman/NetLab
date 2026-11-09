@@ -25,7 +25,7 @@ public final class MobileService {
     private static final Map<ServerLevel,Set<String>> PENDING=new WeakHashMap<>();
     private static final Map<ServerLevel,Map<String,String>> STATUS=new WeakHashMap<>();
     static Map<String,Lease> leases(ServerLevel level){return LEASES.computeIfAbsent(level,l->new HashMap<>());}
-    public static void clear(){LEASES.clear();PENDING.clear();STATUS.clear();PhoneDevices.clear();}
+    public static void clear(){MobileLearning.clear();LEASES.clear();PENDING.clear();STATUS.clear();PhoneDevices.clear();}
     public static void forget(ServerLevel level,String client){leases(level).remove(client);}
     public static String reason(Throwable error){while(error.getCause()!=null)error=error.getCause();return error.getMessage()==null?"Ошибка регистрации":error.getMessage();}
     public static String key(MobileRef pc){return "pc:"+pc.device().identity;}
@@ -56,7 +56,7 @@ public final class MobileService {
         MobileRadio.Reception chosen=null;MobileRef core=null;
         for(var r:MobileRadio.scan(level,position,cells))try{if(r.signal().bars()==0)continue;var candidate=MobileRef.core(level,r.cell().bbu().state().coreAddress);if(candidate.device().identity.equals(sim.issuer)&&candidate.state().plmn.equals(sim.operator)){chosen=r;core=candidate;break;}}catch(IllegalArgumentException ignored){}
         if(chosen==null){leases(level).remove(key);status(level,key,"Нет подходящей базовой станции");return;}
-        var old=lease(level,key);if(old!=null&&old.simId.equals(sim.id)&&old.cell.antenna().id()==chosen.cell().antenna().id()){old.signal=chosen.signal();old.expires=level.getGameTime()+80;return;}
+        var old=lease(level,key);if(old!=null&&old.simId.equals(sim.id)&&old.cell.antenna().id()==chosen.cell().antenna().id()){old.signal=chosen.signal();old.expires=level.getGameTime()+80;MobileLearning.signal(old,position);return;}
         // Hysteresis prevents alternating cells of nearly equal strength.
         if(old!=null&&chosen.signal().rsrp()<old.signal.rsrp()+3){old.expires=level.getGameTime()+80;return;}
         var selected=chosen;var epc=core;String nonce=MobileAuth.secret(),proof=MobileAuth.proof(sim.key,nonce,"attach|"+sim.id);
@@ -76,7 +76,7 @@ public final class MobileService {
             var lease=new Lease();lease.client=key;lease.simId=sim.id;lease.apn=sim.apn;lease.ip=c.subscribers.address(sub,c.subscriberGateway);lease.core=epc;lease.ue=ue;lease.cell=selected.cell();lease.signal=selected.signal();lease.expires=level.getGameTime()+80;epc.changed(c);leases(level).put(key,lease);
             byte[] ul=CryptoChannel.derive(sim.key,(nonce+"UL").getBytes(StandardCharsets.UTF_8)),dl=CryptoChannel.derive(sim.key,(nonce+"DL").getBytes(StandardCharsets.UTF_8));lease.upTx=new CryptoChannel(ul);lease.upRx=new CryptoChannel(ul);lease.downTx=new CryptoChannel(dl);lease.downRx=new CryptoChannel(dl);
             lease.coreEpoch=Hardware.ensure(epc.device()).epoch;lease.bbuEpoch=Hardware.ensure(lease.cell.bbu().device()).epoch;lease.rruEpoch=Hardware.ensure(lease.cell.rru().device()).epoch;lease.ueEpoch=ue==null?0:Hardware.ensure(ue.device()).epoch;
-            if(ue!=null){int port=MobileHardware.cellular(ue.device());var p=ue.device().ports.get(port);p.up=true;p.ip=lease.ip;p.mask="255.255.255.0";ue.device().preferredPort=port;ue.device().gateway=c.subscriberGateway;ue.host().changed();}else PhoneDevices.attached(lease);
+            if(ue!=null){int port=MobileHardware.cellular(ue.device());var p=ue.device().ports.get(port);p.up=true;p.ip=lease.ip;p.mask="255.255.255.0";ue.device().preferredPort=port;ue.device().gateway=c.subscriberGateway;ue.host().changed();}else PhoneDevices.attached(lease);MobileLearning.attached(lease);MobileLearning.signal(lease,position);
         }).whenComplete((v,e)->{PENDING.get(level).remove(key);if(e!=null){leases(level).remove(key);status(level,key,reason(e));}});
     }
     private static CompletableFuture<Void> transport(MobileRef from,MobileRef to,String text){return ApplicationTransport.sendAsync(from.level(),new ApplicationTransport.Endpoint(from.host(),from.bay()),new ApplicationTransport.Endpoint(to.host(),to.bay()),text.getBytes(StandardCharsets.UTF_8),false).thenApply(r->{if(!r.success())throw new IllegalArgumentException(r.status());return null;});}

@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a10",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Быстрее готовить, а не лететь"
+    },
+    "description": {
+      "text": "Установить ускоритель и подтвердить сокращение серверной подготовки; подсказка отделяет это от скорости кабеля."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

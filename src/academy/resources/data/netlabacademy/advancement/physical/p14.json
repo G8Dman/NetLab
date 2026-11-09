@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p13",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Оптический переход"
+    },
+    "description": {
+      "text": "Подключить два совместимых оптических порта; если шасси требует SFP, предварительно установить подходящие трансиверы."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

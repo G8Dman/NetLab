@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:extra/e04",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Вкусно и пакет"
+    },
+    "description": {
+      "text": "Необязательная пасхалка: изготовить декоративный блок «Вкусно и точка» по рецепту на основе блока цискиума."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

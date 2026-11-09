@@ -1,0 +1,37 @@
+{
+  "parent": "netlabacademy:iptv/t11",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Я присоединился позже"
+    },
+    "description": {
+      "text": "Подключить второй телевизор после начала эфира; он должен перейти к текущей позиции канала, а не начинать ролик сначала."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmedia"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "voicechat"
+    }
+  ]
+}

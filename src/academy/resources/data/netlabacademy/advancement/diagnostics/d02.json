@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/d01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Сначала узнать MAC"
+    },
+    "description": {
+      "text": "На своём стенде с пустым соответствующим ARP-кешем увидеть ARP и последующую доставку IP-пакета."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

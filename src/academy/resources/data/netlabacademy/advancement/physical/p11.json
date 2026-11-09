@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Бирка вместо загадки"
+    },
+    "description": {
+      "text": "Дать кабелю имя биркой и увидеть его вместе с обоими концами в панели очков."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

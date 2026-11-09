@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Кабель не исчезает"
+    },
+    "description": {
+      "text": "В выживании подключить кабель с расходом предмета, затем отключить и получить его обратно. Один цикл, без требования фармить повторы."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

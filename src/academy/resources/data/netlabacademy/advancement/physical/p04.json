@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p03",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Энергия на входе"
+    },
+    "description": {
+      "text": "Подать FE в энергошкаф из доступного в этой сборке источника. Конкретный сторонний генератор не требуется."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

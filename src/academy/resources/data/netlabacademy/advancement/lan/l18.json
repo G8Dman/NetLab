@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l03",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Копия для анализа"
+    },
+    "description": {
+      "text": "Настроить SPAN и получить на порту наблюдения копию реально отправленного тестового трафика. Основной обмен должен продолжиться."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

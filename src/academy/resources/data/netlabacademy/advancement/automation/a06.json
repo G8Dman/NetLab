@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Вижу содержимое"
+    },
+    "description": {
+      "text": "Через сервер выполнить inspect и получить актуальные слоты подключённого контейнера. Чтение не должно расходовать предметы."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

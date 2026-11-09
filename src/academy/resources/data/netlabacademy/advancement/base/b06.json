@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:base/b05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Не гадай — читай"
+    },
+    "description": {
+      "text": "Открыть статьи о консоли и настройке IPv4; карточка достижения показывает, где назначают адреса."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

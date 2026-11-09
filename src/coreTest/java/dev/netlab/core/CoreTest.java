@@ -179,6 +179,7 @@ public final class CoreTest {
     var consoleNet=new Network();consoleNet.devices.put(11L,consolePc);consoleNet.devices.put(12L,consoleRouter);
     wire(consoleNet,11,1,12,2);
     check(!consoleNet.linkUp(11,1)&&consoleNet.lanPeers(11,1).isEmpty(),"console cable carries no Ethernet frames");
+    checks += AcademyCourseTest.run();
     checks += RouterTest.run();
     checks += SwitchingTest.run();
     checks += HardwareTest.run();

@@ -3,7 +3,7 @@ loaderVersion="[1,)"
 license="All Rights Reserved"
 [[mods]]
 modId="netlabautomation"
-version="0.7.3-alpha"
+version="0.7.4-alpha"
 displayName="NetLab Automation"
 description='''Network-controlled inventories, device capabilities, logistics and interception for NetLab.'''
 [[mixins]]
@@ -11,7 +11,7 @@ config="netlabautomation.mixins.json"
 [[dependencies.netlabautomation]]
 modId="netlab"
 type="required"
-versionRange="[0.21.0-alpha,)"
+versionRange="[0.23.0-alpha,)"
 ordering="AFTER"
 side="BOTH"
 [[dependencies.netlabautomation]]

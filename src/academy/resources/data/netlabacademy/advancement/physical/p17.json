@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p16",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Переносное рабочее место"
+    },
+    "description": {
+      "text": "На настроенном ноутбуке проверить IP, сломать и вновь поставить его; убедиться, что тот же ноутбук сохранил адрес и настройки."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

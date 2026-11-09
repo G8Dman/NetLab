@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/d08",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Выше своих прав нельзя"
+    },
+    "description": {
+      "text": "На учебном втором контроллере с VLAN-доступом убедиться в отказе при попытке управления всем LAN; разрешённое действие внутри VLAN работает."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "parent": "netlabacademy:combined/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Разговор через GEO"
+    },
+    "description": {
+      "text": "Media + Sputnik: провести реальный голосовой обмен через спутниковый участок одной АТС; задержка маршрута должна учитываться."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmedia"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "voicechat"
+    }
+  ]
+}

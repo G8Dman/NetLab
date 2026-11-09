@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Общая база VLAN"
+    },
+    "description": {
+      "text": "На собственных коммутаторах настроить согласованный VTP-домен и увидеть распространение созданного VLAN."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

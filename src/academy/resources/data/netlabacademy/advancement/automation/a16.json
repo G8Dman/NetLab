@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a15",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Любой предмет"
+    },
+    "description": {
+      "text": "Настроить поддержанное правило с выбором «Любой предмет» и подтвердить автоматическую передачу подходящего содержимого заданного слота."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

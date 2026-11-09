@@ -44,7 +44,7 @@ public final class FrontPanel {
         if(request.action().equals("open")){send(player,entity,request.bay(),"",true);return;}
         String status="";
         try{
-            var h=Hardware.ensure(d);String action=request.action();
+            int learningPorts=(int)d.ports.stream().filter(p->!p.hidden&&!p.virtual&&p.maxMbps>0).count();var h=Hardware.ensure(d);String action=request.action();
             if(!action.equals("refresh")&&!player.mayBuild())return;
             switch(action){
                 case "memoryInsert"->{if(h.powered)throw new IllegalArgumentException("Сначала выключи устройство");MemoryCards.insert(player,d);status=MemoryCards.status(d);}
@@ -85,7 +85,7 @@ public final class FrontPanel {
                 }
                 default->throw new IllegalArgumentException("Неизвестное действие");
             }
-            if(!action.equals("refresh")){entity.changed();ConsoleAccess.close(entity,player.getUUID());}
+            if(!action.equals("refresh")){entity.changed();dev.netlab.api.LearningEvents.emit(player,"panel."+action,entity,request.bay(),"module",request.value(),"slot",request.slot(),"portsAdded",d.ports.stream().filter(p->!p.hidden&&!p.virtual&&p.maxMbps>0).count()-learningPorts);ConsoleAccess.close(entity,player.getUUID());}
         }catch(IllegalArgumentException e){status=e.getMessage();}
         send(player,entity,request.bay(),status,false);
     }

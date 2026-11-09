@@ -10,6 +10,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import java.util.*;
 
 public final class DiagnosticsOverlay {
+    private static long lastLearning=-100;
     public static boolean wearing(){var p=Minecraft.getInstance().player;return p!=null&&p.getItemBySlot(EquipmentSlot.HEAD).is(NetLab.GOGGLES.get());}
     public static String endpoint(DeviceEntity d,int port){var target=d.portDevice(port);return (target==null?d.device.hostname:target.hostname)+" : "+d.portLabel(port)+" ("+d.getBlockPos().toShortString()+")";}
     public static void render(GuiGraphics g,DeltaTracker delta){
@@ -20,7 +21,7 @@ public final class DiagnosticsOverlay {
             var d=hit.device();var peer=d.links.get(hit.port());color=peer.color();
             lines.add("NETLAB / "+(peer.name().isBlank()?"Кабель":peer.name()));
             lines.add("A: "+endpoint(d,hit.port()));
-            if(mc.level.getBlockEntity(BlockPos.of(peer.pos())) instanceof DeviceEntity other)lines.add("B: "+endpoint(other,peer.port()));
+            if(mc.level.getBlockEntity(BlockPos.of(peer.pos())) instanceof DeviceEntity other){lines.add("B: "+endpoint(other,peer.port()));if(!peer.name().isBlank()&&mc.level.getGameTime()-lastLearning>=40){lastLearning=mc.level.getGameTime();net.neoforged.neoforge.network.PacketDistributor.sendToServer(new Packets.LearningHint(d.getBlockPos(),"goggles.cable",""+hit.port()));}}
             if(StudyClient.visible){
                 double now=StudyClient.time();var active=StudyClient.flights().stream().filter(f->{var e=f.event();return now>=f.start()&&now<=f.start()+f.duration()&&(e.from()==d.getBlockPos().asLong()&&e.fromPort()==hit.port()&&e.to()==peer.pos()&&e.toPort()==peer.port()||e.to()==d.getBlockPos().asLong()&&e.toPort()==hit.port()&&e.from()==peer.pos()&&e.fromPort()==peer.port());}).sorted(Comparator.comparingInt(f->"ITEM_DATA".equals(f.event().phase())?0:1)).findFirst();
                 if(active.isPresent()){

@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a14",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Запас ниже нормы"
+    },
+    "description": {
+      "text": "Создать правило пополнения: при уменьшении запаса угля ниже порога сервер сам отправляет новую партию. Засчитать реальное срабатывание."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

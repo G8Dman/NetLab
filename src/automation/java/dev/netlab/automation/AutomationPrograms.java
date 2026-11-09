@@ -32,10 +32,10 @@ public final class AutomationPrograms {
             return AutomationService.inspect(server,source).thenCompose(snapshot->{
                 if(!server.running||!server.stocks.contains(r))return CompletableFuture.completedFuture("Правило остановлено");
                 var selected=drain(r,snapshot);if(selected.isEmpty())return CompletableFuture.completedFuture("Любой предмет: источник пуст или извлечение недоступно");
-                var dispatch=selected.get();return AutomationService.start(server,r.source(),r.destination(),dispatch.item(),Math.min(dev.netlab.automation.core.ServerHardware.itemLimit(server.device),dispatch.amount()),dispatch.sourceSlot(),dispatch.destinationSlot());
+                var dispatch=selected.get();return AutomationLearning.rule(server,true,()->AutomationService.start(server,r.source(),r.destination(),dispatch.item(),Math.min(dev.netlab.automation.core.ServerHardware.itemLimit(server.device),dispatch.amount()),dispatch.sourceSlot(),dispatch.destinationSlot()));
             });
         }
-        var dst=AutomationService.find((ServerLevel)server.getLevel(),r.destination());return AutomationService.inspect(server,dst).thenCompose(snapshot->{if(!server.running)return CompletableFuture.completedFuture("Остановлено");int amount=count(snapshot,r.item(),r.destinationSlot());if(amount>=r.minimum())return CompletableFuture.completedFuture("Запас достаточен");return AutomationService.start(server,r.source(),r.destination(),r.item(),Math.min(dev.netlab.automation.core.ServerHardware.itemLimit(server.device),Math.min(r.batch(),r.minimum()-amount)),r.sourceSlot(),r.destinationSlot());});
+        var dst=AutomationService.find((ServerLevel)server.getLevel(),r.destination());return AutomationService.inspect(server,dst).thenCompose(snapshot->{if(!server.running)return CompletableFuture.completedFuture("Остановлено");int amount=count(snapshot,r.item(),r.destinationSlot());if(amount>=r.minimum())return CompletableFuture.completedFuture("Запас достаточен");return AutomationLearning.rule(server,false,()->AutomationService.start(server,r.source(),r.destination(),r.item(),Math.min(dev.netlab.automation.core.ServerHardware.itemLimit(server.device),Math.min(r.batch(),r.minimum()-amount)),r.sourceSlot(),r.destinationSlot()));});
     }
     private static CompletableFuture<String> pattern(AutomationNode server,AutomationProgram.Pattern p){
         var level=(ServerLevel)server.getLevel();var destination=AutomationService.find(level,p.destination());

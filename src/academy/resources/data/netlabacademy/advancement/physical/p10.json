@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Цветовая маркировка"
+    },
+    "description": {
+      "text": "Изменить цвет установленного кабеля."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

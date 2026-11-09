@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l02",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Первый успешный ping"
+    },
+    "description": {
+      "text": "Выполнить ping с одного клиента на другой и получить ответ через коммутатор. Проверяется ответ, а не ввод команды."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

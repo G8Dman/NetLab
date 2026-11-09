@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:finals/f01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Знаю свою сборку"
+    },
+    "description": {
+      "text": "Завершить базовый маршрут и учебные финалы только тех веток, которые присутствуют и доступны в этой сборке по правилам ниже. Это динамическая цель без штрафа за отсутствующие дополнения."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

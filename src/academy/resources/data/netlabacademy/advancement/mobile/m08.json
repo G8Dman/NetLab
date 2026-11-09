@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:mobile/m07",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "SIM зарегистрирована"
+    },
+    "description": {
+      "text": "Выпустить SIM из заготовки через станок; запись об абоненте должна реально появиться в EPC. Наличие предмета из креатива не заменяет выпуск."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmobile"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:routing/r13",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "IPv6 между сетями"
+    },
+    "description": {
+      "text": "Провести успешный IPv6-обмен через маршрутизатор между двумя префиксами."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -17,7 +17,7 @@ public final class MobileProvisioner {
         String nonce=MobileAuth.secret(),key=MobileAuth.derive(password,MobileAuth.salt(c.adminVerifier)),proof=MobileAuth.proof(key,nonce,"station|"+station.device().identity);
         return exchange(core,station,"PAIR-CHALLENGE "+nonce).thenCompose(v->exchange(station,core,"PAIR-PROOF "+proof)).thenApply(v->{
             if(!station.live()||!core.live()||!Hardware.powered(core.device())||!MobileAuth.verify(MobileAuth.verifierKey(core.state().adminVerifier),nonce,"station|"+station.device().identity,proof))throw new IllegalArgumentException("Пароль не принят либо ядро изменилось");
-            var s=station.state();s.stationKey=key;s.stationSalt=MobileAuth.salt(c.adminVerifier);s.stationCore=core.device().identity;station.changed(s);return "Станок авторизован в EPC";
+            var s=station.state();s.stationKey=key;s.stationSalt=MobileAuth.salt(c.adminVerifier);s.stationCore=core.device().identity;station.changed(s);MobileLearning.emit(station,"mobile.station");return "Станок авторизован в EPC";
         });
     }
     public static CompletableFuture<String> issue(MobileRef station,String label){
@@ -36,6 +36,6 @@ public final class MobileProvisioner {
         }).thenCompose(v->exchange(station,core,"SIM-ACTIVATE "+sim.id)).thenCompose(v->{
             if(!station.live()||!core.live())throw new IllegalArgumentException("Устройство отключено");var state=core.state();state.subscribers.activate(sim.id,MobileAuth.proof(sim.key,nonce,"activate|"+sim.id),nonce);core.changed(state);
             return exchange(core,station,"SIM-ACTIVE-ACK "+sim.id);
-        }).thenApply(v->{if(!station.live()||machine.pending!=sim)throw new IllegalArgumentException("Станок заменён");machine.output=MobileItems.sim(sim);machine.pending=null;machine.phase="";machine.pendingCore="";machine.changed();return "SIM выпущена и активирована: "+sim.label;}).whenComplete((v,e)->{machine.issuing=false;machine.last=e==null?v:MobileService.reason(e);if(station.live())machine.changed();});
+        }).thenApply(v->{if(!station.live()||machine.pending!=sim)throw new IllegalArgumentException("Станок заменён");machine.output=MobileItems.sim(sim);machine.pending=null;machine.phase="";machine.pendingCore="";machine.changed();MobileLearning.emit(station,"mobile.sim.issue","sim",sim.id);return "SIM выпущена и активирована: "+sim.label;}).whenComplete((v,e)->{machine.issuing=false;machine.last=e==null?v:MobileService.reason(e);if(station.live())machine.changed();});
     }
 }

@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Отвёртка инженера"
+    },
+    "description": {
+      "text": "При отключённых кабелях снять устройство из шкафа отвёрткой и установить обратно, сохранив его аппаратную комплектацию."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

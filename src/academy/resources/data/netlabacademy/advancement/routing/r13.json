@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:routing/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Соседи по IPv6"
+    },
+    "description": {
+      "text": "Настроить IPv6 на двух совместимых узлах и выполнить поддержанный IPv6 ping в локальной сети."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

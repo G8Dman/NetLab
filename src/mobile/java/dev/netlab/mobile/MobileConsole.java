@@ -47,7 +47,7 @@ public final class MobileConsole implements ConsoleExtensions.Handler {
                 case "core"->{Device.ip(a[2]);if(!Set.of(MobileHardware.BBU,MobileHardware.STATION).contains(r.device().kind))throw new IllegalArgumentException("Нужен BBU или SIM-станок");s.coreAddress=a[2];}
                 case "pool"->{kind(r,MobileHardware.CORE);Device.ip(a[2]);long host=Device.ip(a[2])&255;if(host==0||host==255||!s.subscribers.entries.isEmpty())throw new IllegalArgumentException("Свободный /24, шлюз .1..254; пул меняется до выпуска SIM");s.subscriberGateway=a[2];r.device().ports.get(MobileHardware.cellular(r.device())).ip=a[2];}
                 case "apn"->{kind(r,MobileHardware.CORE);if(!a[2].matches("[a-z0-9.-]{1,48}"))throw new IllegalArgumentException("APN: a-z, 0-9, точка, дефис");s.apn=a[2];}
-                case "revoke"->{kind(r,MobileHardware.CORE);var sub=s.subscribers.entries.get(a[2]);if(sub==null)throw new IllegalArgumentException("SIM не найдена");sub.active=false;}
+                case "revoke"->{kind(r,MobileHardware.CORE);var sub=s.subscribers.entries.get(a[2]);if(sub==null)throw new IllegalArgumentException("SIM не найдена");boolean active=sub.active;sub.active=false;if(active)dev.netlab.api.LearningEvents.emit(c.player(),"mobile.revoke",r.host(),r.bay());}
                 case "radio"->{kind(r,MobileHardware.RRU);s.radioEnabled=on(a[2]);}
                 case "band"->{kind(r,MobileHardware.RRU);int band=Integer.parseInt(a[2]);if(band!=3&&band!=20)throw new IllegalArgumentException("band 3|20");s.band=band;}
                 case "channel"->{kind(r,MobileHardware.RRU);s.channel=Addressing.number(a[2],0,65535);}

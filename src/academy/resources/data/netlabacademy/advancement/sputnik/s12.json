@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:sputnik/s11",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Первый настоящий сайт"
+    },
+    "description": {
+      "text": "Открыть поддержанный HTTPS-сайт в браузере Sputnik и получить успешную загрузку через действующий игровой интернет-шлюз. Не считать ввод URL или HTTP-ошибку выполнением."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    }
+  ]
+}

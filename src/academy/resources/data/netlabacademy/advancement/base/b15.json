@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:base/b05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Инженерный взгляд"
+    },
+    "description": {
+      "text": "Изготовить и надеть диагностические очки."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

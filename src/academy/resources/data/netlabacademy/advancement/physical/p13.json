@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/p06",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Сначала выключи"
+    },
+    "description": {
+      "text": "При выключенном устройстве установить совместимый модуль и включить устройство с появившимся портом."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

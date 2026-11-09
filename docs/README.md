@@ -45,3 +45,6 @@
 - [IPTV: настройка по устройствам](NETLAB-IPTV.md)
 - [IP Телефония: настройка по устройствам](NETLAB-IP-TELEPHONY.md)
 - [NetLab Media 0.1.0: возможности и проверка](UPDATE-MEDIA-0.1.0.md)
+
+- [NetLab Academy: обучение внутри книги и подсветка поиска](UPDATE-ACADEMY-0.1.0.md)
+- [Полный каталог 215 достижений](NETLAB-ACHIEVEMENTS.md)

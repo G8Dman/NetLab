@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:finals/f01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Работающая лаборатория"
+    },
+    "description": {
+      "text": "Показать свой питаемый стенд с коммутатором, маршрутизатором, двумя подсетями и сохранёнными настройками; успешно выполнить клиентский обмен через границу сетей."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

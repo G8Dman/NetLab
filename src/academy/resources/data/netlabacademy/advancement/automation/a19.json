@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a10",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Посылка через шлюз"
+    },
+    "description": {
+      "text": "Провести доставку между своими интерфейсами в разных подсетях с явным адресом удалённого получателя."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

@@ -48,6 +48,7 @@ public final class CableInteraction {
         }
         if(!device.decorate(port,color,name)){player.displayClientMessage(Component.literal("Второй конец кабеля не загружен или соединение уже удалено."),true);return true;}
         boolean painting=stack.getItem() instanceof DyeItem;
+        if((painting?color!=peer.color():!name.equals(peer.name()))&&player instanceof net.minecraft.server.level.ServerPlayer p)dev.netlab.api.LearningEvents.emit(p,painting?"cable.color":"cable.name",device,port/128,"circuit",peer.circuit());
         if(!player.isCreative())stack.shrink(1);
         player.displayClientMessage(Component.literal(painting?"Кабель окрашен.":"Имя кабеля: "+name),true);
         return true;

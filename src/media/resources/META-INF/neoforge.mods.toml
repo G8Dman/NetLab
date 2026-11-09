@@ -3,13 +3,13 @@ loaderVersion="[2,)"
 license="All Rights Reserved"
 [[mods]]
 modId="netlabmedia"
-version="0.1.0-alpha"
+version="0.1.1-alpha"
 displayName="NetLab Media"
 description='''IPTV headends, synchronized television, audio distribution and routed microphone IP calls.'''
 [[dependencies.netlabmedia]]
 modId="netlab"
 type="required"
-versionRange="[0.22.0-alpha,)"
+versionRange="[0.23.0-alpha,)"
 ordering="AFTER"
 side="BOTH"
 [[dependencies.netlabmedia]]

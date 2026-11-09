@@ -1,0 +1,5 @@
+# These affect only the final "Знаю свою сборку" goal, never the availability of individual tasks.
+# Copy to <world>/serverconfig/netlabacademy-server.toml; restart before testing new final policies.
+requireExternalInternetForFinal = false
+requireMicrophoneForFinal = false
+requireFluidTanksForFinal = false

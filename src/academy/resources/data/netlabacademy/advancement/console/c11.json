@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:console/c09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Память пережила выключение"
+    },
+    "description": {
+      "text": "Штатно выключить и включить настроенное устройство; проверить сохранённый IP/hostname с активной картой. Перезапуск Minecraft для достижения не нужен."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Контроллер трафика"
+    },
+    "description": {
+      "text": "Установить контроллер в шкаф, подключить Console и LAN, обеспечить питание."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

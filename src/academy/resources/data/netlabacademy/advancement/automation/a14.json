@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a13",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Уголь туда, где горит"
+    },
+    "description": {
+      "text": "Подключить мультиинтерфейс к печи, определить доступную сторону/слоты и успешно пополнить её топливный слот."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

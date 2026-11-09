@@ -30,6 +30,7 @@ public final class Study {
         }
         for(var p:level.players())if(p.getItemBySlot(EquipmentSlot.HEAD).is(NetLab.GOGGLES.get())){
             var visible=events.stream().filter(e->p.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(BlockPos.of(e.from())))<128*128||p.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(BlockPos.of(e.to())))<128*128).toList();
+            if(!visible.isEmpty())dev.netlab.api.LearningEvents.emit(p,"study.packet",null,0,"protocol",visible.getFirst().protocol(),"items",visible.stream().anyMatch(v->!v.item().isBlank()));
             for(int offset=0;offset<visible.size();offset+=256)PacketDistributor.sendToPlayer(p,new Packets.Trace(GSON.toJson(new Batch(Simulation.now(level),visible.subList(offset,Math.min(visible.size(),offset+256))))));
         }
         network.traffic.clear();

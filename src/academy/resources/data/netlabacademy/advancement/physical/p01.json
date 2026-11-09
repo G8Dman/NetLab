@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:physical/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Всё по местам"
+    },
+    "description": {
+      "text": "Установить серверный шкаф и закрепить в нём первое устройство."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

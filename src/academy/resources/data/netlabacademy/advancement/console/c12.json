@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:console/c04",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Без привязки к столу"
+    },
+    "description": {
+      "text": "Портативным терминалом изменить настройку, закрыть сеанс и повторно проверить, что настройка осталась, а история сеанса очищена."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a20",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Место не бесконечно"
+    },
+    "description": {
+      "text": "На своём стенде отправить жидкость в частично заполненный бак; проверить сохранение невыданного остатка в механике билета."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

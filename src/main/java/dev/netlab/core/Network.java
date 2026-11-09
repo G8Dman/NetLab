@@ -12,6 +12,9 @@ public final class Network {
     public Wire(Endpoint a,Endpoint b,double length){this(a,b,length,"auto");}
   }
   public record Result(boolean success, String text, List<Long> path) {}
+  public record Operation(String kind,long source,String destination,String protocol,int port,Result result,int bytes,long started,long finished) {}
+  public java.util.function.Consumer<Operation> observer;
+
   public record Hop(Endpoint end, List<Long> path,long arrival) {}
   public record Choice(int port, String nextHop, int prefix, int distance, int metric, String protocol) {}
   private record Frame(Endpoint end, int tag, List<Long> path,long arrival) {}
@@ -190,7 +193,7 @@ public final class Network {
             if(window[0]!=second){window[0]=second;window[1]=0;}
             if(++window[1]>input.dhcpRate){input.errDisabled=true;input.drops++;dropAt(frame.end);Switching.log(d,"DHCP rate exceeded "+d.portName(frame.end.port));continue;}
           }
-          if(frameProtocol.equals("DHCP-OFFER")&&d.os().dhcpSnooping&&Switching.vlans(d.os().dhcpSnoopingVlans).contains(vlan)&&!input.dhcpTrust){input.drops++;dropAt(frame.end);continue;}
+          if(frameProtocol.equals("DHCP-OFFER")&&d.os().dhcpSnooping&&Switching.vlans(d.os().dhcpSnoopingVlans).contains(vlan)&&!input.dhcpTrust){input.drops++;dropAt(frame.end);if(observer!=null)observer.accept(new Operation("dhcp-snooping-drop",frame.end.device(),"","udp",67,new Result(false,"Untrusted DHCP offer",frame.path()),0,cursor,cursor));continue;}
         }
         int known=recording&&!frameDestination.isEmpty()?switching.lookup(frame.end.device,vlan,frameDestination):-1;
         int knownGroup=known>=0?d.ports.get(known).channelGroup:0;
@@ -622,7 +625,7 @@ public final class Network {
     return new ApplicationDelivery(delivery.result,delivery.packet.payload.clone(),delivery.device);
   }
   public Result ping(long from, String destination) {
-    return pingRecorded(from,destination);
+    long began=cursor;var result=pingRecorded(from,destination);if(observer!=null)observer.accept(new Operation("ping",from,destination,destination.contains(":")?"icmpv6":"icmp",0,result,64,began,cursor));return result;
   }
   private Result pingRecorded(long from,String destination) {
     refreshServices();
@@ -857,6 +860,8 @@ public final class Network {
                                .append('\n'));
     return out.length() == 0 ? "No DHCP pools" : out.toString();
   }
+  /** Selected forwarding decision, without emitting packets or changing counters. */
+  public String forwardingProtocol(long id,String destination){var choice=route(id,destination);return choice==null?"":choice.protocol();}
   public String routeTable(long id, boolean six, String filter) {
     refreshServices();
     Device d = devices.get(id);

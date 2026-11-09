@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:wifi/w04",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Не просто полоски"
+    },
+    "description": {
+      "text": "Выполнить успешный ping с Wi-Fi-клиента на проводной узел LAN."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

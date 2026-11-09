@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a10",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Рецепт на сервере"
+    },
+    "description": {
+      "text": "Создать поддержанный шаблон изготовления через мультиинтерфейс и верстак; получить результат фактического выполнения. Рекурсивный автокрафт AE2 не требуется."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

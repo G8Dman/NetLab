@@ -20,7 +20,7 @@ def text_value(text, key):
 
 def main():
     specs = [('netlab', 'netlab', text_value((ROOT / 'gradle.properties').read_text(), 'mod_version'))]
-    for name in ('automation', 'mobile', 'sputnik', 'media'):
+    for name in ('automation', 'mobile', 'sputnik', 'media', 'academy'):
         metadata = (ROOT / 'src' / name / 'resources/META-INF/neoforge.mods.toml').read_text()
         specs.append(('netlab' + name, 'netlab-' + name, text_value(metadata, 'version')))
     output = ROOT / 'mods'
@@ -47,7 +47,7 @@ def main():
     # Remove only obsolete builds of our known mods; never silently remove foreign files.
     for p in output.iterdir():
         if p.name not in expected:
-            if p.is_file() and re.fullmatch(r'netlab(?:-automation|-mobile|-sputnik|-media)?-[0-9][A-Za-z0-9.+_-]*\.jar', p.name):
+            if p.is_file() and re.fullmatch(r'netlab(?:-automation|-mobile|-sputnik|-media|-academy)?-[0-9][A-Za-z0-9.+_-]*\.jar', p.name):
                 p.unlink()
             else:
                 raise ValueError('Unexpected file in ready-to-install folder: ' + p.name)
@@ -67,7 +67,7 @@ def main():
                      'installation': 'https://minecolonies.com/wiki/installation/'}]}
     (ROOT / 'MODS.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     (ROOT / 'SHA256SUMS.txt').write_text(''.join(e['sha256'] + '  ' + e['file'] + '\n' for e in entries), encoding='utf-8')
-    print('Ready-to-install folder: mods/ (exactly five NetLab JARs, no third-party mods)')
+    print('Ready-to-install folder: mods/ (exactly six NetLab JARs, no third-party mods)')
 
 
 if __name__ == '__main__':

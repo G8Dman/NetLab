@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:mobile/m02",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Радиоблок у антенны"
+    },
+    "description": {
+      "text": "Соединить оба RF-порта антенны с портами одного RRU; расстояние должно соответствовать правилам Mobile."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmobile"
+    }
+  ]
+}

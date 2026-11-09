@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:sputnik/s09",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Провайдер выпускает в интернет"
+    },
+    "description": {
+      "text": "Настроить интернет-шлюз, его связь с HUB и необходимые игровые маршруты; подтвердить готовность сервиса выхода."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    }
+  ]
+}

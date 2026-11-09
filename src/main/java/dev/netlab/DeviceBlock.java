@@ -50,6 +50,7 @@ public class DeviceBlock extends Block implements EntityBlock {
     if(!l.isClientSide&&l.getBlockEntity(p) instanceof DeviceEntity host&&(stack.has(NetLab.CONFIGURATION.get())||stack.getOrDefault(net.minecraft.core.component.DataComponents.CUSTOM_DATA,net.minecraft.world.item.component.CustomData.EMPTY).copyTag().contains("netlabDevice"))){
       host.device=dev.netlab.api.RackDevices.restore(stack,kind);PowerSystem.attached(host,0);host.changed();
     }
+    if(placer instanceof ServerPlayer player&&!l.isClientSide&&l.getBlockEntity(p) instanceof DeviceEntity host)dev.netlab.api.LearningEvents.emit(player,"placed",host,0);
   }
   @Override
   protected VoxelShape getShape(

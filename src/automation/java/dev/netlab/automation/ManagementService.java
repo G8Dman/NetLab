@@ -71,10 +71,10 @@ public final class ManagementService {
             }else{
                 var session=SESSIONS.get(player.getUUID());if(session==null||session.pc!=host||!session.token.equals(request.token()))throw new IllegalArgumentException("Сначала войди на сервер");valid(player,session);session.expires=level.getGameTime()+6000;
                 var body=q.deepCopy();body.addProperty("op","MANAGEMENT_"+request.action());body.addProperty("session",session.token);
-                future=wire(player,session,false,body).thenCompose(received->{current(player,id);if(SESSIONS.get(player.getUUID())!=session)throw new IllegalArgumentException("Сеанс изменился");return execute(session,request.action(),received);}).thenApply(status->state(session,status)).thenCompose(out->{current(player,id);return wire(player,session,true,out);});
+                future=wire(player,session,false,body).thenCompose(received->{current(player,id);if(SESSIONS.get(player.getUUID())!=session)throw new IllegalArgumentException("Сеанс изменился");return AutomationLearning.gui(player,host instanceof dev.netlab.api.PortableHosts.Host,()->execute(session,request.action(),received));}).thenApply(status->state(session,status)).thenCompose(out->{current(player,id);return wire(player,session,true,out);});
             }
         }catch(RuntimeException error){future=CompletableFuture.failedFuture(error);}
-        future.whenComplete((result,error)->{if(!PENDING.remove(player.getUUID(),id))return;if(error!=null)error(player,request.pc(),AutomationService.reason(error));else{if(request.action().equals("login"))rememberServer(player,result.get("server").getAsString());result.add("history",historyFor(player,host));PacketDistributor.sendToPlayer(player,new ManagementPackets.State(request.pc(),result.toString()));}});
+        future.whenComplete((result,error)->{if(!PENDING.remove(player.getUUID(),id))return;if(error!=null)error(player,request.pc(),AutomationService.reason(error));else{if(request.action().equals("login")){rememberServer(player,result.get("server").getAsString());dev.netlab.api.LearningEvents.emit(player,"automation.login",host,0,"phone",host instanceof dev.netlab.api.PortableHosts.Host);}result.add("history",historyFor(player,host));PacketDistributor.sendToPlayer(player,new ManagementPackets.State(request.pc(),result.toString()));}});
     }
     private static void current(ServerPlayer p,long id){if(!Objects.equals(PENDING.get(p.getUUID()),id))throw new CancellationException("Запрос отменён");}
     private static CompletableFuture<String> execute(Session s,String action,JsonObject q){
@@ -83,6 +83,7 @@ public final class ManagementService {
             case "refresh":if(q.has("jobPage")){s.jobPage=number(q,"jobPage",s.jobPage,0,31);return CompletableFuture.completedFuture("Журнал");}s.page=number(q,"page",s.page,0,63);return AutomationService.catalog(server,s.page).thenApply(c->{s.catalog=c;return "Обновлено";});
             case "inspect":return AutomationService.inspect(server,AutomationService.find(level,ip(q,"source"))).thenApply(snapshot->{s.snapshot=snapshot;return "Состояние получено по сети";});
             case "transfer":return AutomationService.start(server,ip(q,"source"),ip(q,"destination"),item(q,"item"),number(q,"count",1,1,ServerHardware.itemLimit(server.device)),number(q,"sourceSlot",-1,-1,255),number(q,"destinationSlot",-1,-1,255));
+            case "slotsView":if(s.snapshot.has("inventory"))dev.netlab.api.LearningEvents.owner(level,server.owner,"automation.slots",server.host,server.slot);return CompletableFuture.completedFuture("Фильтр слотов изменён");
             case "hardware":return CompletableFuture.completedFuture(ServerThermal.summary(server.device));
             case "transferFluid":return AutomationService.startFluid(server,ip(q,"source"),ip(q,"destination"),fluid(q),number(q,"amount",1000,1,MachineFluids.MAX_AMOUNT),q.has("fluidHash")?q.get("fluidHash").getAsInt():null);
             case "running":server.running=!server.running;break;

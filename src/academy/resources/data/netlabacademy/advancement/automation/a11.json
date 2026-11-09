@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a07",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Отправить мышкой"
+    },
+    "description": {
+      "text": "Провести ещё одну подтверждённую передачу через графический выбор интерфейса, предмета и количества."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:routing/r01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "У адреса появилось имя"
+    },
+    "description": {
+      "text": "Настроить доступную DNS-запись и успешно разрешить её с клиента через nslookup; возвращённый адрес должен совпасть с записью."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

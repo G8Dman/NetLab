@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 /** Carry On may move the whole physical rack, never endpoints of live cables. */
 public final class RackCarry {
     private RackCarry() {}
+    public static String fingerprint(DeviceEntity host){String value=host.device.identity+":"+dev.netlab.core.Hardware.ensure(host.device).modules+":"+(host.upperDevice==null?"empty":host.upperDevice.identity+":"+dev.netlab.core.Hardware.ensure(host.upperDevice).modules);try{return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)));}catch(java.security.NoSuchAlgorithmException e){throw new IllegalStateException(e);}}
+
     public static boolean rack(DeviceEntity host) {
         return host.getBlockState().getBlock() instanceof DeviceBlock block && block.rack;
     }

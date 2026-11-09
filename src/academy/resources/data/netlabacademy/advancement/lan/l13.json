@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l12",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Резерв сработал"
+    },
+    "description": {
+      "text": "Отключить активный путь собственного STP-стенда и восстановить связь через резервный после пересчёта дерева."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

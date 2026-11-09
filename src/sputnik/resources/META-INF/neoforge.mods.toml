@@ -3,13 +3,13 @@ loaderVersion="[2,)"
 license="All Rights Reserved"
 [[mods]]
 modId="netlabsputnik"
-version="0.3.0-alpha"
+version="0.3.1-alpha"
 displayName="NetLab Sputnik"
 description='''VSAT satellite links, provider hubs, real web access and background speakers.'''
 [[dependencies.netlabsputnik]]
 modId="netlab"
 type="required"
-versionRange="[0.21.0-alpha,)"
+versionRange="[0.23.0-alpha,)"
 ordering="AFTER"
 side="BOTH"
 [[dependencies.netlabsputnik]]

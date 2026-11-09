@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:routing/r03",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Соседи OSPF"
+    },
+    "description": {
+      "text": "Согласовать OSPF на своём стенде, увидеть изученный маршрут и провести обмен без подмены результата статическим маршрутом."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

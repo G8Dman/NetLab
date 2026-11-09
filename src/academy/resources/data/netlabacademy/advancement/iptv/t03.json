@@ -1,0 +1,37 @@
+{
+  "parent": "netlabacademy:iptv/t02",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Пульт редактора"
+    },
+    "description": {
+      "text": "С ПК/ноутбука успешно войти в управление IPTV по доступному игровому IP сервера."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmedia"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "voicechat"
+    }
+  ]
+}

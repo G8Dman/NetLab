@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:sputnik/s02",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Абонент по идентификатору"
+    },
+    "description": {
+      "text": "Зарегистрировать в HUB настоящий ID своего VSAT-модема и согласованный абонентский ключ. Не путать ID модема с IP или ID BUC/LNB."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    }
+  ]
+}

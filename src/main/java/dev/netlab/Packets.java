@@ -10,6 +10,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 public final class Packets {
+  public record LearningHint(BlockPos pos,String kind,String value) implements CustomPacketPayload {
+    public static final Type<LearningHint> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(NetLab.ID,"learning_hint"));
+    public static final StreamCodec<RegistryFriendlyByteBuf,LearningHint> CODEC=StreamCodec.composite(BlockPos.STREAM_CODEC,LearningHint::pos,ByteBufCodecs.stringUtf8(24),LearningHint::kind,ByteBufCodecs.stringUtf8(96),LearningHint::value,LearningHint::new);
+    public Type<LearningHint> type(){return TYPE;}
+  }
   public record WifiRequest(BlockPos pos,int bay,String action,String json) implements CustomPacketPayload {
     public static final Type<WifiRequest> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(NetLab.ID,"wifi_request"));
     public static final StreamCodec<RegistryFriendlyByteBuf,WifiRequest> CODEC=StreamCodec.composite(BlockPos.STREAM_CODEC,WifiRequest::pos,ByteBufCodecs.VAR_INT,WifiRequest::bay,ByteBufCodecs.stringUtf8(16),WifiRequest::action,ByteBufCodecs.stringUtf8(2048),WifiRequest::json,WifiRequest::new);
@@ -87,6 +92,7 @@ public final class Packets {
     r.playToServer(PanelRequest.TYPE,PanelRequest.CODEC,(msg,ctx)->FrontPanel.handle((ServerPlayer)ctx.player(),msg));
     r.playToClient(PanelData.TYPE,PanelData.CODEC,(msg,ctx)->dev.netlab.client.Client.panel(msg));
     r.playToClient(Trace.TYPE,Trace.CODEC,(msg,ctx)->dev.netlab.client.StudyClient.receive(msg.json()));
+    r.playToServer(LearningHint.TYPE,LearningHint.CODEC,(q,c)->{dev.netlab.api.LearningEvents.hint((ServerPlayer)c.player(),new dev.netlab.api.LearningEvents.Hint(q.pos(),q.kind(),q.value()));});
     r.playToServer(Command.TYPE,Command.CODEC,(msg,ctx)->ConsoleCommands.handle((ServerPlayer)ctx.player(),msg));
     r.playToServer(Complete.TYPE, Complete.CODEC, (msg, ctx) -> {
       var player = (ServerPlayer) ctx.player();
@@ -103,6 +109,7 @@ public final class Packets {
           var connection=ConsoleAccess.target(device,player.getUUID(),false);
           if(connection==null)return;
           var completion=dev.netlab.api.ConsoleExtensions.complete(connection,msg.prefix);
+          if(!completion.value().equals(msg.prefix))dev.netlab.api.LearningEvents.emit(player,"console.tab",connection.entity(),connection.id()==connection.entity().slotId(1)?1:0,"value",completion.value());
           PacketDistributor.sendToPlayer(player,new Completed(msg.pos,msg.prefix,completion.value(),String.join("\n",completion.choices())));return;
         }
         var completion = device.session(player.getUUID()).complete(device.selectedDevice(player.getUUID()), msg.prefix);

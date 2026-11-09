@@ -10,7 +10,7 @@ public final class StudyScreen extends Screen {
     @Override protected void init(){
         int x=width/2-150,y=Math.max(52,height/2-64);
         double[] speeds={.1,.25,.5,1,2,4};
-        for(int i=0;i<speeds.length;i++){final double speed=speeds[i];addRenderableWidget(Button.builder(Component.literal(speed+"x"),b->StudyClient.preview(speed)).bounds(x+i*50,y,48,20).build());}
+        for(int i=0;i<speeds.length;i++){final double speed=speeds[i];addRenderableWidget(Button.builder(Component.literal(speed+"x"),b->{StudyClient.preview(speed);net.neoforged.neoforge.network.PacketDistributor.sendToServer(new dev.netlab.Packets.LearningHint(net.minecraft.core.BlockPos.ZERO,"study.speed",""));}).bounds(x+i*50,y,48,20).build());}
         addRenderableWidget(Button.builder(Component.literal(StudyClient.paused?"Продолжить":"Пауза"),b->{StudyClient.pausePlayback();rebuildWidgets();}).bounds(x,y+30,145,20).build());
         addRenderableWidget(Button.builder(Component.literal(StudyClient.visible?"Пакеты: видны":"Пакеты: скрыты"),b->{StudyClient.visible=!StudyClient.visible;b.setMessage(Component.literal(StudyClient.visible?"Пакеты: видны":"Пакеты: скрыты"));}).bounds(x+155,y+30,145,20).build());
         addRenderableWidget(Button.builder(Component.literal("Синхронно с сетью (1×)"),b->{StudyClient.synchronize();rebuildWidgets();}).bounds(x,y+60,300,20).build());

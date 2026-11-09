@@ -62,6 +62,12 @@ sourceSets {
         compileClasspath += sourceSets.main.output + sourceSets.sputnik.output + sourceSets.main.compileClasspath + files('.tools/sputnik/de.keksuccino.rinku-neoforge-3.0.4-1.21.1-mod.jar', '.tools/media/voicechat-api-2.6.0.jar')
         runtimeClasspath += sourceSets.main.output + sourceSets.sputnik.output + sourceSets.main.runtimeClasspath
     }
+    academy {
+        java.setSrcDirs(['src/academy/java'])
+        resources.setSrcDirs(['src/academy/resources'])
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
 }
 
 neoForge {
@@ -128,6 +134,7 @@ neoForge {
     }
 
     mods {
+        netlabacademy { sourceSet(sourceSets.academy) }
         netlabmedia { sourceSet(sourceSets.media) }
         netlabmobile { sourceSet(sourceSets.mobile) }
         netlabsputnik { sourceSet(sourceSets.sputnik) }
@@ -241,7 +248,7 @@ tasks.named('check') { dependsOn coreTest }
 tasks.register('automationJar', Jar) {
     dependsOn automationClasses
     archiveBaseName = 'netlab-automation'
-    archiveVersion = '0.7.3-alpha'
+    archiveVersion = '0.7.4-alpha'
     from sourceSets.automation.output
 }
 tasks.named('assemble') { dependsOn automationJar }
@@ -252,7 +259,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.mobile.output
 tasks.register('mobileJar', Jar) {
     dependsOn mobileClasses
     archiveBaseName = 'netlab-mobile'
-    archiveVersion = '0.4.0-alpha'
+    archiveVersion = '0.4.1-alpha'
     from sourceSets.mobile.output
 }
 tasks.named('assemble') { dependsOn mobileJar }
@@ -262,7 +269,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.sputnik.output
 tasks.register('sputnikJar', Jar) {
     dependsOn sputnikClasses
     archiveBaseName = 'netlab-sputnik'
-    archiveVersion = '0.3.0-alpha'
+    archiveVersion = '0.3.1-alpha'
     from sourceSets.sputnik.output
 }
 tasks.named('assemble') { dependsOn sputnikJar }
@@ -271,7 +278,16 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.media.output
 tasks.register('mediaJar', Jar) {
     dependsOn mediaClasses
     archiveBaseName = 'netlab-media'
-    archiveVersion = '0.1.0-alpha'
+    archiveVersion = '0.1.1-alpha'
     from sourceSets.media.output
 }
 tasks.named('assemble') { dependsOn mediaJar }
+sourceSets.coreChecks.compileClasspath += sourceSets.academy.output
+sourceSets.coreChecks.runtimeClasspath += sourceSets.academy.output
+tasks.register('academyJar', Jar) {
+    dependsOn academyClasses
+    archiveBaseName = 'netlab-academy'
+    archiveVersion = '0.1.0-alpha'
+    from sourceSets.academy.output
+}
+tasks.named('assemble') { dependsOn academyJar }

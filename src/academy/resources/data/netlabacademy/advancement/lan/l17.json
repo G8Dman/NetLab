@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l06",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Доверяй правильному DHCP"
+    },
+    "description": {
+      "text": "Настроить DHCP Snooping: настоящий ответ проходит с trusted-порта, ответ собственного тестового постороннего DHCP отбрасывается."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

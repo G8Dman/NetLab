@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:lan/l07",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Граница широковещательного домена"
+    },
+    "description": {
+      "text": "На собственном стенде показать отсутствие L2-пути между разными access-VLAN при отсутствии межвлановой маршрутизации. Причина должна определяться моделью, а не произвольным таймаутом."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

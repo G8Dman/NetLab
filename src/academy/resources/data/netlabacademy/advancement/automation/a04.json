@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a03",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Первый мультиинтерфейс"
+    },
+    "description": {
+      "text": "Установить и запитать мультиинтерфейс, подключить его к поддержанному инвентарю и к LAN."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

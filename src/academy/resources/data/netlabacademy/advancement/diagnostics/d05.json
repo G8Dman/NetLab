@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:diagnostics/d04",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Администратор LAN"
+    },
+    "description": {
+      "text": "Создать пароль управления LAN, войти администратором и подтвердить зарегистрированную сеть."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

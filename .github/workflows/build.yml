@@ -1,4 +1,4 @@
-name: Build four NetLab mods
+name: Build six NetLab mods
 
 on: [push, pull_request]
 
@@ -41,6 +41,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: cmd
         run: dev.cmd build
+
+      - name: Check Academy and handbook without starting Minecraft
+        if: runner.os != 'Windows'
+        run: python tools/check_academy.py
 
       - name: Prepare ready-to-install NetLab mods
         run: python tools/package_mods.py

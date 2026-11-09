@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:wifi/w05",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Вернулся в зону"
+    },
+    "description": {
+      "text": "Выйти из покрытия и вернуться; клиент должен восстановить соединение с сохранённой сетью."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

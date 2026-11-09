@@ -22,7 +22,7 @@ public final class ModuleAssemblerMenu extends AbstractContainerMenu {
         addSlot(new Slot(output,0,242,92){
             @Override public boolean mayPlace(ItemStack stack){return false;}
             @Override public boolean mayPickup(Player player){return canCraft();}
-            @Override public void onTake(Player player,ItemStack stack){consume();super.onTake(player,stack);}
+            @Override public void onTake(Player player,ItemStack stack){boolean made=canCraft();consume();if(made&&player instanceof net.minecraft.server.level.ServerPlayer p)dev.netlab.api.LearningEvents.emit(p,"module.craft",null,0);super.onTake(player,stack);}
         });
         for(int row=0;row<3;row++)for(int col=0;col<9;col++)addSlot(new Slot(inventory,col+row*9+9,180+col*18,151+row*18));
         for(int col=0;col<9;col++)addSlot(new Slot(inventory,col,180+col*18,209));

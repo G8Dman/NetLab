@@ -20,6 +20,8 @@ public final class ScrewdriverItem extends Item {
         int slot=c.getClickLocation().y-p.getY()>=.5?1:0;var d=slot==0?host.device:host.upperDevice;
         if(d==null||d.kind.equals("rack"))return InteractionResult.CONSUME;
         if(!RackDevices.allowed((ServerPlayer)player,host,slot)){player.displayClientMessage(net.minecraft.network.chat.Component.literal("Нет доступа к устройству"),true);return InteractionResult.CONSUME;}
+        boolean disconnected=host.links.keySet().stream().noneMatch(k->k/128==slot)&&!host.powerLinks.containsKey(512+slot);
+        if(disconnected&&player instanceof ServerPlayer sp)dev.netlab.api.LearningEvents.emit(sp,"rack.remove",host,slot);
         PowerSystem.disconnect(host,512+slot,player);
         var item=RackDevices.item(d);if(item.isEmpty())return InteractionResult.PASS;
         for(int port:new java.util.ArrayList<>(host.links.keySet()))if(port/128==slot)host.disconnect(port,player);

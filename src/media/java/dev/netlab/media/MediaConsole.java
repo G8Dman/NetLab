@@ -35,7 +35,7 @@ public final class MediaConsole implements ConsoleExtensions.Handler {
             case "sip server"->{require(kind,MediaHardware.PHONE,"pc");arity(a,3);Device.ip(a[2]);s.server=a[2];}
             case "sip account"->{require(kind,MediaHardware.PHONE,"pc");arity(a,4);MediaState.number(a[2]);MediaState.password(a[3]);s.number=a[2];s.password=a[3];}
             default->throw new IllegalArgumentException(HELP);
-        }r.changed(s);
+        }r.changed(s);MediaLearning.configure(r,text,actor);
     }
     public static int channelLimit(Device d){return Hardware.ensure(d).modules.containsValue(MediaHardware.VIDEO)?16:4;}
     private static MediaState.Channel channel(MediaState s,String text){var c=s.channels.get(Addressing.number(text,1,9999));if(c==null)throw new IllegalArgumentException("Канал не создан");return c;}

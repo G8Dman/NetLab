@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:sputnik/s01",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Платы в HUB"
+    },
+    "description": {
+      "text": "При Power OFF установить требуемые платы управления, передачи и приёма в HUB; включить устройство с питанием и картой."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    }
+  ]
+}

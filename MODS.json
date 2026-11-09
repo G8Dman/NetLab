@@ -9,38 +9,45 @@
   "mods": [
     {
       "id": "netlab",
-      "version": "0.22.0-alpha",
-      "file": "mods/netlab-0.22.0-alpha.jar",
-      "bytes": 784710,
-      "sha256": "c38d9f159625bea241f07e342a9d422883677d8e33236433b84ec84dd9cecb8f"
+      "version": "0.23.0-alpha",
+      "file": "mods/netlab-0.23.0-alpha.jar",
+      "bytes": 811824,
+      "sha256": "d87276c3ff22a232bde4f1dddcdc50b07fd22f2329cfc3f3aaf72e8d7b3aced8"
     },
     {
       "id": "netlabautomation",
-      "version": "0.7.3-alpha",
-      "file": "mods/netlab-automation-0.7.3-alpha.jar",
-      "bytes": 245123,
-      "sha256": "c834a80ab287d188faf91035e78fba3aaa207e2e2c1ebf13b5223734d4031e3c"
+      "version": "0.7.4-alpha",
+      "file": "mods/netlab-automation-0.7.4-alpha.jar",
+      "bytes": 252252,
+      "sha256": "706793d337ee7c925029a28aeabf8808618f7dc73f6f75c459bb9eb8e9113896"
     },
     {
       "id": "netlabmobile",
-      "version": "0.4.0-alpha",
-      "file": "mods/netlab-mobile-0.4.0-alpha.jar",
-      "bytes": 172467,
-      "sha256": "f21e44bc37b233add54066b3e56e824b466044356380fa8e13438fe18e4932ee"
+      "version": "0.4.1-alpha",
+      "file": "mods/netlab-mobile-0.4.1-alpha.jar",
+      "bytes": 178336,
+      "sha256": "5a3af2a0b35f17e0e92725e99d69c28d231c952ab12f4821a3f6580cd167922a"
     },
     {
       "id": "netlabsputnik",
-      "version": "0.3.0-alpha",
-      "file": "mods/netlab-sputnik-0.3.0-alpha.jar",
-      "bytes": 181831,
-      "sha256": "67c9bff86de59c4a749a742d06bc65fb2ae527d6092e49efcf36abe2ab68cfbe"
+      "version": "0.3.1-alpha",
+      "file": "mods/netlab-sputnik-0.3.1-alpha.jar",
+      "bytes": 190886,
+      "sha256": "7ffd3642d131e5e891bb64dfc4ac84e5d0fea42977d18a38428910da4250eb77"
     },
     {
       "id": "netlabmedia",
+      "version": "0.1.1-alpha",
+      "file": "mods/netlab-media-0.1.1-alpha.jar",
+      "bytes": 181279,
+      "sha256": "d1c0a2c7027704cd490c58a640b584a9faecd67ebaed0762c0ea6e04a54064c8"
+    },
+    {
+      "id": "netlabacademy",
       "version": "0.1.0-alpha",
-      "file": "mods/netlab-media-0.1.0-alpha.jar",
-      "bytes": 165395,
-      "sha256": "6c2d4b89ffa163e53c26f5f6eaf586f9d1680ccf70050dc7dce0b3d30326a48d"
+      "file": "mods/netlab-academy-0.1.0-alpha.jar",
+      "bytes": 220035,
+      "sha256": "c9c142875095158d1999362164e12156a07ec9db5a81815940269787f596fdcc"
     }
   ],
   "external_dependencies": [

@@ -39,7 +39,9 @@ public final class TrafficControllers extends SavedData {
     }
     public static String execute(ServerLevel l,Network n,long id,dev.netlab.core.Console cli,UUID player,String line){
         var store=get(l);
-        try{return TrafficConsole.execute(store.authority,domain(l,n,id),n,id,cli,player,l.getGameTime(),line);}
+        try{String answer=TrafficConsole.execute(store.authority,domain(l,n,id),n,id,cli,player,l.getGameTime(),line);var role=TrafficConsole.role(cli);var host=Simulation.entity(l,id);int bay=host!=null&&id==host.slotId(1)?1:0;
+            if(store.authority.valid(role)){dev.netlab.api.LearningEvents.owner(l,player,role.vlan==0?"traffic.admin":"traffic.vlan.login",host,bay);String cmd=line.strip().toLowerCase(Locale.ROOT);if(role.vlan>0&&cmd.startsWith("speed lan")&&answer.startsWith("%"))dev.netlab.api.LearningEvents.owner(l,player,"traffic.scope.denied",host,bay);if(role.vlan>0&&cmd.startsWith("speed vlan")&&!answer.startsWith("%"))dev.netlab.api.LearningEvents.owner(l,player,"traffic.vlan.allowed",host,bay);if(role.vlan==0&&cmd.startsWith("revoke vlan")&&!answer.startsWith("%"))dev.netlab.api.LearningEvents.owner(l,player,"traffic.revoke",host,bay);}
+            return answer;}
         catch(IllegalArgumentException e){cli.pending="";return "% "+e.getMessage()+"\nTrafficControl>";}
         finally{var device=n.devices.get(id);if(device!=null)remember(store.authority,device);store.setDirty();}
     }

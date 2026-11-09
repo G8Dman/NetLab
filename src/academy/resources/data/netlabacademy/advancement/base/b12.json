@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:base/b11",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Своя плата расширения"
+    },
+    "description": {
+      "text": "Произвести в сборщике поддержанный модуль из плат, меди и красной пыли; забрать результат."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

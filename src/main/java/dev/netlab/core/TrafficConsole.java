@@ -7,6 +7,7 @@ public final class TrafficConsole {
     private static final Map<Console,Session> SESSIONS=new WeakHashMap<>();
     private static final Map<String,long[]> ATTEMPTS=new HashMap<>();
     private static final class Session {String domain,state="locked",staged="";int vlan;TrafficAuthority.Lease role;}
+    public static TrafficAuthority.Lease role(Console cli){var s=SESSIONS.get(cli);return s==null||!s.state.equals("ready")?null:s.role;}
     public static String prompt(Console cli){var s=SESSIONS.get(cli);return s!=null&&s.role!=null?"TrafficControl("+(s.role.vlan==0?"admin":"vlan"+s.role.vlan)+")#":"TrafficControl>";}
     public static String open(TrafficAuthority auth,TrafficAuthority.Domain d,Network n,long id,Console cli){
         try{var s=SESSIONS.get(cli);

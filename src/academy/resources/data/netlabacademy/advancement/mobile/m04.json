@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:mobile/m03",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Оптика до BBU"
+    },
+    "description": {
+      "text": "Установить нужные платы BBU, подключить его fronthaul к RRU оптикой и включить используемые порты."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmobile"
+    }
+  ]
+}

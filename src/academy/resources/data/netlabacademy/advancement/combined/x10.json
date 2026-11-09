@@ -1,0 +1,37 @@
+{
+  "parent": "netlabacademy:combined/root",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Звук по всей комнате"
+    },
+    "description": {
+      "text": "Media + Sputnik: из браузера ПК подать звук через разветвитель Media минимум на две колонки с корректным трактом AudioOut → AudioIn."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabmedia"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabsputnik"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "voicechat"
+    }
+  ]
+}

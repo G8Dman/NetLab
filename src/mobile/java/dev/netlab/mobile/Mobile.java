@@ -38,7 +38,7 @@ public final class Mobile {
         BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);TABS.register(bus);
         TABS.register("mobile",()->CreativeModeTab.builder().title(Component.literal("NetLab Mobile")).icon(()->PHONE.get().getDefaultInstance()).displayItems((p,o)->{o.accept(ANTENNA.get());o.accept(RRU.get());o.accept(BBU.get());o.accept(CORE.get());o.accept(STATION.get());o.accept(RF.get());o.accept(BLANK_SIM.get());o.accept(PHONE.get());o.accept(PHONE_DIAGNOSTICS.get());o.accept(PHONE_TERMINAL.get());MODULE_ITEMS.values().forEach(m->o.accept(m.get()));}).build());
         integrate();
-        bus.addListener(MobilePackets::register);bus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event)->event.register(MobileChunks.TICKETS));
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(MobileLearning::tick);bus.addListener(MobilePackets::register);bus.addListener((net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent event)->event.register(MobileChunks.TICKETS));
         var events=net.neoforged.neoforge.common.NeoForge.EVENT_BUS;events.addListener(MobileService::tick);events.addListener(MobileChunks::tick);events.addListener(MobileDemo::register);
         events.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Post event)->RF.get().preview(event));
         events.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent event)->{MobileService.clear();MobilePackets.clear();RF.get().clear();});

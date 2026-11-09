@@ -10,6 +10,7 @@ public final class GuideBookItem extends Item {
     public GuideBookItem(Properties properties){super(properties);}
     @Override public InteractionResultHolder<ItemStack> use(Level level,Player player,InteractionHand hand){
         if(level.isClientSide)dev.netlab.client.Client.openGuide();
+        else if(player instanceof net.minecraft.server.level.ServerPlayer p)dev.netlab.api.LearningEvents.emit(p,"book.open",null,0);
         return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand),level.isClientSide);
     }
 }

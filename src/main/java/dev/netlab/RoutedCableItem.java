@@ -96,7 +96,7 @@ public abstract class RoutedCableItem extends Item {
         }
         var start=source(level,first);
         if(start==null){clear(player.getUUID());message(player,"Начальный разъём выгружен, заменён или занят. Начни маршрут заново.");return InteractionResult.CONSUME;}
-        var result=connect(start,first.port,h,port,first.anchors);if(result.success){CableInventory.install(start,first.port,h,port,context.getItemInHand(),player.isCreative());clear(player.getUUID());}message(player,result.message);
+        var result=connect(start,first.port,h,port,first.anchors);if(result.success){CableInventory.install(start,first.port,h,port,context.getItemInHand(),player.isCreative());if(player instanceof ServerPlayer p)dev.netlab.api.LearningEvents.emit(p,"cable.connect",start,first.port/128,"port",first.port,"anchors",first.anchors.size(),"consumed",!player.isCreative(),"power",this instanceof PowerCableItem,"peer",h.getBlockPos().asLong(),"peerPort",port);clear(player.getUUID());}message(player,result.message);
         return InteractionResult.CONSUME;
     }
     @Override public final InteractionResultHolder<ItemStack> use(Level level,Player player,InteractionHand hand){

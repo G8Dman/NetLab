@@ -1,0 +1,29 @@
+{
+  "parent": "netlabacademy:automation/a10",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Больше за один запрос"
+    },
+    "description": {
+      "text": "Установить плату объёма и доставить допустимую партию больше базового лимита, без недопустимых размеров стопок."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "netlabautomation"
+    }
+  ]
+}

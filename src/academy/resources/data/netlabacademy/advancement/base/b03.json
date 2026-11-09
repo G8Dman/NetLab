@@ -1,0 +1,23 @@
+{
+  "parent": "netlabacademy:base/b02",
+  "display": {
+    "icon": {
+      "id": "minecraft:paper"
+    },
+    "title": {
+      "text": "Металл будущего"
+    },
+    "description": {
+      "text": "Выплавить слиток цискиума из сырья. Проверяется результат плавки, а не простое наличие слитка."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "evidence": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -111,7 +111,7 @@ public final class ManagementScreen extends Screen {
     }
     private void inventoryGrid(int half){
         button("< Список устройств",left,57,half,()->{inspector=false;rowPage=0;rebuild();});
-        addRenderableWidget(Checkbox.builder(Component.literal(tankInspector?"Убрать пустые баки":"Убрать пустые слоты"),font).pos(left+half+12,57).maxWidth(half).selected(hideEmptySlots).onValueChange((box,selected)->{hideEmptySlots=selected;rowPage=0;rebuild();}).build());
+        addRenderableWidget(Checkbox.builder(Component.literal(tankInspector?"Убрать пустые баки":"Убрать пустые слоты"),font).pos(left+half+12,57).maxWidth(half).selected(hideEmptySlots).onValueChange((box,selected)->{hideEmptySlots=selected;rowPage=0;send("slotsView",form());rebuild();}).build());
         labels.add(new String[]{font.plainSubstrByWidth(nodeLabel(value("source","")),w-130),Integer.toString(left),"83"});
         button(tankInspector?"Баки ▼":"Предметы ▼",left+w-120,80,120,()->{tankInspector=!tankInspector;rowPage=0;rebuild();});
         if(tankInspector){tankGrid();return;}
