@@ -44,7 +44,7 @@ jobs:
 
       - name: Check Academy and handbook without starting Minecraft
         if: runner.os != 'Windows'
-        run: python tools/check_academy.py
+        run: python tools/check_academy.py --online
 
       - name: Prepare ready-to-install NetLab mods
         run: python tools/package_mods.py
