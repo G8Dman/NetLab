@@ -44,6 +44,7 @@
 
 - [IPTV: настройка по устройствам](NETLAB-IPTV.md)
 - [IP Телефония: настройка по устройствам](NETLAB-IP-TELEPHONY.md)
+- [NetLab 0.23.2: сообщение вместо HTML-ошибки авторизации](UPDATE-0.23.2.md)
 - [NetLab Media 0.1.0: возможности и проверка](UPDATE-MEDIA-0.1.0.md)
 
 - [NetLab Academy 0.1.1: одна вкладка и связанное дерево](UPDATE-ACADEMY-0.1.1.md)

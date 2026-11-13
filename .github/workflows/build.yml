@@ -42,7 +42,7 @@ jobs:
         shell: cmd
         run: dev.cmd build
 
-      - name: Check Academy and handbook without starting Minecraft
+      - name: Check Academy, handbook and disconnect messages without starting Minecraft
         if: runner.os != 'Windows'
         run: python tools/check_academy.py --online
 

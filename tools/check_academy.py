@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conditional courses, actual advancement codecs and guide highlighting; never starts the game."""
+"""Conditional courses, advancement codecs, guide highlighting and disconnect text; never starts the game."""
 from pathlib import Path
 import argparse,os,shutil,subprocess,tempfile
 parser=argparse.ArgumentParser(description=__doc__)
@@ -32,5 +32,7 @@ with tempfile.TemporaryDirectory(prefix='netlab-academy-') as temp:
  # No optional addon output, JCEF/Rinku or voice API is present.
  if any(f'/classes/java/{name}' in cp for name in ('automation','mobile','sputnik','media')):raise SystemExit('Optional classes leaked into Academy runtime')
  out=ROOT/'build/academy-runtime-check';out.mkdir(parents=True,exist_ok=True)
- run([java_tool('javac'),'-proc:none','-cp',cp,'-d',str(out),str(ROOT/'tools/AcademyRuntimeCheck.java')])
- run([java_tool('java'),'-Xmx1G','-cp',str(out)+os.pathsep+cp,'AcademyRuntimeCheck'])
+ # The same real component classpath also checks client disconnect text without opening a screen.
+ for main in ('AcademyRuntimeCheck','DisconnectMessageRuntimeCheck'):
+  run([java_tool('javac'),'-proc:none','-cp',cp,'-d',str(out),str(ROOT/'tools'/f'{main}.java')])
+  run([java_tool('java'),'-Xmx1G','-cp',str(out)+os.pathsep+cp,main])

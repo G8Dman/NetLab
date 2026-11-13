@@ -4,5 +4,6 @@
   "package": "dev.netlab.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": ["CarryOnPickupMixin"],
+  "client": ["DisconnectedScreenMixin"],
   "injectors": {"defaultRequire": 1}
 }
