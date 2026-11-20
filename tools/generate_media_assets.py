@@ -24,8 +24,13 @@ def main():
   write(A/f'models/item/{name}.json',{'parent':'minecraft:item/generated','textures':{'layer0':'netlab:item/advanced_circuit_board'}})
  for kind in ['audio','hdmi']:
   write(A/f'models/item/{kind}_cable.json',{'parent':'minecraft:item/generated','textures':{'layer0':'netlabsputnik:item/audio_cable' if kind=='audio' else 'netlab:item/routed_fiber'}})
+ write(A/'models/item/tv_remote.json',{
+  'textures':{'particle':'minecraft:block/black_concrete','case':'minecraft:block/black_concrete','button':'minecraft:block/gray_concrete','power':'minecraft:block/red_concrete'},
+  'elements':[box([5,1,7],[11,15,9],'case'),box([7,12,6.6],[9,14,7],'power'),
+              box([6,8,6.6],[10,10,7],'button'),box([6,5,6.6],[10,7,7],'button')],
+  'display':{'gui':{'rotation':[5,165,-15],'scale':[.85,.85,.85]},'ground':{'scale':[.4,.4,.4]}}})
  ru={'headend':'Медиасервер IPTV','pbx':'Сервер IP-АТС','stb':'IPTV-приставка','tv':'Телевизор NetLab','phone':'IP-телефон Cisco','audio_splitter':'Аудиоразветвитель 1→4','speaker':'Колонка Media'}
- items={'module_nl_media_video':'Плата каналов IPTV — NL-MEDIA-VIDEO','module_nl_media_sessions':'Плата ёмкости АТС — NL-MEDIA-SESSIONS','phone_sip_module':'Модуль IP-телефонии Cisco Pocket','audio_cable':'Аудиокабель 3,5 мм','hdmi_cable':'Видеокабель HDMI'}
+ items={'module_nl_media_video':'Плата каналов IPTV — NL-MEDIA-VIDEO','module_nl_media_sessions':'Плата ёмкости АТС — NL-MEDIA-SESSIONS','phone_sip_module':'Модуль IP-телефонии Cisco Pocket','audio_cable':'Аудиокабель 3,5 мм','hdmi_cable':'Видеокабель HDMI','tv_remote':'Пульт IPTV'}
  write(A/'lang/ru_ru.json',{**{'block.netlabmedia.'+k:v for k,v in ru.items()},**{'item.netlabmedia.'+k:v for k,v in items.items()}})
  write(A/'lang/en_us.json',{**{'block.netlabmedia.'+k:k.replace('_',' ').title() for k in ru},**{'item.netlabmedia.'+k:k.replace('_',' ').title() for k in items}})
  I='minecraft:iron_ingot';C='minecraft:copper_ingot';G='minecraft:gold_ingot';R='minecraft:redstone';Aboard='netlab:advanced_circuit_board';B='netlab:basic_circuit_board';M='netlab:cisco_memory_card';Q='minecraft:quartz';L='minecraft:glass_pane'
@@ -40,7 +45,8 @@ def main():
  ('module_nl_media_video',['GLG','QAQ','GRG'],{'G':G,'L':L,'Q':Q,'A':Aboard,'R':'minecraft:redstone_block'},1),
  ('module_nl_media_sessions',['GQG','AMA','GRG'],{'G':G,'Q':Q,'A':Aboard,'M':M,'R':R},1),
  ('phone_sip_module',[' Q ','BMB',' G '],{'Q':Q,'B':Aboard,'M':M,'G':G},1),
+ ('tv_remote',[' R ','IBI',' C '],{'I':I,'B':B,'C':C,'R':R},1),
  ('audio_cable',['CSC',' G '],{'C':C,'S':'minecraft:string','G':'minecraft:gold_nugget'},6),
  ('hdmi_cable',['GQG','CSC'],{'G':'minecraft:gold_nugget','Q':Q,'C':C,'S':'minecraft:string'},6)]:recipe('media',n,pattern,key,count)
- print('Generated 7 Media device models, 5 item models, and 12 survival recipes.')
+ print('Generated 7 Media device models, 6 item models, and 13 survival recipes.')
 if __name__=='__main__':main()

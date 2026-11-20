@@ -10,5 +10,6 @@
   "item.netlabmedia.module_nl_media_sessions": "Плата ёмкости АТС — NL-MEDIA-SESSIONS",
   "item.netlabmedia.phone_sip_module": "Модуль IP-телефонии Cisco Pocket",
   "item.netlabmedia.audio_cable": "Аудиокабель 3,5 мм",
-  "item.netlabmedia.hdmi_cable": "Видеокабель HDMI"
+  "item.netlabmedia.hdmi_cable": "Видеокабель HDMI",
+  "item.netlabmedia.tv_remote": "Пульт IPTV"
 }

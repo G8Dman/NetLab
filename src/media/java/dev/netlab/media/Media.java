@@ -24,6 +24,7 @@ public final class Media {
     public static final Map<String,DeferredItem<ModuleItem>> MODULES=new LinkedHashMap<>();
     public static final Map<String,DeferredItem<CableItem>> CABLES=new LinkedHashMap<>();
     public static final DeferredItem<PortableModules.ModuleItem> PHONE_SIP=ITEMS.register("phone_sip_module",()->new PortableModules.ModuleItem(new Item.Properties().stacksTo(1),"CISCO-POCKET-SIP","telephony","Модуль IP-телефонии Cisco Pocket"));
+    public static final DeferredItem<TelevisionControls> TV_REMOTE=ITEMS.register("tv_remote",()->new TelevisionControls(new Item.Properties().stacksTo(1)));
     static {for(String kind:MediaHardware.KINDS){var b=BLOCKS.register(kind.substring(6),()->new MediaBlock(BlockBehaviour.Properties.of().strength(3).noOcclusion(),kind));DEVICES.put(kind,b);ITEMS.registerSimpleBlockItem(kind.substring(6),b);}for(String code:MediaHardware.MODULES)MODULES.put(code,ITEMS.register(ModuleItem.itemId(code),()->new ModuleItem(new Item.Properties().stacksTo(16),code)));for(String c:List.of("audio","hdmi"))CABLES.put(c,ITEMS.register(c+"_cable",()->new CableItem(new Item.Properties().stacksTo(1),c)));}
     public static final Supplier<BlockEntityType<MediaEntity>> ENTITY=ENTITIES.register("media_device",()->BlockEntityType.Builder.of(MediaEntity::new,DEVICES.values().stream().map(Supplier::get).toArray(MediaBlock[]::new)).build(null));
     private static boolean integrated;
@@ -39,7 +40,7 @@ public final class Media {
         dev.netlab.sputnik.InternetBridge.external=new MediaInternet();dev.netlab.sputnik.SputnikPackets.EXTRA_AUDIO=MediaAudio::browser;
     }
     public Media(IEventBus bus){BLOCKS.register(bus);ITEMS.register(bus);ENTITIES.register(bus);TABS.register(bus);integrate();NetLab.EXTRA_MODULE_ITEMS.addAll(MODULES.values());
-        TABS.register("media",()->CreativeModeTab.builder().title(Component.literal("NetLab Media")).icon(()->DEVICES.get(MediaHardware.TV).get().asItem().getDefaultInstance()).displayItems((p,o)->{DEVICES.values().forEach(b->o.accept(b.get()));MODULES.values().forEach(m->o.accept(m.get()));CABLES.values().forEach(c->o.accept(c.get()));o.accept(PHONE_SIP.get());}).build());
+        TABS.register("media",()->CreativeModeTab.builder().title(Component.literal("NetLab Media")).icon(()->DEVICES.get(MediaHardware.TV).get().asItem().getDefaultInstance()).displayItems((p,o)->{DEVICES.values().forEach(b->o.accept(b.get()));MODULES.values().forEach(m->o.accept(m.get()));CABLES.values().forEach(c->o.accept(c.get()));o.accept(PHONE_SIP.get());o.accept(TV_REMOTE.get());}).build());
         bus.addListener(MediaPackets::register);var events=net.neoforged.neoforge.common.NeoForge.EVENT_BUS;events.addListener(MediaService::tick);events.addListener(MediaLearning::tick);LearningEvents.HINTS.add(MediaLearning::hint);events.addListener(MediaDemo::register);events.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Post e)->CABLES.values().forEach(c->c.get().preview(e)));events.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent e)->{MediaService.clear();CABLES.values().forEach(c->c.get().clear());});
     }
 }

@@ -10,7 +10,7 @@ public final class MediaState {
     public static final Gson JSON=new Gson();
     public static final class Channel {public String name="",owner="";public Set<String> editors=new LinkedHashSet<>();public List<MediaPlaylist.Entry> playlist=new ArrayList<>();public boolean loop=true,running;public long started;}
     public String owner="",admin="",server="",gateway="",number="",password="";
-    public boolean enabled=true,speakers=true;public int channel=1;public double volume=.7;public Map<Integer,Channel> channels=new TreeMap<>();public Map<String,String> subscribers=new TreeMap<>();
+    public boolean enabled=true,speakers=true,satelliteOnly;public int channel=1;public double volume=.7;public Map<Integer,Channel> channels=new TreeMap<>();public Map<String,String> subscribers=new TreeMap<>();
     public static MediaState get(Device d){var s=d.extensions.containsKey(KEY)?JSON.fromJson(d.extensions.get(KEY),MediaState.class):initial(d);if(s.channels==null)s.channels=new TreeMap<>();if(s.subscribers==null)s.subscribers=new TreeMap<>();return s;}
     public static MediaState initial(Device d){var s=new MediaState();s.speakers=!Set.of(MediaHardware.PHONE,"pc").contains(d.kind);return s;}
     public void save(Device d){d.extensions.put(KEY,JSON.toJson(this));}

@@ -20,7 +20,7 @@ public final class MediaService {
     public record Registration(MediaRef phone,MediaRef pbx,String number,long expiry,long phoneEpoch,long pbxEpoch){}
     public record Use(UUID player,MediaRef ref,long expiry){}
     private record Admin(MediaRef origin,MediaRef server,boolean iptv,long expiry,String hash,long epoch){boolean valid(){return server.live()&&expiry>now(origin)&&hash.equals(server.state().admin)&&epoch==Hardware.ensure(server.device()).epoch&&origin.host().network().routePath(origin.id(),server.ip()).success()&&server.host().network().routePath(server.id(),origin.ip()).success();}}
-    public record Watching(MediaRef tv,MediaRef receiver,MediaRef server,int channel,long expiry){}
+    public record Watching(MediaRef tv,MediaRef receiver,MediaRef server,int channel,long gatewayId,long expiry){}
     private record Viewer(UUID player,long tv){}
     private static final Map<String,Registration> REG=new HashMap<>();
     private static final Map<UUID,Use> USE=new HashMap<>();
@@ -37,8 +37,8 @@ public final class MediaService {
     public static void portable(PortableHosts.Host host){if(!host.allows("telephony"))return;var r=new MediaRef(host,0,host.device);var s=r.state();if(!s.number.isBlank()){if(!s.owner.equals(host.owner.getUUID().toString())){s.owner=host.owner.getUUID().toString();r.changed(s);}PORTABLE.put(host.device.identity,r);}}
     public static final Set<UUID> VOICE_USERS=ConcurrentHashMap.newKeySet();
     
-    public static String describe(MediaRef r){var s=r.state();String out=r.device().hostname+" / IP "+r.ip()+" / "+(r.live()&&s.enabled?"ON":"OFF")+"\n"+MemoryCards.status(r.device());if(r.device().kind.equals(MediaHardware.HEADEND))out+="\nКаналов: "+s.channels.size()+" / "+MediaConsole.channelLimit(r.device());if(r.device().kind.equals(MediaHardware.PBX))out+="\nАбоненты: "+s.subscribers.keySet()+"\nЗарегистрировано: "+REG.values().stream().filter(v->v.pbx.device().identity.equals(r.device().identity)).count();var reg=REG.get(r.device().identity);if(reg!=null)out+="\nSIP "+reg.number+" REGISTERED";return out;}
-    public static void open(ServerPlayer p,MediaRef r){if(!accessible(p,r))return;if(Set.of(MediaHardware.HEADEND,MediaHardware.PBX).contains(r.device().kind)){FrontPanel.send(p,r.host(),r.bay(),"Настройка службы через Console; media panel — меню");return;}if(r.device().kind.equals(MediaHardware.PHONE)||r.host() instanceof PortableHosts.Host)use(p,r);panel(p,r,true,"");}
+    public static String describe(MediaRef r){var s=r.state();String out=r.device().hostname+" / IP "+r.ip()+" / "+(r.live()&&s.enabled?"ON":"OFF")+"\n"+MemoryCards.status(r.device());if(r.device().kind.equals(MediaHardware.HEADEND))out+="\nКаналов: "+s.channels.size()+" / "+MediaConsole.channelLimit(r.device())+"\nШлюз Sputnik: "+(s.gateway.isBlank()?"авто":s.gateway)+" · "+(s.satelliteOnly?"VSAT обязательно":"обычная маршрутизация")+"\n"+Uplink.check(r).status;if(r.device().kind.equals(MediaHardware.PBX))out+="\nАбоненты: "+s.subscribers.keySet()+"\nЗарегистрировано: "+REG.values().stream().filter(v->v.pbx.device().identity.equals(r.device().identity)).count();var reg=REG.get(r.device().identity);if(reg!=null)out+="\nSIP "+reg.number+" REGISTERED";return out;}
+    public static void open(ServerPlayer p,MediaRef r){if(!accessible(p,r)||r.device().kind.equals(MediaHardware.TV))return;if(Set.of(MediaHardware.HEADEND,MediaHardware.PBX).contains(r.device().kind)){FrontPanel.send(p,r.host(),r.bay(),"Настройка службы через Console; media panel — меню");return;}if(r.device().kind.equals(MediaHardware.PHONE)||r.host() instanceof PortableHosts.Host)use(p,r);panel(p,r,true,"");}
     public static boolean accessible(ServerPlayer p,MediaRef r){if(r==null||r.level()!=p.serverLevel())return false;if(r.host() instanceof PortableHosts.Host h)return h.owner==p&&h.online()&&h.allows("telephony");return r.host().getLevel()!=null&&!r.host().isRemoved()&&r.level().hasChunkAt(r.host().getBlockPos())&&r.level().getBlockEntity(r.host().getBlockPos())==r.host()&&p.distanceToSqr(r.host().getBlockPos().getCenter())<=64;}
     private static MediaRef resolve(ServerPlayer p,BlockPos pos,int bay){if(bay<0||bay>1)return null;var host=PortableHosts.resolve(p,pos);return host==null?null:MediaRef.of(host,bay);}
     private static long now(MediaRef r){return r.level().getGameTime();}
@@ -86,19 +86,91 @@ public final class MediaService {
         transport(r,session.server,command.getBytes(StandardCharsets.UTF_8),8080,"tcp","MEDIA").whenComplete((v,error)->{if(error==null)try{if(ADMINS.get(p.getUUID())!=session||!accessible(p,r))throw new IllegalArgumentException("Сеанс истёк");MediaConsole.configure(session.server,command,p.getUUID(),now(r));}catch(RuntimeException e){error=e;}result(p,r,error,"Настройки сервера применены");});}
     public static void panel(ServerPlayer p,MediaRef r,boolean open,String status){var s=r.state();var out=new JsonObject();out.addProperty("kind",r.device().kind);out.addProperty("name",r.device().hostname);out.addProperty("status",status);out.addProperty("ip",r.ip());out.addProperty("power",r.live());out.addProperty("server",s.server);out.addProperty("number",s.number);out.addProperty("channel",s.channel);out.addProperty("volume",s.volume);out.addProperty("speakers",s.speakers);out.addProperty("memory",MemoryCards.status(r.device()));out.addProperty("voice",dev.netlab.media.voice.MediaVoice.ready());
         var reg=REG.get(r.device().identity);out.addProperty("registered",reg!=null&&reg.expiry>now(r));var call=CALLS.find(r.device().identity);out.addProperty("call",call==null?"IDLE":call.state().name());if(call!=null){var other=REG.get(call.other(r.device().identity));out.addProperty("peer",other==null?"?":other.number);out.addProperty("incoming",call.callee().equals(r.device().identity));}
-        var admin=ADMINS.get(p.getUUID());if(admin!=null&&admin.origin.device()==r.device()&&admin.valid()){out.addProperty("admin",true);out.addProperty("service",admin.iptv?"iptv":"pbx");out.addProperty("serviceIP",admin.server.ip());var target=admin.server.state();var channels=new JsonArray();for(var entry:target.channels.entrySet()){var ch=new JsonObject();ch.addProperty("number",entry.getKey());ch.addProperty("name",entry.getValue().name);ch.addProperty("running",entry.getValue().running);ch.addProperty("videos",entry.getValue().playlist.size());channels.add(ch);}out.add("channels",channels);int selected=SELECTED.getOrDefault(p.getUUID(),7);out.addProperty("selectedChannel",selected);var playlist=new JsonArray();var selectedChannel=target.channels.get(selected);if(selectedChannel!=null)for(int i=0;i<selectedChannel.playlist.size();i++){var entry=selectedChannel.playlist.get(i);var row=new JsonObject();row.addProperty("index",i+1);row.addProperty("title",entry.title());row.addProperty("url",entry.url().substring(0,Math.min(128,entry.url().length())));row.addProperty("seconds",entry.seconds());playlist.add(row);}out.add("playlist",playlist);var users=new JsonArray();target.subscribers.keySet().forEach(users::add);out.add("users",users);}
+        var admin=ADMINS.get(p.getUUID());if(admin!=null&&admin.origin.device()==r.device()&&admin.valid()){out.addProperty("admin",true);out.addProperty("service",admin.iptv?"iptv":"pbx");out.addProperty("serviceIP",admin.server.ip());var target=admin.server.state();if(admin.iptv){out.addProperty("gateway",target.gateway);out.addProperty("satelliteOnly",target.satelliteOnly);out.addProperty("uplinkStatus",Uplink.check(admin.server).status);}var channels=new JsonArray();for(var entry:target.channels.entrySet()){var ch=new JsonObject();ch.addProperty("number",entry.getKey());ch.addProperty("name",entry.getValue().name);ch.addProperty("running",entry.getValue().running);ch.addProperty("videos",entry.getValue().playlist.size());channels.add(ch);}out.add("channels",channels);int selected=SELECTED.getOrDefault(p.getUUID(),7);out.addProperty("selectedChannel",selected);var playlist=new JsonArray();var selectedChannel=target.channels.get(selected);if(selectedChannel!=null)for(int i=0;i<selectedChannel.playlist.size();i++){var entry=selectedChannel.playlist.get(i);var row=new JsonObject();row.addProperty("index",i+1);row.addProperty("title",entry.title());row.addProperty("url",entry.url().substring(0,Math.min(128,entry.url().length())));row.addProperty("seconds",entry.seconds());try{row.addProperty("provider",MediaSource.parse(entry.url()).kind().label);}catch(IllegalArgumentException e){row.addProperty("provider","Некорректная ссылка");}row.addProperty("fallback",!entry.fallback().isEmpty());playlist.add(row);}out.add("playlist",playlist);var users=new JsonArray();target.subscribers.keySet().forEach(users::add);out.add("users",users);}
         if(r.device().kind.equals(MediaHardware.STB))try{var headend=MediaRef.address(r.level(),s.server,MediaHardware.HEADEND);if(r.host().network().routePath(r.id(),headend.ip()).success()&&headend.host().network().routePath(headend.id(),r.ip()).success()){var rows=new JsonArray();for(var entry:headend.state().channels.entrySet()){var row=new JsonObject();row.addProperty("number",entry.getKey());row.addProperty("name",entry.getValue().name);row.addProperty("videos",entry.getValue().playlist.size());rows.add(row);}out.add("channels",rows);}}catch(IllegalArgumentException ignored){}
         PacketDistributor.sendToPlayer(p,new MediaPackets.State(r.host().getBlockPos(),r.bay(),out.toString(),open));}
     public static MediaRef peer(MediaRef ref,String port,String expected){int index=-1;for(int i=0;i<ref.device().ports.size();i++)if(ref.device().portName(i).equals(port))index=i;if(index<0)return null;var link=ref.host().links.get(ref.bay()*128+index);if(link==null||!ref.level().hasChunkAt(BlockPos.of(link.pos()))||!(ref.level().getBlockEntity(BlockPos.of(link.pos())) instanceof DeviceEntity host))return null;var reverse=host.links.get(link.port());if(reverse==null||reverse.pos()!=ref.host().getBlockPos().asLong()||reverse.port()!=ref.bay()*128+index)return null;var remote=MediaRef.of(host,link.port()/128);int remotePort=link.port()%128;return remote!=null&&remotePort<remote.device().ports.size()&&remote.device().portName(remotePort).equals(expected)&&remote.live()?remote:null;}
     private static void updateVoiceUsers(){VOICE_USERS.clear();for(var u:USE.values()){var c=CALLS.find(u.ref.device().identity);if(c!=null&&c.state()==CallBook.State.ACTIVE)VOICE_USERS.add(u.player);}}
     public static void voice(UUID player,byte[] opus){var u=USE.get(player);if(u==null||!VOICE_USERS.contains(player)||opus.length==0||opus.length>1275)return;var p=server.getPlayerList().getPlayer(player);if(p==null||!accessible(p,u.ref)||u.expiry<now(u.ref)||!u.ref.live())return;var c=CALLS.find(u.ref.device().identity);if(c==null||c.state()!=CallBook.State.ACTIVE)return;var dest=REG.get(c.other(u.ref.device().identity));if(dest==null)return;String key=u.ref.device().identity;if(AUDIO_PENDING.getOrDefault(key,0)>=64)return;AUDIO_PENDING.merge(key,1,Integer::sum);long sent=now(u.ref);
         transport(u.ref,dest.phone,opus,16384,"udp","RTP").whenComplete((arrived,error)->{AUDIO_PENDING.computeIfPresent(key,(k,v)->v<=1?null:v-1);if(error!=null){MediaLearning.failed(u.ref,dest.phone,error);return;}if(now(u.ref)-sent>40)return;var current=CALLS.find(key);if(current==null||!current.id().equals(c.id())||current.state()!=CallBook.State.ACTIVE)return;for(var target:USE.values())if(target.ref.device().identity.equals(dest.phone.device().identity)){var listener=server.getPlayerList().getPlayer(target.player);if(listener!=null&&accessible(listener,target.ref))if(dev.netlab.media.voice.MediaVoice.deliver(c.id(),player,listener,arrived,dest.phone.state().speakers,dest.phone.host() instanceof PortableHosts.Host h?h.owner.blockPosition():dest.phone.host().getBlockPos()))MediaLearning.voice(c.id(),player,listener,u.ref,dest.phone,dest.phone.state().speakers);}});}
-    public static Watching watching(ServerPlayer p,BlockPos tv){var w=WATCH.get(new Viewer(p.getUUID(),tv.asLong()));return w!=null&&w.expiry>p.serverLevel().getGameTime()&&w.tv.live()&&w.receiver.live()&&w.server.live()&&w.receiver.state().channel==w.channel&&w.receiver.state().server.equals(w.server.ip())&&w.server.state().enabled&&w.server.state().channels.containsKey(w.channel)&&w.server.state().channels.get(w.channel).running&&p.distanceToSqr(tv.getCenter())<32*32?w:null;}
-    private static void television(ServerPlayer player,MediaRef tv,JsonArray rows){var row=new JsonObject();row.addProperty("pos",tv.host().getBlockPos().asLong());row.addProperty("volume",tv.state().volume);row.addProperty("speakers",tv.state().speakers);String status="Нет сигнала";try{if(!tv.live()||!tv.state().enabled)throw new IllegalArgumentException("Нет питания");var receiver=peer(tv,"HDMIIn","HDMIOut");if(receiver==null)throw new IllegalArgumentException("Подключи HDMI приставки");var s=receiver.state();if(!s.enabled)throw new IllegalArgumentException("Приставка выключена настройкой media enabled");var headend=MediaRef.address(tv.level(),s.server,MediaHardware.HEADEND);var ch=headend.state().channels.get(s.channel);if(ch==null||!ch.running)throw new IllegalArgumentException("Канал не вещает");var playing=MediaPlaylist.at(ch.playlist,ch.started,tv.level().getGameTime(),ch.loop);if(playing==null)throw new IllegalArgumentException("Эфир завершён");var net=receiver.host().network();var forward=net.routePath(headend.id(),receiver.ip());var reverse=net.routePath(receiver.id(),headend.ip());if(!forward.success()||!reverse.success())throw new IllegalArgumentException("Нет маршрута IPTV туда / обратно");var w=new Watching(tv,receiver,headend,s.channel,tv.level().getGameTime()+60);WATCH.put(new Viewer(player.getUUID(),tv.host().getBlockPos().asLong()),w);LearningEvents.emit(player,"media.stb.ready",receiver.host(),receiver.bay());LearningEvents.emit(player,"media.hdmi",tv.host(),tv.bay());row.addProperty("receiver",receiver.host().getBlockPos().asLong());row.addProperty("channel",s.channel);row.addProperty("name",ch.name);row.addProperty("url",playing.entry().url());row.addProperty("seconds",playing.seconds());row.addProperty("entry",playing.index());row.addProperty("cycle",playing.cycle());row.addProperty("gateway",headend.state().gateway);row.addProperty("started",ch.started);var outputs=new JsonArray();for(var out:MediaAudio.outputs(tv))outputs.add(out);row.add("outputs",outputs);status="ON AIR";}catch(RuntimeException error){WATCH.remove(new Viewer(player.getUUID(),tv.host().getBlockPos().asLong()));status=message(error);}row.addProperty("status",status);rows.add(row);}
+    public static Watching watching(ServerPlayer player,BlockPos pos){
+        var w=WATCH.get(new Viewer(player.getUUID(),pos.asLong()));
+        if(w==null||w.expiry<=player.serverLevel().getGameTime()||w.tv.level()!=player.serverLevel()
+                ||player.distanceToSqr(pos.getCenter())>=32*32||!w.tv.live()||!w.tv.state().enabled
+                ||!w.receiver.live()||!w.server.live())return null;
+        var hdmi=peer(w.tv,"HDMIIn","HDMIOut");
+        if(hdmi==null||hdmi.device()!=w.receiver.device())return null;
+        var receiver=w.receiver.state();var station=w.server.state();var channel=station.channels.get(w.channel);
+        return receiver.enabled&&receiver.channel==w.channel&&receiver.server.equals(w.server.ip())
+                &&station.enabled&&channel!=null&&channel.running?w:null;
+    }
+
+    private static void television(ServerPlayer player,MediaRef tv,JsonArray rows,Map<Long,Uplink> uplinks){
+        var row=new JsonObject();
+        var pos=tv.host().getBlockPos();
+        var viewer=new Viewer(player.getUUID(),pos.asLong());
+        var state=tv.state();
+        boolean on=tv.live()&&state.enabled;
+        row.addProperty("pos",pos.asLong());
+        row.addProperty("on",on);
+        String status="Нет сигнала HDMI";
+        try{
+            if(!on)throw new IllegalArgumentException("Телевизор выключен");
+            var receiver=peer(tv,"HDMIIn","HDMIOut");
+            if(receiver==null||!receiver.device().kind.equals(MediaHardware.STB))throw new IllegalArgumentException(status);
+            var tune=receiver.state();
+            row.addProperty("channel",tune.channel);
+            if(!tune.enabled)throw new IllegalArgumentException("Приставка выключена");
+            var headend=MediaRef.address(tv.level(),tune.server,MediaHardware.HEADEND);
+            var ch=headend.state().channels.get(tune.channel);
+            if(ch==null||!ch.running)throw new IllegalArgumentException("Канал не вещает");
+            var playing=MediaPlaylist.at(ch.playlist,ch.started,tv.level().getGameTime(),ch.loop);
+            if(playing==null)throw new IllegalArgumentException("Эфир завершён");
+            var net=receiver.host().network();
+            if(!net.routePath(headend.id(),receiver.ip()).success()||!net.routePath(receiver.id(),headend.ip()).success())
+                throw new IllegalArgumentException("Нет маршрута до IPTV-станции");
+            var uplink=uplinks.computeIfAbsent(headend.id(),ignored->Uplink.check(headend));
+            if(uplink.gateway==null)throw new IllegalArgumentException(uplink.status);
+            MediaSource.parse(playing.entry().url());
+            WATCH.put(viewer,new Watching(tv,receiver,headend,tune.channel,uplink.gateway.id(),tv.level().getGameTime()+40));
+            LearningEvents.emit(player,"media.stb.ready",receiver.host(),receiver.bay());
+            LearningEvents.emit(player,"media.hdmi",tv.host(),tv.bay());
+            row.addProperty("source",headend.device().identity);
+            row.addProperty("url",playing.entry().url());
+            if(!playing.entry().fallback().isEmpty())row.addProperty("fallback",playing.entry().fallback());
+            row.addProperty("seconds",playing.seconds());
+            row.addProperty("entry",playing.index());
+            row.addProperty("cycle",playing.cycle());
+            row.addProperty("gateway",uplink.gateway.ip());
+            row.addProperty("started",ch.started);
+            var outputs=new JsonArray();MediaAudio.outputs(tv).forEach(outputs::add);
+            row.add("outputs",outputs);
+            status="Эфир";
+        }catch(RuntimeException error){WATCH.remove(viewer);status=message(error);}
+        row.addProperty("status",status);
+        rows.add(row);
+    }
+
+    private record Uplink(dev.netlab.sputnik.SputnikRef gateway,String status){
+        static Uplink check(MediaRef station){
+            try{return new Uplink(MediaInternet.uplink(station),"Sputnik готов");}
+            catch(RuntimeException error){return new Uplink(null,message(error));}
+        }
+    }
     public static void tick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post e){server=e.getServer();if(server.getTickCount()%20!=0)return;dev.netlab.media.voice.MediaVoice.tick();for(var level:server.getAllLevels()){long now=level.getGameTime();for(var phone:List.copyOf(PORTABLE.values()))if(phone.level()==level){if(phone.host() instanceof PortableHosts.Host h&&h.present()&&h.allows("telephony"))registerPhone(phone);else PORTABLE.remove(phone.device().identity);}for(var r:MediaRef.loaded(level))if(r.device().kind.equals(MediaHardware.PHONE))registerPhone(r);for(var u:List.copyOf(USE.values()))if(u.ref.level()==level){var player=server.getPlayerList().getPlayer(u.player);if(player==null||u.expiry<now||!accessible(player,u.ref)||!u.ref.live()){release(u.player);continue;}var active=CALLS.find(u.ref.device().identity);if(active!=null)USE.put(u.player,new Use(u.player,u.ref,now+100));}
             REG.entrySet().removeIf(entry->{var reg=entry.getValue();boolean remove=reg.phone.level()==level&&(reg.expiry<now||!reg.phone.live()||!reg.pbx.live()||!reg.phone.state().enabled||!reg.pbx.state().enabled||reg.phoneEpoch!=Hardware.ensure(reg.phone.device()).epoch||reg.pbxEpoch!=Hardware.ensure(reg.pbx.device()).epoch||!reg.pbx.state().subscribers.containsKey(reg.number));if(remove)CALLS.hangup(entry.getKey());return remove;});
             for(var c:CALLS.all()){var a=REG.get(c.caller());var b=REG.get(c.callee());if(a==null||b==null){CALLS.hangup(c.caller());continue;}if(a.phone.level()!=level)continue;if(c.state()==CallBook.State.RINGING&&now>=c.deadline())CALLS.hangup(c.caller());else if(c.state()==CallBook.State.RINGING&&server.getTickCount()%40==0){if(b.phone.host() instanceof PortableHosts.Host h){level.playSound(null,h.owner.blockPosition(),SoundEvents.NOTE_BLOCK_BELL.value(),SoundSource.PLAYERS,.6f,1.2f);h.owner.displayClientMessage(Component.literal("Входящий "+a.number+" · Pocket → IP-телефония"),true);}else level.playSound(null,b.phone.host().getBlockPos(),SoundEvents.NOTE_BLOCK_BELL.value(),SoundSource.BLOCKS,.6f,1.2f);}}
-            for(var p:level.players()){var rows=new JsonArray();for(var tv:MediaRef.loaded(level))if(tv.device().kind.equals(MediaHardware.TV)&&p.distanceToSqr(tv.host().getBlockPos().getCenter())<32*32&&rows.size()<8)television(p,tv,rows);PacketDistributor.sendToPlayer(p,new MediaPackets.Scene(rows.toString()));var u=USE.get(p.getUUID());if(u!=null&&accessible(p,u.ref))panel(p,u.ref,false,"");}}
+            var televisions=MediaRef.loaded(level).stream().filter(r->r.device().kind.equals(MediaHardware.TV)).toList();
+            var uplinks=new HashMap<Long,Uplink>();
+            for(var p:level.players()){
+                var rows=new JsonArray();
+                televisions.stream().filter(tv->p.distanceToSqr(tv.host().getBlockPos().getCenter())<32*32)
+                        .sorted(Comparator.comparingDouble(tv->p.distanceToSqr(tv.host().getBlockPos().getCenter())))
+                        .limit(8).forEach(tv->television(p,tv,rows,uplinks));
+                PacketDistributor.sendToPlayer(p,new MediaPackets.Scene(rows.toString()));
+                var u=USE.get(p.getUUID());if(u!=null&&accessible(p,u.ref))panel(p,u.ref,false,"");
+            }
+        }
         ADMINS.entrySet().removeIf(x->{var a=x.getValue();return !a.valid()||server.getPlayerList().getPlayer(x.getKey())==null;});WATCH.entrySet().removeIf(x->x.getValue().expiry<now(x.getValue().tv));ACTION_BUDGET.keySet().removeIf(id->server.getPlayerList().getPlayer(id)==null);updateVoiceUsers();}
     public static void clear(){MediaLearning.clear();dev.netlab.media.voice.MediaVoice.clear();REG.clear();USE.clear();PORTABLE.clear();ADMINS.clear();SELECTED.clear();WATCH.clear();REGISTERING.clear();SIGNALLING.clear();AUDIO_PENDING.clear();ACTION_BUDGET.clear();CALLS.clear();VOICE_USERS.clear();server=null;}
 }

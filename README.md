@@ -24,10 +24,10 @@ NetLab превращает Minecraft в учебную сетевую лабо�
 | Automation 0.7.4 | [netlab-automation-0.7.4-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-automation-0.7.4-alpha.jar) |
 | Mobile 0.4.2 | [netlab-mobile-0.4.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-mobile-0.4.2-alpha.jar) |
 | Sputnik 0.3.2 | [netlab-sputnik-0.3.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-sputnik-0.3.2-alpha.jar) |
-| Media 0.1.2 | [netlab-media-0.1.2-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-media-0.1.2-alpha.jar) |
+| Media 0.2.0 | [netlab-media-0.2.0-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-media-0.2.0-alpha.jar) |
 | Academy 0.1.1 | [netlab-academy-0.1.1-alpha.jar](https://raw.githubusercontent.com/G8Dman/NetLab/main/mods/netlab-academy-0.1.1-alpha.jar) |
 
-**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все шесть модов одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-suite-0.23.2/NetLab-1.21.1-mods.zip).
+**Скачивание открыто всем без регистрации и входа.** Ссылки выше скачивают JAR непосредственно. [Скачать все шесть модов одним ZIP](https://github.com/G8Dman/NetLab/releases/download/netlab-media-0.2.0/NetLab-1.21.1-mods.zip).
 
 В сборках с AE2 можно [отключить только его автоматизацию](docs/UPDATE-AUTOMATION-0.7.3.md), сохранив ручное ME-хранилище. [Пример серверной конфигурации](config-examples/netlabautomation-server.toml); по умолчанию ограничение выключено.
 
@@ -51,10 +51,12 @@ Rinku сам скачивает Chromium под текущую ОС при пе�
 | **NetLab Automation** | `0.7.4-alpha` | Сетевую передачу предметов и жидкостей, сервер автоматизации, правила, рецепты, нагрев и охлаждение; необязательный запрет автоматизации AE2 с сохранением ручного ME-хранилища. |
 | **NetLab Mobile** | `0.4.2-alpha` | Сотовую сеть: антенны на башнях игроков, RRU, BBU, ядро EPC, выпуск SIM и модемы для ПК/ноутбука. |
 | **NetLab Sputnik** | `0.3.2-alpha` | Спутниковую сеть: HUB, BUC/LNB, VSAT, интернет-шлюз, браузер настоящих сайтов и колонки с фоновым звуком. |
-| **NetLab Media** | `0.1.2-alpha` | IPTV-каналы, приставки, телевизоры, аудиоразветвитель и IP-телефонию через микрофон, включая Cisco Pocket. |
+| **NetLab Media** | `0.2.0-alpha` | IPTV с YouTube, RUTUBE, VK Видео и Twitch, телевизоры в мире, аудиоразветвитель и IP-телефонию через микрофон, включая Cisco Pocket. |
 | **NetLab Academy** | `0.1.1-alpha` | 215 учебных достижений в одной вкладке NetLab, 29 шагов основного курса и живой прогресс прямо в «Библии по CISCO». Ветки отсутствующих аддонов не загружаются. |
 
 Этот комплект дополнений требует **NetLab 0.23.0-alpha или новее**. Academy, Automation, Mobile и Sputnik можно ставить отдельно с основным модом; Media дополнительно требует Sputnik и Simple Voice Chat. Для Academy сторонних библиотек нет.
+
+Обновление **Media 0.2.0** добавляет смешанные IPTV-плейлисты, пульт и управление на экране телевизора, а также режим, требующий маршрута через VSAT и HUB. [Настройка IPTV](docs/NETLAB-IPTV.md).
 
 Обновление **0.23.2**: HTML-ошибка авторизации «Service unavailable / The request is blocked» заменяется на «Арабская ошибка, перезайти в лаунчер». Это изменение текста, без обхода авторизации. [Установка и проверки](docs/UPDATE-0.23.2.md).
 

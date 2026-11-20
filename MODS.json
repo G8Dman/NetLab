@@ -37,10 +37,10 @@
     },
     {
       "id": "netlabmedia",
-      "version": "0.1.2-alpha",
-      "file": "mods/netlab-media-0.1.2-alpha.jar",
-      "bytes": 181279,
-      "sha256": "28ddce653a9872da9ed6c06fe473b5d2eb6f28d666fafc2a0412e54d0fb93312"
+      "version": "0.2.0-alpha",
+      "file": "mods/netlab-media-0.2.0-alpha.jar",
+      "bytes": 208274,
+      "sha256": "11fc7c254983f1d6fca5666886a050aa0e61a36aa3e84c0b10b6ed37c47de3d6"
     },
     {
       "id": "netlabacademy",

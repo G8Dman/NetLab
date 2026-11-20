@@ -43,6 +43,20 @@ public final class MediaRuntimeCheck {
         var buffer=new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),regs);var action=new MediaPackets.Action(BlockPos.ZERO,1,"login","x".repeat(8192));MediaPackets.Action.CODEC.encode(buffer,action);check(MediaPackets.Action.CODEC.decode(buffer).json().length()==8192,"bounded action codec roundtrip");buffer.release();
         for(String section:List.of("iptv","ip-telephony")){var json=JsonParser.parseString(Files.readString(Path.of("src/media/resources/assets/netlabmedia/netlab_guide/"+section+".json"))).getAsJsonObject();check(json.getAsJsonArray("articles").size()>=14,"full device-by-device guide: "+section);for(var article:json.getAsJsonArray("articles"))check(!article.getAsJsonObject().get("body").getAsString().isBlank(),"guide chapter has instructions");}
         check(PlayerPage.html("https://youtu.be/M7lc1UVf-VE",5).contains("YouTubeIframeAPIReady"),"YouTube player uses official API");var html=PlayerPage.html("https://example.org/video.webm?x=';alert(1)//",3);check(html.contains("document.createElement('video')")&&html.contains("\\u0027")&&!html.contains("x=';alert"),"media URL cannot terminate JavaScript string");
+        var oldEntry=MediaState.JSON.fromJson("{\"url\":\"https://youtu.be/M7lc1UVf-VE\",\"title\":\"Old channel\",\"seconds\":60}",MediaPlaylist.Entry.class);
+        check(oldEntry.fallback().isEmpty()&&oldEntry.seconds()==60,"previously saved channel entries load without a fallback field");
+        for(var entry:Map.of("https://rutube.ru/video/57e1cb24939d657284dc2900deb5949a/","player:setCurrentTime","https://vkvideo.ru/video-1_2","VK.VideoPlayer","https://www.twitch.tv/videos/40464143","v40464143","https://twitch.tv/twitchdev","TWITCH_OFFLINE","https://clips.twitch.tv/TwitchExample","netlab.media").entrySet()){
+            var page=PlayerPage.html(entry.getKey(),12);
+            check(page.contains(entry.getValue())&&page.contains("let target=12.0"),"provider document matches source and channel clock: "+entry.getKey());
+        }
+        var mediaNet=new Network();var satellite=new Network.Wire(new Network.Endpoint(2,4),new Network.Endpoint(3,4),0,"satellite");
+        mediaNet.wires.add(satellite);
+        var throughSatellite=MediaInternet.class.getDeclaredMethod("usesSatellite",Network.class,Network.Result.class);throughSatellite.setAccessible(true);
+        for(var path:List.of(List.of(1L,2L,3L,4L),List.of(4L,3L,2L,1L)))
+            check((boolean)throughSatellite.invoke(null,mediaNet,new Network.Result(true,"",path)),"registered VSAT/HUB link recognized in both directions");
+        check(!(boolean)throughSatellite.invoke(null,mediaNet,new Network.Result(true,"",List.of(1L,2L,5L,3L,4L))),"a wired detour past VSAT and HUB does not count as a satellite hop");
+        mediaNet.wires.add(new Network.Wire(new Network.Endpoint(2,0),new Network.Endpoint(3,0),1,"copper"));
+        check(!(boolean)throughSatellite.invoke(null,mediaNet,new Network.Result(true,"",List.of(1L,2L,3L,4L))),"an ambiguous parallel wired link is not accepted as satellite-only");
         check(PortableModules.DEFINITIONS.get("telephony").code().equals("CISCO-POCKET-SIP"),"Mobile discovers optional phone hardware through base API");
         MediaVoiceRuntimeCheck.run();
         System.out.println(checks+" Media registry/card/recipe/model/payload checks passed; no game, server, world or microphone launched.");

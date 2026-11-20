@@ -278,7 +278,7 @@ sourceSets.coreChecks.runtimeClasspath += sourceSets.media.output
 tasks.register('mediaJar', Jar) {
     dependsOn mediaClasses
     archiveBaseName = 'netlab-media'
-    archiveVersion = '0.1.2-alpha'
+    archiveVersion = '0.2.0-alpha'
     from sourceSets.media.output
 }
 tasks.named('assemble') { dependsOn mediaJar }
