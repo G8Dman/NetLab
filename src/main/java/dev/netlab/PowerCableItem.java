@@ -28,6 +28,6 @@ public final class PowerCableItem extends RoutedCableItem {
         var message=PowerSystem.connect(a,ap,b,bp,anchors);var peer=a.powerLinks.get(ap);
         return new Connection(peer!=null&&peer.pos()==b.getBlockPos().asLong()&&peer.port()==bp,message);
     }
-    @Override protected String portHint(){return "Нажми задний разъём питания. На шкафе сначала установи блок питания.";}
+    @Override protected String portHint(){return "Нажми разъём FE на устройстве. На шкафе сначала установи блок питания.";}
     @Override protected int color(){return 0xe7a52b;}
 }

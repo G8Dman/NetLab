@@ -20,7 +20,11 @@ public final class MediaRuntimeCheck {
     static int checks;
     static void check(boolean ok,String why){if(!ok)throw new AssertionError(why);checks++;}
     public static void register(){
-        for(var entry:Media.DEVICES.entrySet())Registry.register(BuiltInRegistries.BLOCK,entry.getValue().getId(),new MediaBlock(BlockBehaviour.Properties.of(),entry.getKey()));
+        for(var entry:Media.DEVICES.entrySet()){
+            var properties=BlockBehaviour.Properties.of();
+            var block=entry.getKey().equals(MediaHardware.TV)?new TelevisionBlock(properties):new MediaBlock(properties,entry.getKey());
+            Registry.register(BuiltInRegistries.BLOCK,entry.getValue().getId(),block);
+        }
         for(var entry:Media.ITEMS.getEntries()){
             String name=entry.getId().getPath();var module=MediaHardware.MODULES.stream().filter(code->ModuleItem.itemId(code).equals(name)).findFirst().orElse(null);
             Item item=name.endsWith("_cable")?new CableItem(new Item.Properties(),name.replace("_cable","")):name.equals("phone_sip_module")?new PortableModules.ModuleItem(new Item.Properties(),"CISCO-POCKET-SIP","telephony","Phone SIP"):module!=null?new ModuleItem(new Item.Properties(),module):BuiltInRegistries.BLOCK.containsKey(entry.getId())?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new Item(new Item.Properties());Registry.register(BuiltInRegistries.ITEM,entry.getId(),item);if(item instanceof BlockItem b)b.registerBlocks(Item.BY_BLOCK,item);
@@ -37,8 +41,10 @@ public final class MediaRuntimeCheck {
         var pocket=new ItemStack(dev.netlab.mobile.Mobile.PHONE.get());var tag=new net.minecraft.nbt.CompoundTag();StoredJson.put(tag,"phoneMedia",MediaState.JSON.toJson(ps));dev.netlab.mobile.MobileItems.seal(pocket,tag);var pocketSaved=ItemStack.parse(regs,pocket.save(regs)).orElseThrow();var pocketState=MediaState.JSON.fromJson(StoredJson.get(dev.netlab.mobile.MobileItems.privateTag(pocketSaved),"phoneMedia"),MediaState.class);check(pocketState.server.equals(ps.server)&&pocketState.password.equals(ps.password),"Pocket media credentials persist in physical item NBT");
         var publicCopy=MediaState.JSON.fromJson(MediaState.JSON.toJson(d),Device.class);MediaState.redact(publicCopy);check(MediaState.get(publicCopy).admin.isBlank()&&MediaState.get(publicCopy).channels.isEmpty(),"shared block data hides hashes and links");check(MediaState.get(d).channels.size()==1,"redaction leaves actual server intact");
         for(String kind:MediaHardware.KINDS){var device=new Device(kind);MediaHardware.initialize(device);var model=net.minecraft.client.renderer.block.model.BlockModel.fromString(Files.readString(Path.of("src/media/resources/assets/netlabmedia/models/block/"+kind.substring(6)+".json")));var bs=Media.DEVICES.get(kind).get().defaultBlockState();check(!model.getElements().isEmpty(),"equipment model parses: "+kind);
+            if(kind.equals(MediaHardware.TV))continue;
             for(var jack:PortLayout.jacks(device,false,0))for(double dx:new double[]{-.45*jack.width(),0,.45*jack.width()})for(double dy:new double[]{-.45*jack.height(),0,.45*jack.height()}){double x=jack.x()+dx,y=jack.y()+dy;double front=model.getElements().stream().filter(box->box.rotation==null&&x*16>=box.from.x&&x*16<=box.to.x&&y*16>=box.from.y&&y*16<=box.to.y).mapToDouble(box->box.from.z/16).min().orElseThrow(()->new AssertionError("Socket floats outside model: "+kind));check(jack.z()<front,"port is visible ahead of case: "+kind);var hit=bs.getShape(net.minecraft.world.level.EmptyBlockGetter.INSTANCE,BlockPos.ZERO).clip(new net.minecraft.world.phys.Vec3(x,y,-1),new net.minecraft.world.phys.Vec3(x,y,1),BlockPos.ZERO);check(hit!=null&&hit.getDirection()==Direction.NORTH,"port lies on selectable front: "+kind);}
         }
+        televisionMounts();
         var ops=RegistryOps.create(JsonOps.INSTANCE,regs);try(var files=Files.list(Path.of("src/media/resources/data/netlabmedia/recipe"))){for(var file:files.toList()){var data=JsonParser.parseString(Files.readString(file)).getAsJsonObject();var recipe=Recipe.CODEC.parse(ops,data).getOrThrow();var input=RecipeCoverageRuntimeCheck.input(data);check(recipe instanceof CraftingRecipe&&((CraftingRecipe)recipe).matches(input,null),"actual media recipe matches: "+file);check(!recipe.getResultItem(regs).isEmpty(),"registered media recipe output: "+file);}}
         var buffer=new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),regs);var action=new MediaPackets.Action(BlockPos.ZERO,1,"login","x".repeat(8192));MediaPackets.Action.CODEC.encode(buffer,action);check(MediaPackets.Action.CODEC.decode(buffer).json().length()==8192,"bounded action codec roundtrip");buffer.release();
         for(String section:List.of("iptv","ip-telephony")){var json=JsonParser.parseString(Files.readString(Path.of("src/media/resources/assets/netlabmedia/netlab_guide/"+section+".json"))).getAsJsonObject();check(json.getAsJsonArray("articles").size()>=14,"full device-by-device guide: "+section);for(var article:json.getAsJsonArray("articles"))check(!article.getAsJsonObject().get("body").getAsString().isBlank(),"guide chapter has instructions");}
@@ -60,5 +66,69 @@ public final class MediaRuntimeCheck {
         check(PortableModules.DEFINITIONS.get("telephony").code().equals("CISCO-POCKET-SIP"),"Mobile discovers optional phone hardware through base API");
         MediaVoiceRuntimeCheck.run();
         System.out.println(checks+" Media registry/card/recipe/model/payload checks passed; no game, server, world or microphone launched.");
+    }
+
+    private static void televisionMounts() throws Exception {
+        var tv=(TelevisionBlock)Media.DEVICES.get(MediaHardware.TV).get();
+        var type=net.minecraft.world.level.block.entity.BlockEntityType.Builder.of((p,s)->null,tv).build(null);
+        var assets=Path.of("src/media/resources/assets/netlabmedia");
+        var variants=JsonParser.parseString(Files.readString(assets.resolve("blockstates/tv.json"))).getAsJsonObject().getAsJsonObject("variants");
+        check(variants.size()==8,"all wall and stand directions have a model variant");
+        for(boolean wall:new boolean[]{false,true}){
+            String modelId=wall?"tv_wall":"tv";
+            var model=net.minecraft.client.renderer.block.model.BlockModel.fromString(Files.readString(assets.resolve("models/block/"+modelId+".json")));
+            check(model.getElements().size()==(wall?2:4),"only the standing model contains neck and foot");
+            var panel=model.getElements().getFirst();
+            check(panel.to.z==(wall?16:5),"wall model sits flush against its support");
+            var surface=model.getElements().get(1);
+            check(surface.from.z/16.0>TelevisionSurface.FRONT+(wall?TelevisionSurface.WALL_OFFSET:0),"live video is in front of the screen texture");
+        }
+        var placement=TelevisionBlock.class.getDeclaredMethod("placement",Direction.class,Direction.class);
+        placement.setAccessible(true);
+        var supportCells=new HashSet<BlockPos>();
+        var supportReader=(net.minecraft.world.level.LevelReader)java.lang.reflect.Proxy.newProxyInstance(
+                MediaRuntimeCheck.class.getClassLoader(),new Class<?>[]{net.minecraft.world.level.LevelReader.class},
+                (proxy,method,args)->{
+                    if(method.getName().equals("getBlockState"))
+                        return supportCells.contains(args[0])?net.minecraft.world.level.block.Blocks.STONE.defaultBlockState():net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                    throw new AssertionError("Unexpected support lookup: "+method.getName());
+                });
+        check(!tv.defaultBlockState().getValue(TelevisionBlock.WALL_MOUNTED),"saved TVs with no new state use the standing model");
+        for(var facing:Direction.Plane.HORIZONTAL)for(boolean wall:new boolean[]{false,true}){
+            var state=(net.minecraft.world.level.block.state.BlockState)placement.invoke(tv,wall?facing:Direction.UP,facing.getOpposite());
+            check(state.getValue(DeviceBlock.FACING)==facing&&state.getValue(TelevisionBlock.WALL_MOUNTED)==wall,"mounting follows face, standing TV faces player");
+            var shape=state.getShape(net.minecraft.world.level.EmptyBlockGetter.INSTANCE,BlockPos.ZERO);
+            check(wall?shape.bounds().minY>0:shape.bounds().minY==0,"only tabletop TV has a foot");
+            Direction support=wall?facing.getOpposite():Direction.DOWN;
+            supportCells.add(BlockPos.ZERO.relative(support));
+            check(state.canSurvive(supportReader,BlockPos.ZERO),"proper support carries the television");
+            supportCells.clear();
+            check(!state.canSurvive(supportReader,BlockPos.ZERO),"air cannot support the television");
+            int turns=DeviceBlock.turns(state);
+            var near=rotated(.5,.65,-1,turns);var far=rotated(.5,.65,1.5,turns);
+            var screen=shape.clip(near,far,BlockPos.ZERO);
+            var back=shape.clip(far,near,BlockPos.ZERO);
+            check(screen!=null&&screen.getDirection()==facing,"screen remains on the face looking out from the wall");
+            check(back!=null&&Math.abs(back.getLocation().distanceTo(rotated(.5,.65,wall?1:5/16.0,turns)))<1e-5,"wall version reaches the wall, tabletop uses its own depth");
+            var host=new DeviceEntity(type,BlockPos.ZERO,state){};
+            MediaHardware.initialize(host.device);
+            var normal=net.minecraft.world.phys.Vec3.atLowerCornerOf(facing.getCounterClockWise().getNormal());
+            check(CableGeometry.facing(host)==facing.getCounterClockWise()&&PowerGeometry.facing(host)==CableGeometry.facing(host),"all plugs face the same side after rotation");
+            for(int port:new int[]{0,1,PowerGeometry.BOARD_IN}){
+                boolean power=port==PowerGeometry.BOARD_IN;
+                var socket=power?PowerGeometry.point(host,port):CableGeometry.port(host,port);
+                var eye=socket.add(normal.scale(.65)).add(0,.04,0);var target=socket.subtract(normal.scale(.07)).add(0,-.0043,0);
+                var hit=shape.clip(eye,target,BlockPos.ZERO);
+                check(hit!=null&&hit.getDirection()==CableGeometry.facing(host),"side jack is reachable on actual collision geometry");
+                check((power?PowerGeometry.clicked(host,hit,eye):CableGeometry.clickedPort(host,hit,eye))==port,"side socket can be selected with a real angled hit");
+                var path=power?PowerGeometry.fixedRoute(host,port,host,port,List.of()):CableGeometry.route(host,port,host,port,List.of());
+                var exit=CableGeometry.vector(path.get(1)).subtract(socket);
+                check(exit.dot(normal)>.11,"cable exits through the side instead of the panel or wall");
+            }
+        }
+    }
+
+    private static net.minecraft.world.phys.Vec3 rotated(double x,double y,double z,int turns){
+        var p=DeviceOrientation.rotate(x,y,z,turns);return new net.minecraft.world.phys.Vec3(p.x(),p.y(),p.z());
     }
 }

@@ -15,7 +15,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.*;
 import java.util.*;
-public final class MediaBlock extends DeviceBlock {
+public class MediaBlock extends DeviceBlock {
     public MediaBlock(BlockBehaviour.Properties p,String kind){super(p,kind,false);}
     @Override public BlockEntity newBlockEntity(BlockPos pos,BlockState state){return new MediaEntity(pos,state);}
     @Override public void setPlacedBy(Level level,BlockPos pos,BlockState state,LivingEntity who,ItemStack stack){super.setPlacedBy(level,pos,state,who,stack);if(!level.isClientSide&&level.getBlockEntity(pos) instanceof DeviceEntity h){var s=MediaState.get(h.device);if(s.owner.isEmpty()&&who!=null)s.owner=who.getUUID().toString();s.save(h.device);h.changed();}}
@@ -24,35 +24,10 @@ public final class MediaBlock extends DeviceBlock {
         return super.useItemOn(stack,state,level,pos,player,hand,hit);
     }
     @Override protected InteractionResult useWithoutItem(BlockState state,Level level,BlockPos pos,Player player,BlockHitResult hit){
-        if(kind.equals(MediaHardware.TV)){
-            if(hit.getDirection()!=state.getValue(FACING))return InteractionResult.PASS;
-            var p=hit.getLocation();
-            var pixel=TelevisionSurface.pixel(p.x-pos.getX(),p.y-pos.getY(),p.z-pos.getZ(),turns(state));
-            if(pixel!=null){
-                if(level.isClientSide)dev.netlab.media.client.MediaClient.clickTelevision(pos,pixel);
-            }else if(!level.isClientSide&&level.getBlockEntity(pos) instanceof DeviceEntity host&&player instanceof ServerPlayer serverPlayer){
-                var local=dev.netlab.core.DeviceOrientation.inverse(p.x-pos.getX(),p.y-pos.getY(),p.z-pos.getZ(),turns(state));
-                if(local.y()>=.125&&local.y()<.26){
-                    var tv=MediaRef.of(host,0);var settings=tv.state();
-                    if(!player.mayBuild()||!settings.owns(player.getUUID()))return InteractionResult.FAIL;
-                    if(local.x()>=.77){
-                        settings.enabled=!settings.enabled;tv.changed(settings);
-                        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal(settings.enabled?"Телевизор включён":"Телевизор выключен"),true);
-                    }else if(local.x()<=.23){
-                        if(player.isShiftKeyDown())settings.volume=settings.volume>=.99?.25:Math.min(1,settings.volume+.25);
-                        else settings.speakers=!settings.speakers;
-                        tv.changed(settings);
-                        String status=player.isShiftKeyDown()?"Громкость: "+Math.round(settings.volume*100)+"%":settings.speakers?"Динамики включены":"Динамики выключены";
-                        serverPlayer.displayClientMessage(net.minecraft.network.chat.Component.literal(status),true);
-                    }
-                }
-            }
-            return InteractionResult.sidedSuccess(level.isClientSide);
-        }
         if(!level.isClientSide&&level.getBlockEntity(pos) instanceof DeviceEntity host&&player instanceof ServerPlayer serverPlayer)MediaService.open(serverPlayer,new MediaRef(host,0,host.device));
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
-    @Override protected VoxelShape getShape(BlockState state,BlockGetter level,BlockPos pos,CollisionContext context){return orientShape(state,switch(kind){case MediaHardware.TV->box(0,0,1,16,16,5);case MediaHardware.PHONE->box(1,0,1,15,8,14);case MediaHardware.SPEAKER->box(2,0,2,14,15,14);default->box(0,0,1,16,4,14);});}
+    @Override protected VoxelShape getShape(BlockState state,BlockGetter level,BlockPos pos,CollisionContext context){return orientShape(state,switch(kind){case MediaHardware.PHONE->box(1,0,1,15,8,14);case MediaHardware.SPEAKER->box(2,0,2,14,15,14);default->box(0,0,1,16,4,14);});}
     @Override protected List<ItemStack> getDrops(BlockState state,LootParams.Builder loot){var be=loot.getOptionalParameter(LootContextParams.BLOCK_ENTITY);return be instanceof DeviceEntity h?List.of(MemoryCards.deviceItem(this,h.device)):super.getDrops(state,loot);}
     @Override public BlockState playerWillDestroy(Level level,BlockPos pos,BlockState state,Player player){if(!level.isClientSide&&player.isCreative()&&level.getBlockEntity(pos) instanceof DeviceEntity h)popResource(level,pos,MemoryCards.deviceItem(this,h.device));return super.playerWillDestroy(level,pos,state,player);}
 }

@@ -1,0 +1,150 @@
+{
+  "textures": {
+    "particle": "netlabsputnik:block/body",
+    "body": "netlabsputnik:block/body",
+    "face": "netlabsputnik:block/face",
+    "grille": "netlabsputnik:block/grille",
+    "black": "minecraft:block/black_concrete",
+    "light": "minecraft:block/light_gray_concrete",
+    "display": "minecraft:block/cyan_concrete",
+    "key": "minecraft:block/white_concrete"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        3,
+        12
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        5.25,
+        11.98
+      ],
+      "to": [
+        14.5,
+        12.6,
+        11.99
+      ],
+      "faces": {
+        "north": {
+          "texture": "#black",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#black",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#black",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#black",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#black",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#black",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

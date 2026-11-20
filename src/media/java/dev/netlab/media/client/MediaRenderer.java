@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import dev.netlab.DeviceBlock;
 import dev.netlab.DeviceEntity;
 import dev.netlab.client.CableRenderer;
+import dev.netlab.media.TelevisionBlock;
 import dev.netlab.media.core.MediaHardware;
 import dev.netlab.media.core.TelevisionSurface;
 import net.minecraft.client.Minecraft;
@@ -27,18 +28,20 @@ public final class MediaRenderer implements BlockEntityRenderer<DeviceEntity> {
         var mc=Minecraft.getInstance();
         Vec3 camera=mc.gameRenderer.getMainCamera().getPosition();
         var delta=camera.subtract(Vec3.atCenterOf(host.getBlockPos()));
-        if(facing.getStepX()*delta.x+facing.getStepZ()*delta.z<-.39)return;
+        double shift=TelevisionBlock.depthOffset(host.getBlockState());
+        if(facing.getStepX()*delta.x+facing.getStepZ()*delta.z<.5-TelevisionSurface.FRONT-shift-.02)return;
         var display=MediaVideoSession.display(host.getBlockPos());
         var session=MediaVideoSession.SESSIONS.get(host.getBlockPos().asLong());
         pose.pushPose();
         pose.translate(.5,0,.5);
         pose.mulPose(Axis.YP.rotationDegrees(-90*DeviceBlock.turns(host.getBlockState())));
         pose.translate(-.5,0,-.5);
-        label(pose,buffers,"PWR",.86,.211,.058,.004f,display!=null&&display.on()?0xff75e897:0xffd9aca2);
-        label(pose,buffers,"VOL",.14,.211,.058,.003f,0xffadc9cd);
+        pose.translate(0,0,shift);
+        label(pose,buffers,"PWR",.83,.257,.058,.004f,display!=null&&display.on()?0xff75e897:0xffd9aca2);
+        label(pose,buffers,"VOL",.17,.257,.058,.003f,0xffadc9cd);
         if(display!=null&&display.on()){
             String channel=display.channel()>0?"CH "+display.channel():"HDMI";
-            label(pose,buffers,channel,.5,.211,.058,.003f,0xffadc9cd);
+            label(pose,buffers,channel,.5,.257,.058,.003f,0xffadc9cd);
             var frame=session==null?null:session.frame();
             if(frame==null){
                 String status=session==null?display.status():session.status;

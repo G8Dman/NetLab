@@ -1,22 +1,42 @@
 {
   "variants": {
-    "facing=north": {
+    "facing=north,wall_mounted=false": {
       "model": "netlabmedia:block/tv",
       "y": 0,
       "uvlock": true
     },
-    "facing=east": {
+    "facing=north,wall_mounted=true": {
+      "model": "netlabmedia:block/tv_wall",
+      "y": 0,
+      "uvlock": true
+    },
+    "facing=east,wall_mounted=false": {
       "model": "netlabmedia:block/tv",
       "y": 90,
       "uvlock": true
     },
-    "facing=south": {
+    "facing=east,wall_mounted=true": {
+      "model": "netlabmedia:block/tv_wall",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=south,wall_mounted=false": {
       "model": "netlabmedia:block/tv",
       "y": 180,
       "uvlock": true
     },
-    "facing=west": {
+    "facing=south,wall_mounted=true": {
+      "model": "netlabmedia:block/tv_wall",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=west,wall_mounted=false": {
       "model": "netlabmedia:block/tv",
+      "y": 270,
+      "uvlock": true
+    },
+    "facing=west,wall_mounted=true": {
+      "model": "netlabmedia:block/tv_wall",
       "y": 270,
       "uvlock": true
     }

@@ -7,14 +7,23 @@ ROOT=Path(__file__).resolve().parents[1]/'src/media/resources';A=ROOT/'assets/ne
 def write(path,data):path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
 def box(lo,hi,texture='body'):
  return {'from':lo,'to':hi,'faces':{f:{'texture':'#'+texture,'uv':[0,0,16,16]} for f in ('north','south','east','west','up','down')}}
-def model(name,parts):
+def geometry(name,parts):
  write(A/f'models/block/{name}.json',{'textures':{'particle':'netlabsputnik:block/body','body':'netlabsputnik:block/body','face':'netlabsputnik:block/face','grille':'netlabsputnik:block/grille','black':'minecraft:block/black_concrete','light':'minecraft:block/light_gray_concrete','display':'minecraft:block/cyan_concrete','key':'minecraft:block/white_concrete'},'elements':parts})
+def model(name,parts):
+ geometry(name,parts)
  write(A/f'blockstates/{name}.json',{'variants':{f'facing={f}':{'model':'netlabmedia:block/'+name,'y':r,'uvlock':True} for f,r in [('north',0),('east',90),('south',180),('west',270)]}})
  write(A/f'models/item/{name}.json',{'parent':'netlabmedia:block/'+name,'display':{'gui':{'rotation':[25,225,0],'translation':[0,-2,0],'scale':[.65,.65,.65]},'ground':{'scale':[.3,.3,.3]},'firstperson_righthand':{'rotation':[0,45,0],'scale':[.5,.5,.5]}}})
  write(ROOT/f'data/netlabmedia/loot_table/blocks/{name}.json',{'type':'minecraft:block','pools':[{'rolls':1,'entries':[{'type':'minecraft:item','name':'netlabmedia:'+name}],'conditions':[{'condition':'minecraft:survives_explosion'}]}]})
 def main():
  for name in ['headend','pbx','stb','audio_splitter']:model(name,[box([0,0,1.6],[16,4,14]),box([0,0,1.5],[16,3.7,1.6],'face'),box([.2,3.7,1.5],[15.8,4,1.6],'light')])
- model('tv',[box([0,2,1],[16,16,4],'light'),box([.6,4.2,.99],[15.4,13,.995],'black'),box([7,0,2],[9,3,5]),box([3,0,1],[13,.5,7]),box([0,0,1.5],[16,2.5,2],'face')])
+ def television_panel(shift):
+  return [box([1,3,1+shift],[15,15,5+shift],'face'),box([1.5,5.25,.98+shift],[14.5,12.6,.99+shift],'black')]
+ model('tv',television_panel(0)+[box([7,.5,2.5],[9,3,3.5]),box([3,0,.5],[13,.5,8])])
+ geometry('tv_wall',television_panel(11))
+ write(A/'blockstates/tv.json',{'variants':{
+  f'facing={f},wall_mounted={wall}':{'model':'netlabmedia:block/'+name,'y':r,'uvlock':True}
+  for f,r in [('north',0),('east',90),('south',180),('west',270)]
+  for wall,name in [('false','tv'),('true','tv_wall')]}})
  phone=[box([1,0,2],[15,3,14]),box([1,0,1.5],[15,2,2],'face'),box([6,3,7],[14,6,13],'light'),box([6.5,6.01,8],[13.5,6.03,12],'display'),box([1.3,3.2,3],[4,7,13],'black'),box([1,3.1,2],[4.3,7.1,5],'black'),box([1,3.1,10],[4.3,7.1,14],'black')]
  for row in range(4):
   for col in range(3):phone.append(box([6+col*2.4,3.01,2.5+row*1.1],[7.8+col*2.4,3.45,3.2+row*1.1],'key'))
@@ -48,5 +57,5 @@ def main():
  ('tv_remote',[' R ','IBI',' C '],{'I':I,'B':B,'C':C,'R':R},1),
  ('audio_cable',['CSC',' G '],{'C':C,'S':'minecraft:string','G':'minecraft:gold_nugget'},6),
  ('hdmi_cable',['GQG','CSC'],{'G':'minecraft:gold_nugget','Q':Q,'C':C,'S':'minecraft:string'},6)]:recipe('media',n,pattern,key,count)
- print('Generated 7 Media device models, 6 item models, and 13 survival recipes.')
+ print('Generated 7 Media devices including both TV mountings, 6 item models, and 13 survival recipes.')
 if __name__=='__main__':main()

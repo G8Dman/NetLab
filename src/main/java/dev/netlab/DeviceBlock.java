@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.*;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.*;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -34,6 +35,41 @@ public class DeviceBlock extends Block implements EntityBlock {
   @Override protected BlockState rotate(BlockState state,Rotation rotation){return state.setValue(FACING,rotation.rotate(state.getValue(FACING)));}
   @Override protected BlockState mirror(BlockState state,Mirror mirror){return state.rotate(mirror.getRotation(state.getValue(FACING)));}
   public static int turns(BlockState state){return (state.getValue(FACING).get2DDataValue()+2)%4;}
+
+  /** Turns and translation of a socket panel in the device's north-facing frame. */
+  public record SocketMount(int turns, Vec3 offset) {
+    public static final SocketMount DEFAULT = new SocketMount(0, Vec3.ZERO);
+
+    public Vec3 toDevice(Vec3 point) {
+      var p = dev.netlab.core.DeviceOrientation.rotate(point.x, point.y, point.z, turns);
+      return new Vec3(p.x(), p.y(), p.z()).add(offset);
+    }
+
+    public Vec3 toPanel(Vec3 point) {
+      var local = point.subtract(offset);
+      var p = dev.netlab.core.DeviceOrientation.inverse(local.x, local.y, local.z, turns);
+      return new Vec3(p.x(), p.y(), p.z());
+    }
+
+    public net.minecraft.core.Direction facing(net.minecraft.core.Direction original) {
+      return net.minecraft.core.Direction.from2DDataValue(original.get2DDataValue() + turns);
+    }
+  }
+
+  /** Ordinary data panels face forward and ordinary power panels face backward. */
+  public SocketMount socketMount(BlockState state, boolean power) { return SocketMount.DEFAULT; }
+  public PowerGeometry.Jack powerInputJack(BlockState state) { return null; }
+  public boolean hasFrontPowerIndicator() { return true; }
+
+  public static SocketMount socketMount(BlockState state, boolean power, boolean rack) {
+    return rack ? SocketMount.DEFAULT : ((DeviceBlock)state.getBlock()).socketMount(state, power);
+  }
+
+  public static net.minecraft.core.Direction socketFacing(BlockState state, boolean power, boolean rack) {
+    var facing = state.getValue(FACING);
+    return socketMount(state, power, rack).facing(power ? facing.getOpposite() : facing);
+  }
+
   public static VoxelShape orientShape(BlockState state,VoxelShape shape){
     int turns=turns(state);if(turns==0)return shape;VoxelShape result=Shapes.empty();
     for(var box:shape.toAabbs()){

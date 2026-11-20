@@ -19,5 +19,5 @@ public final class MediaPackets {
         public static final Type<Scene> TYPE=new Type<>(ResourceLocation.fromNamespaceAndPath(Media.ID,"scene"));
         public static final StreamCodec<RegistryFriendlyByteBuf,Scene> CODEC=StreamCodec.composite(ByteBufCodecs.stringUtf8(30000),Scene::json,Scene::new);public Type<Scene> type(){return TYPE;}
     }
-    public static void register(RegisterPayloadHandlersEvent e){var r=e.registrar("2");r.playToServer(Action.TYPE,Action.CODEC,(q,c)->MediaService.action((ServerPlayer)c.player(),q));r.playToClient(State.TYPE,State.CODEC,(q,c)->dev.netlab.media.client.MediaClient.state(q));r.playToClient(Scene.TYPE,Scene.CODEC,(q,c)->dev.netlab.media.client.MediaClient.scene(q));}
+    public static void register(RegisterPayloadHandlersEvent e){var r=e.registrar("3");r.playToServer(Action.TYPE,Action.CODEC,(q,c)->MediaService.action((ServerPlayer)c.player(),q));r.playToClient(State.TYPE,State.CODEC,(q,c)->dev.netlab.media.client.MediaClient.state(q));r.playToClient(Scene.TYPE,Scene.CODEC,(q,c)->dev.netlab.media.client.MediaClient.scene(q));}
 }

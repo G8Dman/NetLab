@@ -22,5 +22,13 @@ public final class MediaHardware {
         if(d.kind.equals(SPLITTER)){port(d,"AudioIn","audio",1,false);for(int i=1;i<=4;i++)port(d,"AudioOut"+i,"audio",1,false);}
         if(d.kind.equals(SPEAKER))port(d,"AudioIn","audio",1,false);
     }
-    public static PortLayout.Profile profile(Device d){var j=new ArrayList<PortLayout.Jack>();var labels=new LinkedHashMap<Integer,String>();for(int i=0;i<d.ports.size();i++){var p=d.ports.get(i);double x=d.ports.size()==1?.5:.10+.8*i/Math.max(1,d.ports.size()-1);double y=d.kind.equals(TV)?.12:d.kind.equals(PHONE)?.08:d.kind.equals(SPEAKER)?.08:.065;j.add(new PortLayout.Jack(i,x,y,d.kind.equals(TV)?.055:.075,.07,.065,p.console,p.medium));labels.put(i,p.console?"CON":p.name.replace("GigabitEthernet0/0","LAN").replace("Audio","A").replace("HDMI","HDMI "));}return new PortLayout.Profile(d.kind.equals(HEADEND)?"IPTV":d.kind.equals(PBX)?"IP PBX":"",.05,d.kind.equals(TV)?.94:.22,.06,.12,List.copyOf(j),Map.copyOf(labels));}
+    public static PortLayout.Profile profile(Device d){
+        if(d.kind.equals(TV)){
+            // The panel is rotated onto the right edge by TelevisionBlock, in both mountings.
+            double u=1-TelevisionSurface.SIDE_DEPTH;
+            return new PortLayout.Profile("",.05,.22,.06,.12,List.of(
+                    new PortLayout.Jack(0,u,.69,.057,.125,.070,false,"hdmi"),
+                    new PortLayout.Jack(1,u,.53,.057,.065,.065,false,"audio")),Map.of(0,"HDMI IN",1,"AUDIO"));
+        }
+        var j=new ArrayList<PortLayout.Jack>();var labels=new LinkedHashMap<Integer,String>();for(int i=0;i<d.ports.size();i++){var p=d.ports.get(i);double x=d.ports.size()==1?.5:.10+.8*i/Math.max(1,d.ports.size()-1);double y=d.kind.equals(PHONE)||d.kind.equals(SPEAKER)?.08:.065;j.add(new PortLayout.Jack(i,x,y,.075,.07,.065,p.console,p.medium));labels.put(i,p.console?"CON":p.name.replace("GigabitEthernet0/0","LAN").replace("Audio","A").replace("HDMI","HDMI "));}return new PortLayout.Profile(d.kind.equals(HEADEND)?"IPTV":d.kind.equals(PBX)?"IP PBX":"",.05,.22,.06,.12,List.copyOf(j),Map.copyOf(labels));}
 }

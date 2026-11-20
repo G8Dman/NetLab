@@ -115,6 +115,7 @@ public final class CableRenderer implements BlockEntityRenderer<DeviceEntity> {
         var profile=PortLayout.profile(device);
         if(profile!=null&&!profile.title().isBlank()){double tx=rack?.5:.5,ty=profile.titleY()+(rack?(bay==0?.12:.62):0),tz=rack?.02+profile.face()*.9:profile.face();frontLabel(stack,buffers,profile.title(),tx,ty,tz-.004,.0035f,0xd4e9ed);consumer=buffers.getBuffer(RenderType.entitySolid(TEXTURE));}
         var activity=ACTIVITY.computeIfAbsent(entity,e->new HashMap<>());long now=System.nanoTime();
+        pushSocketPanel(stack,DeviceBlock.socketMount(entity.getBlockState(),false,rack));
         for(var jack:PortLayout.jacks(device,rack,bay)){
             var port=device.ports.get(jack.port()%128);boolean round=jack.medium().equals("rf")||jack.medium().startsWith("coax_")||jack.medium().startsWith("sat_rf_")||jack.medium().equals("audio");int rim=jack.console()?0x64cee9:jack.medium().equals("fiber")||jack.medium().equals("sfp")||jack.medium().equals("fronthaul")?0xffba52:round?(jack.medium().equals("audio")?0x81d49b:0xf1dc83):jack.medium().equals("serial")?0x729dc9:profile!=null?0xd8e5ec:0xa1a9b0;
             if(device.kind.equals("pc")&&jack.console()&&port.hardwareSlot.equals("usb0"))adapter(consumer,stack.last(),jack,light);
@@ -149,6 +150,15 @@ public final class CableRenderer implements BlockEntityRenderer<DeviceEntity> {
                 consumer=buffers.getBuffer(RenderType.entitySolid(TEXTURE));
             }
         }
+        stack.popPose();
+    }
+    private static void pushSocketPanel(PoseStack stack,DeviceBlock.SocketMount mount){
+        stack.pushPose();
+        if(mount.equals(DeviceBlock.SocketMount.DEFAULT))return;
+        var offset=mount.offset();
+        stack.translate(offset.x+.5,offset.y,offset.z+.5);
+        stack.mulPose(Axis.YP.rotationDegrees(-90*mount.turns()));
+        stack.translate(-.5,0,-.5);
     }
     private void frontLabel(PoseStack stack,MultiBufferSource buffers,String text,double x,double y,double z,float scale,int color){var font=net.minecraft.client.Minecraft.getInstance().font;stack.pushPose();stack.translate(x,y,z);stack.mulPose(Axis.YP.rotationDegrees(180));stack.scale(scale,-scale,scale);font.drawInBatch(text,-font.width(text)/2f,0,0xff000000|color,false,stack.last().pose(),buffers,Font.DisplayMode.NORMAL,0,0xf000f0);stack.popPose();}
     private void ring(VertexConsumer v,PoseStack.Pose pose,double x,double y,double z,double rx,double ry,double outer,double inner,int color,int light){var normal=new Vec3(0,0,-1);for(int i=0;i<16;i++){double a=-i*Math.PI/8,b=-(i+1)*Math.PI/8;vertex(v,pose,new Vec3(x+Math.cos(a)*rx*outer,y+Math.sin(a)*ry*outer,z),normal,light,0,0,color);vertex(v,pose,new Vec3(x+Math.cos(b)*rx*outer,y+Math.sin(b)*ry*outer,z),normal,light,1,0,color);vertex(v,pose,new Vec3(x+Math.cos(b)*rx*inner,y+Math.sin(b)*ry*inner,z),normal,light,1,1,color);vertex(v,pose,new Vec3(x+Math.cos(a)*rx*inner,y+Math.sin(a)*ry*inner,z),normal,light,0,1,color);}}
@@ -165,11 +175,15 @@ public final class CableRenderer implements BlockEntityRenderer<DeviceEntity> {
     private void power(DeviceEntity host,PoseStack stack,MultiBufferSource buffers,int light){
         var v=buffers.getBuffer(RenderType.entitySolid(TEXTURE));boolean rack=((DeviceBlock)host.getBlockState().getBlock()).rack;
         if(rack&&host.rackSupply){back(v,stack.last(),.5,.095,.95,.88,.062,0x24282f,light);back(v,stack.last(),.20,.095,.964,.025,.025,host.rackPowered?0x41df65:0xd55035,0xf000f0);}
-        for(var j:PowerGeometry.jacks(host)){back(v,stack.last(),j.x(),j.y(),j.z(),j.size(),j.size(),0xed9b35,light);back(v,stack.last(),j.x(),j.y(),j.z()+.001,j.size()*.64,j.size()*.64,0x101115,light);}
-        for(var j:PowerGeometry.jacks(host))if(j.port()>=PowerGeometry.BOARD_IN){var target=j.port()==PowerGeometry.BOARD_IN?host.device:host.upperDevice;if(target!=null&&(PortLayout.profile(target)!=null||LaptopBattery.laptop(target)))rearLabel(stack,buffers,LaptopBattery.laptop(target)?"DC / FE":"FE",j.x(),j.y()+j.size()*.7,j.z()+.004,0xf000f0);}v=buffers.getBuffer(RenderType.entitySolid(TEXTURE));
+        var sockets=PowerGeometry.jacks(host);
+        pushSocketPanel(stack,DeviceBlock.socketMount(host.getBlockState(),true,rack));
+        for(var j:sockets){back(v,stack.last(),j.x(),j.y(),j.z(),j.size(),j.size(),0xed9b35,light);back(v,stack.last(),j.x(),j.y(),j.z()+.001,j.size()*.64,j.size()*.64,0x101115,light);}
+        for(var j:sockets)if(j.port()>=PowerGeometry.BOARD_IN){var target=j.port()==PowerGeometry.BOARD_IN?host.device:host.upperDevice;if(target!=null&&(PortLayout.profile(target)!=null||LaptopBattery.laptop(target)))rearLabel(stack,buffers,LaptopBattery.laptop(target)?"DC / FE":"FE",j.x(),j.y()+j.size()*.7,j.z()+.004,0xf000f0);}
+        stack.popPose();
+        v=buffers.getBuffer(RenderType.entitySolid(TEXTURE));
         if(rack&&host.rackSupply){rearLabel(stack,buffers,"IN",.11,.15,.97,light);rearLabel(stack,buffers,"OUT",.59,.15,.97,light);v=buffers.getBuffer(RenderType.entitySolid(TEXTURE));}
         if(host.device.kind.equals("energy")){rearLabel(stack,buffers,"OUT",.5,.65,1.01,light);v=buffers.getBuffer(RenderType.entitySolid(TEXTURE));}
-        for(int bay=0;bay<(rack?2:1);bay++){var d=bay==0?host.device:host.upperDevice;if(!PowerModel.board(d))continue;double x=d.kind.equals("endpoint")?.22:d.kind.equals("ap")?.2:.12,y=d.kind.equals("endpoint")?.38:d.kind.equals("ap")?.6:.205,z=d.kind.equals("endpoint")?.115:.10;if(rack){x=.06+x*.88;y+=(bay==0?.12:.62);z=.11;}
+        for(int bay=0;bay<(rack?2:1)&&((DeviceBlock)host.getBlockState().getBlock()).hasFrontPowerIndicator();bay++){var d=bay==0?host.device:host.upperDevice;if(!PowerModel.board(d))continue;double x=d.kind.equals("endpoint")?.22:d.kind.equals("ap")?.2:.12,y=d.kind.equals("endpoint")?.38:d.kind.equals("ap")?.6:.205,z=d.kind.equals("endpoint")?.115:.10;if(rack){x=.06+x*.88;y+=(bay==0?.12:.62);z=.11;}
             var profile=PortLayout.profile(d);if(profile!=null){x=profile.powerX();y=profile.powerY();z=profile.face();if(rack){x=.06+x*.88;y+=(bay==0?.12:.62);z=.02+z*.9;}}
             int color=Hardware.powered(d)?0x40ec72:Hardware.ensure(d).powered?0xe14835:0xb98127;face(v,stack.last(),x,y,z-.004,.022,.022,color,0xf000f0);
             var font=net.minecraft.client.Minecraft.getInstance().font;stack.pushPose();stack.translate(x+.02,y+.006,z-.006);stack.mulPose(Axis.YP.rotationDegrees(180));stack.scale(.002f,-.002f,.002f);font.drawInBatch("PWR",-font.width("PWR"),0,0xffbcd5d1,false,stack.last().pose(),buffers,Font.DisplayMode.NORMAL,0,light);stack.popPose();v=buffers.getBuffer(RenderType.entitySolid(TEXTURE));

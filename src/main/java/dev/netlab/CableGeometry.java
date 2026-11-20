@@ -11,8 +11,16 @@ import java.util.*;
 public final class CableGeometry {
     public static final int SEGMENTS=24;
     public static Vec3 port(DeviceEntity device,int port){
-        var local=localPort(device,port);var p=dev.netlab.core.DeviceOrientation.rotate(local.x,local.y,local.z,DeviceBlock.turns(device.getBlockState()));
+        var local=mount(device).toDevice(localPort(device,port));var p=dev.netlab.core.DeviceOrientation.rotate(local.x,local.y,local.z,DeviceBlock.turns(device.getBlockState()));
         return new Vec3(p.x(),p.y(),p.z());
+    }
+    private static DeviceBlock.SocketMount mount(DeviceEntity device){
+        var state=device.getBlockState();
+        return DeviceBlock.socketMount(state,false,((DeviceBlock) state.getBlock()).rack);
+    }
+    public static net.minecraft.core.Direction facing(DeviceEntity device){
+        var state=device.getBlockState();
+        return DeviceBlock.socketFacing(state,false,((DeviceBlock)state.getBlock()).rack);
     }
     private static Vec3 localPort(DeviceEntity device,int port){
         var targetDevice=device.portDevice(port);boolean rack=((DeviceBlock)device.getBlockState().getBlock()).rack;
@@ -27,8 +35,8 @@ public final class CableGeometry {
     public static Vec3 worldPort(DeviceEntity device,int port){return port(device,port).add(Vec3.atLowerCornerOf(device.getBlockPos()));}
     public static List<WallCablePath.Point> route(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors){
         var start=worldPort(a,ap);var end=worldPort(b,bp);
-        var na=Vec3.atLowerCornerOf(a.getBlockState().getValue(DeviceBlock.FACING).getNormal());
-        var nb=Vec3.atLowerCornerOf(b.getBlockState().getValue(DeviceBlock.FACING).getNormal());
+        var na=Vec3.atLowerCornerOf(facing(a).getNormal());
+        var nb=Vec3.atLowerCornerOf(facing(b).getNormal());
         return WallCablePath.between(PowerGeometry.fixedPoint(start),PowerGeometry.fixedPoint(start.add(na.scale(.12))),anchors,PowerGeometry.fixedPoint(end.add(nb.scale(.12))),PowerGeometry.fixedPoint(end));
     }
     public static Vec3 vector(WallCablePath.Point point){return new Vec3(point.x(),point.y(),point.z());}
@@ -56,9 +64,12 @@ public final class CableGeometry {
         return best;
     }
     public static int clickedPort(DeviceEntity device,BlockHitResult hit,Player player){
+        return clickedPort(device,hit,player.getEyePosition());
+    }
+    public static int clickedPort(DeviceEntity device,BlockHitResult hit,Vec3 eyePosition){
         boolean rack=((DeviceBlock)device.getBlockState().getBlock()).rack;
-        if(hit.getDirection()==device.getBlockState().getValue(DeviceBlock.FACING)){
-            var eye=local(device,player.getEyePosition());var at=local(device,hit.getLocation());int bay=0;
+        if(hit.getDirection()==facing(device)){
+            var eye=local(device,eyePosition);var at=local(device,hit.getLocation());int bay=0;
             if(rack){var projected=dev.netlab.core.PortLayout.project(true,eye.x,eye.y,eye.z,at.x,at.y,at.z);bay=projected.y()>=.5?1:0;}
             var target=device.portDevice(bay*128);
             if(dev.netlab.core.PortLayout.supported(target))return dev.netlab.core.PortLayout.pickRay(target,rack,bay,eye.x,eye.y,eye.z,at.x,at.y,at.z);
@@ -66,13 +77,13 @@ public final class CableGeometry {
         return clickedPort(device,hit);
     }
     private static Vec3 local(DeviceEntity device,Vec3 world){
-        var at=world.subtract(Vec3.atLowerCornerOf(device.getBlockPos()));var p=dev.netlab.core.DeviceOrientation.inverse(at.x,at.y,at.z,DeviceBlock.turns(device.getBlockState()));return new Vec3(p.x(),p.y(),p.z());
+        var at=world.subtract(Vec3.atLowerCornerOf(device.getBlockPos()));var p=dev.netlab.core.DeviceOrientation.inverse(at.x,at.y,at.z,DeviceBlock.turns(device.getBlockState()));return mount(device).toPanel(new Vec3(p.x(),p.y(),p.z()));
     }
     public static int clickedPort(DeviceEntity device,BlockHitResult hit){
         var at=local(device,hit.getLocation());int offset=((DeviceBlock)device.getBlockState().getBlock()).rack && at.y>=.5?128:0;
         var target=device.portDevice(offset);if(target==null||target.physicalPortCount()==0)return -1;
         if(dev.netlab.core.PortLayout.supported(target)){
-            if(hit.getDirection()!=device.getBlockState().getValue(DeviceBlock.FACING))return -1;
+            if(hit.getDirection()!=facing(device))return -1;
             return dev.netlab.core.PortLayout.pick(target,((DeviceBlock)device.getBlockState().getBlock()).rack,offset/128,
                 at.x,at.y);
         }

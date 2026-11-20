@@ -4,7 +4,8 @@ import dev.netlab.core.DeviceOrientation;
 
 /** The visible image and the hit area use the same north-facing screen coordinates. */
 public final class TelevisionSurface {
-    public static final float LEFT_X=.06f, RIGHT_X=.94f, BOTTOM=.28f, TOP=.775f, FRONT=.060f;
+    public static final float LEFT_X=.095f, RIGHT_X=.905f, BOTTOM=.33f, TOP=.785625f, FRONT=.060f;
+    public static final double WALL_OFFSET=11/16.0, SIDE_DEPTH=3/16.0;
     public record Pixel(double u,double v) {}
 
     public static Pixel pixel(double x,double y,double z,int turns){
