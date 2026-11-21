@@ -27,7 +27,7 @@ public final class MediaRuntimeCheck {
         }
         for(var entry:Media.ITEMS.getEntries()){
             String name=entry.getId().getPath();var module=MediaHardware.MODULES.stream().filter(code->ModuleItem.itemId(code).equals(name)).findFirst().orElse(null);
-            Item item=name.endsWith("_cable")?new CableItem(new Item.Properties(),name.replace("_cable","")):name.equals("phone_sip_module")?new PortableModules.ModuleItem(new Item.Properties(),"CISCO-POCKET-SIP","telephony","Phone SIP"):module!=null?new ModuleItem(new Item.Properties(),module):BuiltInRegistries.BLOCK.containsKey(entry.getId())?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new Item(new Item.Properties());Registry.register(BuiltInRegistries.ITEM,entry.getId(),item);if(item instanceof BlockItem b)b.registerBlocks(Item.BY_BLOCK,item);
+            Item item=name.equals("tv_remote")?new TelevisionControls(new Item.Properties().stacksTo(1)):name.endsWith("_cable")?new CableItem(new Item.Properties(),name.replace("_cable","")):name.equals("phone_sip_module")?new PortableModules.ModuleItem(new Item.Properties(),"CISCO-POCKET-SIP","telephony","Phone SIP"):module!=null?new ModuleItem(new Item.Properties(),module):BuiltInRegistries.BLOCK.containsKey(entry.getId())?new BlockItem(BuiltInRegistries.BLOCK.get(entry.getId()),new Item.Properties()):new Item(new Item.Properties());Registry.register(BuiltInRegistries.ITEM,entry.getId(),item);if(item instanceof BlockItem b)b.registerBlocks(Item.BY_BLOCK,item);
         }
         Media.integrate();
     }
@@ -45,6 +45,9 @@ public final class MediaRuntimeCheck {
             for(var jack:PortLayout.jacks(device,false,0))for(double dx:new double[]{-.45*jack.width(),0,.45*jack.width()})for(double dy:new double[]{-.45*jack.height(),0,.45*jack.height()}){double x=jack.x()+dx,y=jack.y()+dy;double front=model.getElements().stream().filter(box->box.rotation==null&&x*16>=box.from.x&&x*16<=box.to.x&&y*16>=box.from.y&&y*16<=box.to.y).mapToDouble(box->box.from.z/16).min().orElseThrow(()->new AssertionError("Socket floats outside model: "+kind));check(jack.z()<front,"port is visible ahead of case: "+kind);var hit=bs.getShape(net.minecraft.world.level.EmptyBlockGetter.INSTANCE,BlockPos.ZERO).clip(new net.minecraft.world.phys.Vec3(x,y,-1),new net.minecraft.world.phys.Vec3(x,y,1),BlockPos.ZERO);check(hit!=null&&hit.getDirection()==Direction.NORTH,"port lies on selectable front: "+kind);}
         }
         televisionMounts();
+        missingCablePort();
+        televisionAudioRange();
+        televisionRemote(regs);
         var ops=RegistryOps.create(JsonOps.INSTANCE,regs);try(var files=Files.list(Path.of("src/media/resources/data/netlabmedia/recipe"))){for(var file:files.toList()){var data=JsonParser.parseString(Files.readString(file)).getAsJsonObject();var recipe=Recipe.CODEC.parse(ops,data).getOrThrow();var input=RecipeCoverageRuntimeCheck.input(data);check(recipe instanceof CraftingRecipe&&((CraftingRecipe)recipe).matches(input,null),"actual media recipe matches: "+file);check(!recipe.getResultItem(regs).isEmpty(),"registered media recipe output: "+file);}}
         var buffer=new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(),regs);var action=new MediaPackets.Action(BlockPos.ZERO,1,"login","x".repeat(8192));MediaPackets.Action.CODEC.encode(buffer,action);check(MediaPackets.Action.CODEC.decode(buffer).json().length()==8192,"bounded action codec roundtrip");buffer.release();
         for(String section:List.of("iptv","ip-telephony")){var json=JsonParser.parseString(Files.readString(Path.of("src/media/resources/assets/netlabmedia/netlab_guide/"+section+".json"))).getAsJsonObject();check(json.getAsJsonArray("articles").size()>=14,"full device-by-device guide: "+section);for(var article:json.getAsJsonArray("articles"))check(!article.getAsJsonObject().get("body").getAsString().isBlank(),"guide chapter has instructions");}
@@ -66,6 +69,100 @@ public final class MediaRuntimeCheck {
         check(PortableModules.DEFINITIONS.get("telephony").code().equals("CISCO-POCKET-SIP"),"Mobile discovers optional phone hardware through base API");
         MediaVoiceRuntimeCheck.run();
         System.out.println(checks+" Media registry/card/recipe/model/payload checks passed; no game, server, world or microphone launched.");
+    }
+
+    private static void televisionRemote(HolderLookup.Provider registries) throws Exception {
+        var remote=new ItemStack(Media.TV_REMOTE.get());
+        var receiver=new Device(MediaHardware.STB);
+        var other=new Device(MediaHardware.STB);
+        MediaHardware.initialize(receiver);
+        MediaHardware.initialize(other);
+        receiver.ports.getFirst().ip="192.168.50.30";
+        other.ports.getFirst().ip=receiver.ports.getFirst().ip;
+        var pair=TelevisionControls.class.getDeclaredMethod("pair",ItemStack.class,Device.class);
+        var matches=TelevisionControls.class.getDeclaredMethod("pairedWith",ItemStack.class,Device.class);
+        pair.setAccessible(true);
+        matches.setAccessible(true);
+        check(!(boolean)matches.invoke(null,remote,receiver),"old remotes start unpaired");
+        var custom=new net.minecraft.nbt.CompoundTag();
+        custom.putString("other_metadata","keep");
+        remote.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,net.minecraft.world.item.component.CustomData.of(custom));
+        pair.invoke(null,remote,receiver);
+        check((boolean)matches.invoke(null,remote,receiver)&&!(boolean)matches.invoke(null,remote,other),"remote matches the physical receiver, even when another has the same IP");
+        var saved=ItemStack.parse(registries,remote.save(registries)).orElseThrow();
+        receiver.ports.getFirst().ip="192.168.51.30";
+        check((boolean)matches.invoke(null,saved,receiver),"pairing survives saving and a changed receiver IP");
+        check(saved.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA).copyTag().getString("other_metadata").equals("keep"),"pairing preserves other item metadata");
+        pair.invoke(null,saved,other);
+        check((boolean)matches.invoke(null,saved,other)&&!(boolean)matches.invoke(null,saved,receiver),"re-pairing replaces the old receiver");
+
+        var television=MediaState.initial(new Device(MediaHardware.TV));
+        television.volume=.5;
+        var power=TelevisionBlock.class.getDeclaredMethod("togglePower",MediaState.class);
+        power.setAccessible(true);
+        power.invoke(null,television);
+        check(!television.enabled&&television.speakers&&television.volume==.5,"remote power only disables the television screen and playback");
+        power.invoke(null,television);
+        check(television.enabled,"the same power action can turn the television back on");
+    }
+
+    private static void televisionAudioRange() throws Exception {
+        var tv=BlockPos.ZERO;
+        var speaker=new MediaAudio.Output(new BlockPos(50,0,0),.75f);
+        var nearSpeaker=speaker.pos().getCenter();
+        var atLimit=nearSpeaker.add(32,0,0);
+        var muted=new MediaAudio.Output(speaker.pos(),0);
+        check(tv.getCenter().distanceToSqr(nearSpeaker)>MediaAudio.RANGE_SQUARED,"the listener is well beyond the television range");
+        check(MediaAudio.audienceDistanceSquared(tv,List.of(speaker),nearSpeaker)==0,"a live remote speaker is enough to receive the TV scene");
+        check(MediaAudio.audienceDistanceSquared(tv,List.of(muted),nearSpeaker)>MediaAudio.RANGE_SQUARED,"a muted remote speaker cannot subscribe to the TV scene");
+        check(MediaAudio.audienceDistanceSquared(tv,List.of(speaker),atLimit)==MediaAudio.RANGE_SQUARED&&!speaker.audibleAt(atLimit),"audio fades to silence at the same boundary on server and client");
+        check(speaker.equals(MediaAudio.Output.fromJson(speaker.json())),"the scene preserves the speaker position and gain");
+
+        var state=new JsonObject();
+        state.addProperty("source","test-headend");
+        state.addProperty("channel",7);
+        state.addProperty("url","https://example.org/check.webm");
+        state.addProperty("gateway","172.30.80.2");
+        state.addProperty("seconds",0);
+        state.addProperty("entry",0);
+        state.addProperty("cycle",0);
+        state.addProperty("started",0);
+        var outputs=new JsonArray();
+        outputs.add(speaker.json());
+        state.add("outputs",outputs);
+        var sessionClass=dev.netlab.media.client.MediaVideoSession.class;
+        var create=sessionClass.getDeclaredConstructor(BlockPos.class,JsonObject.class);
+        var needsPlayback=sessionClass.getDeclaredMethod("needsPlayback",net.minecraft.world.phys.Vec3.class);
+        create.setAccessible(true);
+        needsPlayback.setAccessible(true);
+        try(var session=create.newInstance(tv,state)){
+            check((boolean)needsPlayback.invoke(session,nearSpeaker),"audio keeps playback active before any frame has been rendered");
+            check(!(boolean)needsPlayback.invoke(session,atLimit),"playback can become idle after leaving the unrendered TV and all speakers");
+        }
+    }
+
+    private static void missingCablePort() {
+        var block=new DeviceBlock(BlockBehaviour.Properties.of(),"rack",true);
+        var type=net.minecraft.world.level.block.entity.BlockEntityType.Builder.of((p,s)->null,block).build(null);
+        var rack=new DeviceEntity(type,BlockPos.ZERO,block.defaultBlockState()){};
+        var peer=new DeviceEntity(type,new BlockPos(2,0,0),block.defaultBlockState()){};
+        rack.device=new Device("switch");
+        rack.upperDevice=new Device("router");
+        peer.device=new Device("switch");
+        check(rack.device.ports.size()==5,"the switch has the five ports reported in the crash");
+        rack.links.put(5,new DeviceEntity.Peer(peer.getBlockPos().asLong(),0));
+        peer.links.put(0,new DeviceEntity.Peer(rack.getBlockPos().asLong(),5));
+        check(dev.netlab.client.DiagnosticsOverlay.endpoint(rack,5).contains("порт недоступен"),"examining a saved cable to the removed port does not crash the HUD");
+        check(rack.portLabel(4).equals("Console")&&rack.portLabel(130).equals("Console"),"live ports keep their names in both bays");
+        check(!rack.hasPort(-1)&&!rack.hasPort(256)&&!rack.hasPort(131)&&!peer.hasPort(128),"invalid indices and the empty rack bay are rejected");
+        for(int port:new int[]{5,24,131}){
+            var route=CableGeometry.route(rack,port,peer,0,List.of());
+            check(Double.isFinite(WallCablePath.length(route))&&!route.isEmpty(),"a cable to a missing port still has finite geometry and can be picked");
+            var point=WallCablePath.sample(route,.5);
+            var below=new WallCablePath.Point(point.x(),point.y()-1,point.z());
+            var above=new WallCablePath.Point(point.x(),point.y()+1,point.z());
+            check(WallCablePath.pick(route,below,above,.12)!=null,"cable with missing port can still be selected");
+        }
     }
 
     private static void televisionMounts() throws Exception {

@@ -24,7 +24,14 @@ public class DeviceEntity extends BlockEntity {
   public long selectedId(UUID player){return slotId(selectedSlots.getOrDefault(player,0));}
   public long slotId(int slot){return slot==0?worldPosition.asLong():worldPosition.below(1024).asLong();}
   public Device portDevice(int encoded){return encoded>=128?upperDevice:device;}
-  public String portLabel(int encoded){Device d=portDevice(encoded);return d==null?"Empty":d.portName(encoded%128);}
+  public boolean hasPort(int encoded) {
+    if (encoded < 0 || encoded >= 256) return false;
+    Device target = portDevice(encoded);
+    return target != null && encoded % 128 < target.ports.size();
+  }
+  public String portLabel(int encoded) {
+    return hasPort(encoded) ? portDevice(encoded).portName(encoded % 128) : "порт недоступен (№" + encoded % 128 + ")";
+  }
   public static final int DEFAULT_CABLE_COLOR = 0x237de6;
   public record Peer(long pos, int port, int color, String name,String cable,List<WallCablePath.Point> anchors,String circuit) {
     public Peer(long pos,int port,int color,String name,String cable,List<WallCablePath.Point> anchors){this(pos,port,color,name,cable,anchors,"");}

@@ -92,6 +92,11 @@ public final class TelevisionBlock extends MediaBlock {
 
     public static double depthOffset(BlockState state){return state.getValue(WALL_MOUNTED)?TelevisionSurface.WALL_OFFSET:0;}
 
+    static String togglePower(MediaState settings){
+        settings.enabled=!settings.enabled;
+        return settings.enabled?"Телевизор включён":"Телевизор выключен";
+    }
+
     @Override protected InteractionResult useWithoutItem(BlockState state,Level level,BlockPos pos,Player player,BlockHitResult hit){
         if(hit.getDirection()!=state.getValue(FACING))return InteractionResult.PASS;
         var at=hit.getLocation().subtract(Vec3.atLowerCornerOf(pos));
@@ -106,8 +111,7 @@ public final class TelevisionBlock extends MediaBlock {
                 if(!player.mayBuild()||!settings.owns(player.getUUID()))return InteractionResult.FAIL;
                 String message;
                 if(point.x()>=.77){
-                    settings.enabled=!settings.enabled;
-                    message=settings.enabled?"Телевизор включён":"Телевизор выключен";
+                    message=togglePower(settings);
                 }else if(player.isShiftKeyDown()){
                     settings.volume=settings.volume>=.99?.25:Math.min(1,settings.volume+.25);
                     message="Громкость: "+Math.round(settings.volume*100)+"%";

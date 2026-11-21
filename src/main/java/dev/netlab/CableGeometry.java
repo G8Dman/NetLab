@@ -23,14 +23,13 @@ public final class CableGeometry {
         return DeviceBlock.socketFacing(state,false,((DeviceBlock)state.getBlock()).rack);
     }
     private static Vec3 localPort(DeviceEntity device,int port){
-        var targetDevice=device.portDevice(port);boolean rack=((DeviceBlock)device.getBlockState().getBlock()).rack;
+        boolean rack=((DeviceBlock)device.getBlockState().getBlock()).rack;
+        double height=rack?(port>=128?.75:.25):.13;
+        if(!device.hasPort(port))return new Vec3(.5,height,.1);
+        var targetDevice=device.portDevice(port);
         if(dev.netlab.core.PortLayout.supported(targetDevice))for(var jack:dev.netlab.core.PortLayout.jacks(targetDevice,rack,port/128))
             if(jack.port()==port)return new Vec3(jack.x(),jack.y(),jack.z());
-        if(((DeviceBlock)device.getBlockState().getBlock()).rack){
-            var target=device.portDevice(port); if(target==null)return new Vec3(.5,.5,.1);
-            return new Vec3((target.physicalSlot(port%128)+.5)/Math.max(1,target.physicalPortCount()),port>=128?.75:.25,.1);
-        }
-        return new Vec3((device.device.physicalSlot(port)+.5)/device.device.physicalPortCount(),((DeviceBlock)device.getBlockState().getBlock()).rack?.45:.13,.1);
+        return new Vec3((targetDevice.physicalSlot(port%128)+.5)/Math.max(1,targetDevice.physicalPortCount()),height,.1);
     }
     public static Vec3 worldPort(DeviceEntity device,int port){return port(device,port).add(Vec3.atLowerCornerOf(device.getBlockPos()));}
     public static List<WallCablePath.Point> route(DeviceEntity a,int ap,DeviceEntity b,int bp,List<WallCablePath.Point> anchors){

@@ -20,7 +20,10 @@ public final class MediaService {
     public record Registration(MediaRef phone,MediaRef pbx,String number,long expiry,long phoneEpoch,long pbxEpoch){}
     public record Use(UUID player,MediaRef ref,long expiry){}
     private record Admin(MediaRef origin,MediaRef server,boolean iptv,long expiry,String hash,long epoch){boolean valid(){return server.live()&&expiry>now(origin)&&hash.equals(server.state().admin)&&epoch==Hardware.ensure(server.device()).epoch&&origin.host().network().routePath(origin.id(),server.ip()).success()&&server.host().network().routePath(server.id(),origin.ip()).success();}}
-    public record Watching(MediaRef tv,MediaRef receiver,MediaRef server,int channel,long gatewayId,long expiry){}
+    public record Watching(MediaRef tv,MediaRef receiver,MediaRef server,int channel,long gatewayId,long expiry,List<MediaAudio.Output> outputs){}
+    private record Television(MediaRef ref,List<MediaAudio.Output> outputs){
+        double distanceSquared(ServerPlayer player){return MediaAudio.audienceDistanceSquared(ref.host().getBlockPos(),outputs,player.position());}
+    }
     private record Viewer(UUID player,long tv){}
     private static final Map<String,Registration> REG=new HashMap<>();
     private static final Map<UUID,Use> USE=new HashMap<>();
@@ -89,14 +92,35 @@ public final class MediaService {
         var admin=ADMINS.get(p.getUUID());if(admin!=null&&admin.origin.device()==r.device()&&admin.valid()){out.addProperty("admin",true);out.addProperty("service",admin.iptv?"iptv":"pbx");out.addProperty("serviceIP",admin.server.ip());var target=admin.server.state();if(admin.iptv){out.addProperty("gateway",target.gateway);out.addProperty("satelliteOnly",target.satelliteOnly);out.addProperty("uplinkStatus",Uplink.check(admin.server).status);}var channels=new JsonArray();for(var entry:target.channels.entrySet()){var ch=new JsonObject();ch.addProperty("number",entry.getKey());ch.addProperty("name",entry.getValue().name);ch.addProperty("running",entry.getValue().running);ch.addProperty("videos",entry.getValue().playlist.size());channels.add(ch);}out.add("channels",channels);int selected=SELECTED.getOrDefault(p.getUUID(),7);out.addProperty("selectedChannel",selected);var playlist=new JsonArray();var selectedChannel=target.channels.get(selected);if(selectedChannel!=null)for(int i=0;i<selectedChannel.playlist.size();i++){var entry=selectedChannel.playlist.get(i);var row=new JsonObject();row.addProperty("index",i+1);row.addProperty("title",entry.title());row.addProperty("url",entry.url().substring(0,Math.min(128,entry.url().length())));row.addProperty("seconds",entry.seconds());try{row.addProperty("provider",MediaSource.parse(entry.url()).kind().label);}catch(IllegalArgumentException e){row.addProperty("provider","Некорректная ссылка");}row.addProperty("fallback",!entry.fallback().isEmpty());playlist.add(row);}out.add("playlist",playlist);var users=new JsonArray();target.subscribers.keySet().forEach(users::add);out.add("users",users);}
         if(r.device().kind.equals(MediaHardware.STB))try{var headend=MediaRef.address(r.level(),s.server,MediaHardware.HEADEND);if(r.host().network().routePath(r.id(),headend.ip()).success()&&headend.host().network().routePath(headend.id(),r.ip()).success()){var rows=new JsonArray();for(var entry:headend.state().channels.entrySet()){var row=new JsonObject();row.addProperty("number",entry.getKey());row.addProperty("name",entry.getValue().name);row.addProperty("videos",entry.getValue().playlist.size());rows.add(row);}out.add("channels",rows);}}catch(IllegalArgumentException ignored){}
         PacketDistributor.sendToPlayer(p,new MediaPackets.State(r.host().getBlockPos(),r.bay(),out.toString(),open));}
-    public static MediaRef peer(MediaRef ref,String port,String expected){int index=-1;for(int i=0;i<ref.device().ports.size();i++)if(ref.device().portName(i).equals(port))index=i;if(index<0)return null;var link=ref.host().links.get(ref.bay()*128+index);if(link==null||!ref.level().hasChunkAt(BlockPos.of(link.pos()))||!(ref.level().getBlockEntity(BlockPos.of(link.pos())) instanceof DeviceEntity host))return null;var reverse=host.links.get(link.port());if(reverse==null||reverse.pos()!=ref.host().getBlockPos().asLong()||reverse.port()!=ref.bay()*128+index)return null;var remote=MediaRef.of(host,link.port()/128);int remotePort=link.port()%128;return remote!=null&&remotePort<remote.device().ports.size()&&remote.device().portName(remotePort).equals(expected)&&remote.live()?remote:null;}
+    public static MediaRef peer(MediaRef ref,String port,String expected){
+        var remote=connectedPeer(ref,port,expected);
+        return remote!=null&&remote.live()?remote:null;
+    }
+
+    static MediaRef connectedPeer(MediaRef ref,String port,String expected){
+        int index=-1;
+        for(int i=0;i<ref.device().ports.size();i++)if(ref.device().portName(i).equals(port))index=i;
+        if(index<0)return null;
+        int sourcePort=ref.bay()*128+index;
+        var link=ref.host().links.get(sourcePort);
+        if(link==null||link.port()<0||link.port()>=256)return null;
+        var pos=BlockPos.of(link.pos());
+        var level=ref.level();
+        if(!level.hasChunkAt(pos)||!(level.getBlockEntity(pos) instanceof DeviceEntity host)||host.isRemoved())return null;
+        var reverse=host.links.get(link.port());
+        if(reverse==null||reverse.pos()!=ref.host().getBlockPos().asLong()||reverse.port()!=sourcePort)return null;
+        var remote=MediaRef.of(host,link.port()/128);
+        int remotePort=link.port()%128;
+        return remote!=null&&remotePort<remote.device().ports.size()&&remote.device().portName(remotePort).equals(expected)?remote:null;
+    }
     private static void updateVoiceUsers(){VOICE_USERS.clear();for(var u:USE.values()){var c=CALLS.find(u.ref.device().identity);if(c!=null&&c.state()==CallBook.State.ACTIVE)VOICE_USERS.add(u.player);}}
     public static void voice(UUID player,byte[] opus){var u=USE.get(player);if(u==null||!VOICE_USERS.contains(player)||opus.length==0||opus.length>1275)return;var p=server.getPlayerList().getPlayer(player);if(p==null||!accessible(p,u.ref)||u.expiry<now(u.ref)||!u.ref.live())return;var c=CALLS.find(u.ref.device().identity);if(c==null||c.state()!=CallBook.State.ACTIVE)return;var dest=REG.get(c.other(u.ref.device().identity));if(dest==null)return;String key=u.ref.device().identity;if(AUDIO_PENDING.getOrDefault(key,0)>=64)return;AUDIO_PENDING.merge(key,1,Integer::sum);long sent=now(u.ref);
         transport(u.ref,dest.phone,opus,16384,"udp","RTP").whenComplete((arrived,error)->{AUDIO_PENDING.computeIfPresent(key,(k,v)->v<=1?null:v-1);if(error!=null){MediaLearning.failed(u.ref,dest.phone,error);return;}if(now(u.ref)-sent>40)return;var current=CALLS.find(key);if(current==null||!current.id().equals(c.id())||current.state()!=CallBook.State.ACTIVE)return;for(var target:USE.values())if(target.ref.device().identity.equals(dest.phone.device().identity)){var listener=server.getPlayerList().getPlayer(target.player);if(listener!=null&&accessible(listener,target.ref))if(dev.netlab.media.voice.MediaVoice.deliver(c.id(),player,listener,arrived,dest.phone.state().speakers,dest.phone.host() instanceof PortableHosts.Host h?h.owner.blockPosition():dest.phone.host().getBlockPos()))MediaLearning.voice(c.id(),player,listener,u.ref,dest.phone,dest.phone.state().speakers);}});}
     public static Watching watching(ServerPlayer player,BlockPos pos){
         var w=WATCH.get(new Viewer(player.getUUID(),pos.asLong()));
         if(w==null||w.expiry<=player.serverLevel().getGameTime()||w.tv.level()!=player.serverLevel()
-                ||player.distanceToSqr(pos.getCenter())>=32*32||!w.tv.live()||!w.tv.state().enabled
+                ||MediaAudio.audienceDistanceSquared(pos,w.outputs(),player.position())>=MediaAudio.RANGE_SQUARED
+                ||!w.tv.live()||!w.tv.state().enabled
                 ||!w.receiver.live()||!w.server.live())return null;
         var hdmi=peer(w.tv,"HDMIIn","HDMIOut");
         if(hdmi==null||hdmi.device()!=w.receiver.device())return null;
@@ -105,7 +129,8 @@ public final class MediaService {
                 &&station.enabled&&channel!=null&&channel.running?w:null;
     }
 
-    private static void television(ServerPlayer player,MediaRef tv,JsonArray rows,Map<Long,Uplink> uplinks){
+    private static void television(ServerPlayer player,Television television,JsonArray rows,Map<Long,Uplink> uplinks){
+        var tv=television.ref();
         var row=new JsonObject();
         var pos=tv.host().getBlockPos();
         var viewer=new Viewer(player.getUUID(),pos.asLong());
@@ -132,7 +157,7 @@ public final class MediaService {
             var uplink=uplinks.computeIfAbsent(headend.id(),ignored->Uplink.check(headend));
             if(uplink.gateway==null)throw new IllegalArgumentException(uplink.status);
             MediaSource.parse(playing.entry().url());
-            WATCH.put(viewer,new Watching(tv,receiver,headend,tune.channel,uplink.gateway.id(),tv.level().getGameTime()+40));
+            WATCH.put(viewer,new Watching(tv,receiver,headend,tune.channel,uplink.gateway.id(),tv.level().getGameTime()+40,television.outputs()));
             LearningEvents.emit(player,"media.stb.ready",receiver.host(),receiver.bay());
             LearningEvents.emit(player,"media.hdmi",tv.host(),tv.bay());
             row.addProperty("source",headend.device().identity);
@@ -143,7 +168,7 @@ public final class MediaService {
             row.addProperty("cycle",playing.cycle());
             row.addProperty("gateway",uplink.gateway.ip());
             row.addProperty("started",ch.started);
-            var outputs=new JsonArray();MediaAudio.outputs(tv).forEach(outputs::add);
+            var outputs=new JsonArray();television.outputs().forEach(output->outputs.add(output.json()));
             row.add("outputs",outputs);
             status="Эфир";
         }catch(RuntimeException error){WATCH.remove(viewer);status=message(error);}
@@ -160,12 +185,13 @@ public final class MediaService {
     public static void tick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post e){server=e.getServer();if(server.getTickCount()%20!=0)return;dev.netlab.media.voice.MediaVoice.tick();for(var level:server.getAllLevels()){long now=level.getGameTime();for(var phone:List.copyOf(PORTABLE.values()))if(phone.level()==level){if(phone.host() instanceof PortableHosts.Host h&&h.present()&&h.allows("telephony"))registerPhone(phone);else PORTABLE.remove(phone.device().identity);}for(var r:MediaRef.loaded(level))if(r.device().kind.equals(MediaHardware.PHONE))registerPhone(r);for(var u:List.copyOf(USE.values()))if(u.ref.level()==level){var player=server.getPlayerList().getPlayer(u.player);if(player==null||u.expiry<now||!accessible(player,u.ref)||!u.ref.live()){release(u.player);continue;}var active=CALLS.find(u.ref.device().identity);if(active!=null)USE.put(u.player,new Use(u.player,u.ref,now+100));}
             REG.entrySet().removeIf(entry->{var reg=entry.getValue();boolean remove=reg.phone.level()==level&&(reg.expiry<now||!reg.phone.live()||!reg.pbx.live()||!reg.phone.state().enabled||!reg.pbx.state().enabled||reg.phoneEpoch!=Hardware.ensure(reg.phone.device()).epoch||reg.pbxEpoch!=Hardware.ensure(reg.pbx.device()).epoch||!reg.pbx.state().subscribers.containsKey(reg.number));if(remove)CALLS.hangup(entry.getKey());return remove;});
             for(var c:CALLS.all()){var a=REG.get(c.caller());var b=REG.get(c.callee());if(a==null||b==null){CALLS.hangup(c.caller());continue;}if(a.phone.level()!=level)continue;if(c.state()==CallBook.State.RINGING&&now>=c.deadline())CALLS.hangup(c.caller());else if(c.state()==CallBook.State.RINGING&&server.getTickCount()%40==0){if(b.phone.host() instanceof PortableHosts.Host h){level.playSound(null,h.owner.blockPosition(),SoundEvents.NOTE_BLOCK_BELL.value(),SoundSource.PLAYERS,.6f,1.2f);h.owner.displayClientMessage(Component.literal("Входящий "+a.number+" · Pocket → IP-телефония"),true);}else level.playSound(null,b.phone.host().getBlockPos(),SoundEvents.NOTE_BLOCK_BELL.value(),SoundSource.BLOCKS,.6f,1.2f);}}
-            var televisions=MediaRef.loaded(level).stream().filter(r->r.device().kind.equals(MediaHardware.TV)).toList();
+            var televisions=MediaRef.loaded(level).stream().filter(r->r.device().kind.equals(MediaHardware.TV))
+                    .map(r->new Television(r,MediaAudio.outputs(r))).toList();
             var uplinks=new HashMap<Long,Uplink>();
             for(var p:level.players()){
                 var rows=new JsonArray();
-                televisions.stream().filter(tv->p.distanceToSqr(tv.host().getBlockPos().getCenter())<32*32)
-                        .sorted(Comparator.comparingDouble(tv->p.distanceToSqr(tv.host().getBlockPos().getCenter())))
+                televisions.stream().filter(tv->tv.distanceSquared(p)<MediaAudio.RANGE_SQUARED)
+                        .sorted(Comparator.comparingDouble(tv->tv.distanceSquared(p)))
                         .limit(8).forEach(tv->television(p,tv,rows,uplinks));
                 PacketDistributor.sendToPlayer(p,new MediaPackets.Scene(rows.toString()));
                 var u=USE.get(p.getUUID());if(u!=null&&accessible(p,u.ref))panel(p,u.ref,false,"");

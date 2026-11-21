@@ -12,14 +12,17 @@ public final class PlayerPage {
     }
 
     static String html(String url, double seconds, String revision) {
-        MediaSource source = MediaSource.parse(url);
+        return html(MediaSource.parse(url), seconds, revision);
+    }
+
+    static String html(MediaSource source, double seconds, String revision) {
         String base = """
                 <!doctype html><meta charset=utf-8>
                 <meta name=referrer content=strict-origin-when-cross-origin>
                 <style>html,body{margin:0;width:100%%;height:100%%;background:#07151d;color:white;overflow:hidden}
                 #p,iframe,video{width:100%%;height:100%%;border:0;display:block}video{object-fit:contain}</style>
                 <div id=p></div><script>
-                const revision=%s;
+                let revision=%s;
                 let target=%s, align=()=>{};
                 const signal=(kind,value)=>document.title='NETLAB_'+kind+':'+revision+':'+value;
                 const proof=t=>{if(Number.isFinite(t)&&t>=0)signal('FRAME',t)};
@@ -41,13 +44,28 @@ public final class PlayerPage {
 
     private static String youtube(MediaSource source) {
         return script("""
-                let player;
-                window.onYouTubeIframeAPIReady=()=>{player=new YT.Player('p',{videoId:%s,
-                  playerVars:{autoplay:1,controls:1,playsinline:1,origin:location.origin,start:Math.floor(target)},
-                  events:{onReady:e=>e.target.playVideo(),onError:e=>status('YouTube: '+e.data),
-                  onAutoplayBlocked:()=>status('Нажми Play на экране')}})};
-                align=()=>{if(!player||!player.getPlayerState||player.getPlayerState()!==1)return;
-                  const now=player.getCurrentTime(); if(Math.abs(now-target)>3)player.seekTo(target,true);else proof(now)};
+                let player, ready=false, videoId=%s;
+                const playSelected=()=>player.loadVideoById({videoId,startSeconds:target});
+                window.netlabYouTube=(id,seconds,nextRevision)=>{
+                  target=seconds;
+                  if(nextRevision===revision){align();return}
+                  revision=nextRevision;videoId=id;
+                  if(ready)playSelected();
+                };
+                window.onYouTubeIframeAPIReady=()=>{
+                  const initialRevision=revision;
+                  player=new YT.Player('p',{videoId,
+                    playerVars:{autoplay:1,controls:1,playsinline:1,origin:location.origin,start:Math.floor(target)},
+                    events:{onReady:e=>{ready=true;if(initialRevision===revision)e.target.playVideo();else playSelected()},
+                      onError:e=>status('YouTube: '+e.data),onAutoplayBlocked:()=>status('Нажми Play на экране')}});
+                };
+                align=()=>{
+                  if(!ready||player.getPlayerState()!==1)return;
+                  let playing;try{playing=new URL(player.getVideoUrl()).searchParams.get('v')}catch{return}
+                  if(playing!==videoId)return;
+                  const now=player.getCurrentTime();
+                  if(Math.abs(now-target)>3)player.seekTo(target,true);else proof(now);
+                };
                 """.formatted(JSON.toJson(source.id()))) + "<script src=https://www.youtube.com/iframe_api></script>";
     }
 

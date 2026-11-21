@@ -1,8 +1,10 @@
 package dev.netlab.media.client;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.keksuccino.rinku.Rinku;
+import dev.netlab.media.MediaAudio;
 import dev.netlab.media.MediaPackets;
 import dev.netlab.media.core.MediaSource;
 import dev.netlab.sputnik.SputnikPackets;
@@ -11,6 +13,7 @@ import dev.netlab.sputnik.client.WebBrowser;
 import dev.netlab.sputnik.core.SocksProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.cef.CefApp;
 import org.cef.CefClient;
@@ -33,12 +36,16 @@ import java.util.concurrent.*;
 /** One player document per nearby television; HTTPS is carried by the Sputnik tunnel. */
 public final class MediaVideoSession implements AutoCloseable {
     public record Display(boolean on, int channel, String status) {}
-    private record Page(String url, String html, String revision) {}
+    private record Page(String url, String html, MediaSource.Kind kind) {}
+    private record Selection(MediaSource source, String revision) {}
+    private static final Gson JSON = new Gson();
     public static final Map<Long,MediaVideoSession> SESSIONS = new HashMap<>();
     private static final Map<Long,Display> DISPLAYS = new HashMap<>();
     private static final Map<Integer,MediaVideoSession> STREAM_OWNERS = new ConcurrentHashMap<>();
     private static final int MAX_TVS = 4;
+    private static final int BROWSER_IDLE_TICKS = 80;
     private static final int WIDTH = 640, HEIGHT = 360;
+    private static final String PLAYER_DOCUMENT = MediaSource.PLAYER_URL + "?rev=";
 
     private final UUID audioId = UUID.randomUUID();
     public final BlockPos pc;
@@ -46,8 +53,10 @@ public final class MediaVideoSession implements AutoCloseable {
     public volatile String status = "Загрузка плеера";
     private volatile String gateway = "", playingPosition = "";
     private volatile boolean closed, ready, offline;
-    private volatile Page page;
+    private volatile Page page, loadedPage;
+    private volatile Selection selection;
     private JsonObject scene;
+    private List<MediaAudio.Output> outputs=List.of();
     private String sourceKey = "";
     private boolean usingFallback;
     private int ticks, lastProof, audioSequence, lastRendered = -100, startAt;
@@ -75,6 +84,7 @@ public final class MediaVideoSession implements AutoCloseable {
     }
 
     private void start() throws IOException {
+        prepareDocument();
         proxy=new SocksProxy(new SocksProxy.Transport(){
             public CompletableFuture<Void> open(int id,String host,int port){
                 var future=new CompletableFuture<Void>();
@@ -107,7 +117,9 @@ public final class MediaVideoSession implements AutoCloseable {
                 return new CefResourceRequestHandlerAdapter(){
                     @Override public CefResourceHandler getResourceHandler(CefBrowser bb,CefFrame ff,CefRequest q){
                         Page current=page;
-                        return q.getURL().equals(current.url())?new HtmlResource(current.html()):null;
+                        String url=q.getURL();
+                        if(!url.startsWith(PLAYER_DOCUMENT))return null;
+                        return new HtmlResource(url.equals(current.url())?current.html():"");
                     }
                     @Override public boolean onBeforeResourceLoad(CefBrowser bb,CefFrame ff,CefRequest q){
                         return !WebBrowser.allowed(q.getURL()) || (!ready && !q.getURL().equals("about:blank"));
@@ -120,11 +132,18 @@ public final class MediaVideoSession implements AutoCloseable {
             @Override public boolean onBeforePopup(CefBrowser b,CefFrame f,String target,String name){return true;}
         });
         cef.addDisplayHandler(new CefDisplayHandlerAdapter(){
+            @Override public void onAddressChange(CefBrowser b,CefFrame f,String url){
+                if(!closed && b==browser && f.isMain()){
+                    Page current=page;
+                    loadedPage=url.equals(current.url())?current:null;
+                }
+            }
             @Override public void onTitleChange(CefBrowser b,String title){
                 Page current=page;
-                if(closed || b!=browser || !b.getURL().equals(current.url()))return;
-                String framePrefix="NETLAB_FRAME:"+current.revision()+":";
-                String statusPrefix="NETLAB_STATUS:"+current.revision()+":";
+                if(closed || b!=browser || current!=loadedPage)return;
+                var selected=selection;
+                String framePrefix="NETLAB_FRAME:"+selected.revision()+":";
+                String statusPrefix="NETLAB_STATUS:"+selected.revision()+":";
                 if(title.startsWith(framePrefix)){
                     playingPosition=title.substring(framePrefix.length());
                     status="";
@@ -156,6 +175,9 @@ public final class MediaVideoSession implements AutoCloseable {
     }
 
     private void receiveAudio(CefBrowser source,DataPointer data,int frames) {
+        Page audioPage=loadedPage;
+        var audioSelection=selection;
+        if(audioPage==null || audioPage!=page)return;
         try{
             var channel=data.getData(0).forCapacity(frames*4);
             byte[] pcm=new byte[frames*2];
@@ -166,13 +188,14 @@ public final class MediaVideoSession implements AutoCloseable {
             }
             int sequence=audioSequence++;
             Minecraft.getInstance().execute(()->{
-                if(closed||source!=browser||!recentlyRendered()||!scene.has("outputs"))return;
-                if(Minecraft.getInstance().getConnection()!=null)
+                var mc=Minecraft.getInstance();
+                if(closed||source!=browser||audioPage!=page||audioPage!=loadedPage||audioSelection!=selection||mc.player==null)return;
+                var listener=mc.player.position();
+                if(!audibleAt(listener))return;
+                if(mc.getConnection()!=null)
                     PacketDistributor.sendToServer(new dev.netlab.Packets.LearningHint(pc,"media.audio",audioId.toString()));
-                for(var element:scene.getAsJsonArray("outputs")){
-                    var output=element.getAsJsonObject();
-                    SpeakerAudio.receive(new SputnikPackets.Sound(audioId,BlockPos.of(output.get("pos").getAsLong()),sequence,output.get("volume").getAsFloat(),pcm));
-                }
+                for(var output:outputs)if(output.audibleAt(listener))
+                    SpeakerAudio.receive(new SputnikPackets.Sound(audioId,output.pos(),sequence,output.volume(),pcm));
             });
         }catch(RuntimeException error){status="Ошибка вывода звука";}
     }
@@ -221,15 +244,17 @@ public final class MediaVideoSession implements AutoCloseable {
     }
 
     private boolean recentlyRendered(){return ticks-lastRendered<=10;}
+    private boolean audibleAt(Vec3 listener){return outputs.stream().anyMatch(output->output.audibleAt(listener));}
+    private boolean needsPlayback(Vec3 listener){return recentlyRendered()||listener!=null&&audibleAt(listener);}
     public WebBrowser.ResourceLocationHandle frame(){
         lastRendered=ticks;
-        if(browser==null)return null;
+        if(browser==null||page!=loadedPage)return null;
         var result=browser.frameHandle();
         frameDrawn=result!=null;
         return result;
     }
     public boolean click(double u,double v){
-        if(browser==null||!ready)return false;
+        if(browser==null||!ready||page!=loadedPage)return false;
         int x=Math.clamp((int)(u*WIDTH),0,WIDTH-1), y=Math.clamp((int)(v*HEIGHT),0,HEIGHT-1);
         browser.move(x,y);browser.mouse(x,y,0,true);browser.mouse(x,y,0,false);
         return true;
@@ -237,13 +262,14 @@ public final class MediaVideoSession implements AutoCloseable {
 
     public void tick(){
         ticks++;
-        if(!recentlyRendered()){
-            if(browser!=null)closeResources();
+        var player=Minecraft.getInstance().player;
+        if(!needsPlayback(player==null?null:player.position())){
+            if(browser!=null&&ticks-lastRendered>BROWSER_IDLE_TICKS)closeResources();
             return;
         }
         if(offline && !usingFallback && scene.has("fallback")){
             usingFallback=true;
-            setPage(scene.get("fallback").getAsString());
+            selectVideo(scene.get("fallback").getAsString());
         }
         if(browser==null){
             if(ticks<startAt)return;
@@ -252,11 +278,8 @@ public final class MediaVideoSession implements AutoCloseable {
             try{start();}catch(RuntimeException|IOException error){closeResources();status="Не удалось запустить плеер";}
             return;
         }
-        if(ready && ticks%20==0){
-            double target=offset();
-            browser.executeJavaScript("window.netlabSeek&&window.netlabSeek("+target+")",page.url(),0);
-        }
-        if(ticks-lastProof>=40&&frameDrawn&&!playingPosition.isBlank()&&Minecraft.getInstance().getConnection()!=null){
+        if(ticks%20==0)syncPlayback();
+        if(recentlyRendered()&&ticks-lastProof>=40&&frameDrawn&&!playingPosition.isBlank()&&Minecraft.getInstance().getConnection()!=null){
             lastProof=ticks;
             PacketDistributor.sendToServer(new MediaPackets.Action(pc,0,"frame",playingPosition));
         }
@@ -264,24 +287,47 @@ public final class MediaVideoSession implements AutoCloseable {
 
     private double offset(){return scene.get("seconds").getAsDouble()+Math.max(0,ticks-sourceTick)/20.0;}
 
-    private void setPage(String url){
-        playingPosition="";offline=false;status="Загрузка плеера";
-        String revision=UUID.randomUUID().toString();
-        page=new Page(MediaSource.PLAYER_URL+"?rev="+revision,PlayerPage.html(url,offset(),revision),revision);
+    private void syncPlayback(){
+        if(browser==null||!ready||page!=loadedPage)return;
+        var clip=selection;
+        double seconds=offset();
+        String script=clip.source().kind()==MediaSource.Kind.YOUTUBE
+                ?"window.netlabYouTube&&window.netlabYouTube("+JSON.toJson(clip.source().id())+","+seconds+","+JSON.toJson(clip.revision())+")"
+                :"window.netlabSeek&&window.netlabSeek("+seconds+")";
+        browser.executeJavaScript(script,page.url(),0);
+    }
+
+    private void selectVideo(String url){
+        var clip=new Selection(MediaSource.parse(url),UUID.randomUUID().toString());
+        selection=clip;
+        playingPosition="";offline=false;frameDrawn=false;status="Загрузка плеера";
+        if(browser!=null&&ready&&page==loadedPage&&page.kind()==MediaSource.Kind.YOUTUBE&&clip.source().kind()==MediaSource.Kind.YOUTUBE){
+            syncPlayback();
+            return;
+        }
+        prepareDocument();
         if(browser!=null&&ready)browser.loadURL(page.url());
+    }
+
+    private void prepareDocument(){
+        var clip=selection;
+        page=new Page(PLAYER_DOCUMENT+clip.revision(),PlayerPage.html(clip.source(),offset(),clip.revision()),clip.source().kind());
     }
 
     private void update(JsonObject state){
         scene=state;sourceTick=ticks;
+        var audio=new ArrayList<MediaAudio.Output>();
+        if(state.has("outputs"))for(var row:state.getAsJsonArray("outputs"))audio.add(MediaAudio.Output.fromJson(row.getAsJsonObject()));
+        outputs=List.copyOf(audio);
         String nextGateway=state.get("gateway").getAsString();
-        if(!gateway.equals(nextGateway)&&browser!=null)closeResources();
+        boolean gatewayChanged=!gateway.equals(nextGateway);
+        if(gatewayChanged&&browser!=null)closeResources();
         gateway=nextGateway;
         String next=state.get("source").getAsString()+":"+state.get("channel")+":"+state.get("url")+":"
                 +state.get("entry")+":"+state.get("cycle")+":"+state.get("started")+":"+state.get("fallback");
-        if(!next.equals(sourceKey)){
+        if(gatewayChanged||!next.equals(sourceKey)){
             sourceKey=next;usingFallback=false;
-            if(browser!=null)closeResources();
-            setPage(state.get("url").getAsString());
+            selectVideo(state.get("url").getAsString());
         }
     }
 
@@ -307,7 +353,7 @@ public final class MediaVideoSession implements AutoCloseable {
     }
 
     private void closeResources(){
-        ready=false;playingPosition="";frameDrawn=false;
+        ready=false;loadedPage=null;playingPosition="";frameDrawn=false;
         for(var entry:STREAM_OWNERS.entrySet())if(entry.getValue()==this){
             send(entry.getKey(),"CLOSE","",0,new byte[0]);
             STREAM_OWNERS.remove(entry.getKey(),this);

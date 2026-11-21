@@ -11,5 +11,9 @@
   "item.netlabmedia.phone_sip_module": "Phone Sip Module",
   "item.netlabmedia.audio_cable": "Audio Cable",
   "item.netlabmedia.hdmi_cable": "Hdmi Cable",
-  "item.netlabmedia.tv_remote": "Tv Remote"
+  "item.netlabmedia.tv_remote": "IPTV Remote",
+  "item.netlabmedia.tv_remote.unpaired": "Unpaired",
+  "item.netlabmedia.tv_remote.paired": "Paired to an IPTV receiver",
+  "item.netlabmedia.tv_remote.pair_hint": "Shift-right-click the receiver to pair",
+  "item.netlabmedia.tv_remote.power_hint": "Shift-right-click the TV to toggle power"
 }

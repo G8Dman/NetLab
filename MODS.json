@@ -9,10 +9,10 @@
   "mods": [
     {
       "id": "netlab",
-      "version": "0.23.3-alpha",
-      "file": "mods/netlab-0.23.3-alpha.jar",
-      "bytes": 816579,
-      "sha256": "bee7f298fab8cea007a95f6a2d4f33e8db2f6c704261300c71f35be0b21f1aa2"
+      "version": "0.23.4-alpha",
+      "file": "mods/netlab-0.23.4-alpha.jar",
+      "bytes": 816714,
+      "sha256": "d7e6fe0813b105d7932832a73fc5f87cf5dcff5da6212f49e47746013c44d635"
     },
     {
       "id": "netlabautomation",
@@ -37,10 +37,10 @@
     },
     {
       "id": "netlabmedia",
-      "version": "0.2.1-alpha",
-      "file": "mods/netlab-media-0.2.1-alpha.jar",
-      "bytes": 212710,
-      "sha256": "90d6bb9c80cb6a3104f0f550bf2fa88a6c47b8406f0233a97d51926d3179b0cb"
+      "version": "0.2.5-alpha",
+      "file": "mods/netlab-media-0.2.5-alpha.jar",
+      "bytes": 221157,
+      "sha256": "190b0452636ccce9bd331dc36bf992c5bdc8a0bc4e1af29b2b83dea4e2664697"
     },
     {
       "id": "netlabacademy",

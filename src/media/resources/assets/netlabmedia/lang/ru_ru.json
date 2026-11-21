@@ -11,5 +11,9 @@
   "item.netlabmedia.phone_sip_module": "Модуль IP-телефонии Cisco Pocket",
   "item.netlabmedia.audio_cable": "Аудиокабель 3,5 мм",
   "item.netlabmedia.hdmi_cable": "Видеокабель HDMI",
-  "item.netlabmedia.tv_remote": "Пульт IPTV"
+  "item.netlabmedia.tv_remote": "Пульт IPTV",
+  "item.netlabmedia.tv_remote.unpaired": "Не привязан",
+  "item.netlabmedia.tv_remote.paired": "Привязан к IPTV-приставке",
+  "item.netlabmedia.tv_remote.pair_hint": "Shift+ПКМ по приставке — привязать пульт",
+  "item.netlabmedia.tv_remote.power_hint": "Shift+ПКМ по телевизору — включить или выключить"
 }
